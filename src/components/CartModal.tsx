@@ -35,10 +35,8 @@ const handleCheckout = (cartItems: CartItem[], totalPrice: number) => {
     minimumFractionDigits: 0,
   }).format(totalPrice);
   
-  // Prepare the message
-  let message = `*Pesanan Dari Toko Lezat Online*\n`;
-  message += `*Tanggal:* ${formattedDate}\n\n`;
-  message += `*Detail Pesanan:*\n`;
+  // Prepare the message - Simplified format for better compatibility
+  let message = `*Pesanan Dari Toko Lezat Online* *Tanggal:* ${formattedDate} *Detail Pesanan:*`;
   
   // Add each item to the message
   cartItems.forEach((item, index) => {
@@ -48,37 +46,40 @@ const handleCheckout = (cartItems: CartItem[], totalPrice: number) => {
       minimumFractionDigits: 0,
     }).format(item.price * item.quantity);
     
-    message += `${index + 1}. ${item.name}\n`;
-    message += `   ${item.quantity} × ${new Intl.NumberFormat('id-ID', {
+    message += ` ${index + 1}. ${item.name} ${item.quantity} × ${new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
       minimumFractionDigits: 0,
-    }).format(item.price)} = ${itemTotalPrice}\n`;
+    }).format(item.price)} = ${itemTotalPrice}`;
   });
   
   // Add total
-  message += `\n*Total Pembayaran: ${formattedPrice}*\n\n`;
-  message += `Mohon konfirmasi pesanan saya. Terima kasih!`;
+  message += ` *Total Pembayaran: ${formattedPrice}* Mohon konfirmasi pesanan saya. Terima kasih!`;
   
-  // Create the WhatsApp URL with the message
-  // Double encoding fix for WhatsApp Web/Desktop compatibility
-  const encodedMessage = encodeURIComponent(message);
+  // Force use phone number format for both mobile and desktop
   const whatsappNumber = "6285867989333"; // Admin's WhatsApp number
-  
-  // Check if user is on mobile or desktop
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  
-  let whatsappURL;
-  if (isMobile) {
-    // Mobile devices - standard URL format
-    whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-  } else {
-    // Desktop/Web - use api.whatsapp.com for better compatibility
-    whatsappURL = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
+
+  try {
+    // Create a textarea element to copy the message
+    const textarea = document.createElement('textarea');
+    textarea.value = message;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    
+    // Alert user that message has been copied
+    alert('Rincian pesanan telah disalin ke clipboard. Silakan paste (CTRL+V atau Command+V) di chat WhatsApp setelah halaman terbuka.');
+    
+    // Open WhatsApp directly with the number
+    window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+  } catch (error) {
+    console.error('Failed to copy message:', error);
+    
+    // Fallback to the URL with text parameter
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
   }
-  
-  // Open WhatsApp in a new tab
-  window.open(whatsappURL, '_blank');
 };
 
 export default function CartModal({ 
@@ -208,9 +209,20 @@ export default function CartModal({
                   </span>
                 </Button>
                 
-                <p className="text-[9px] sm:text-xs text-muted-foreground text-center mt-1 sm:mt-2">
+                <p className="text-[9px] sm:text-xs text-muted-foreground text-center mt-1 mb-2">
                   Pesanan akan dikirimkan melalui WhatsApp
                 </p>
+
+                <div className="text-center">
+                  <a 
+                    href={`https://wa.me/6285867989333`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[9px] sm:text-xs text-primary hover:underline"
+                  >
+                    Klik disini jika mengalami masalah dengan WhatsApp Web
+                  </a>
+                </div>
               </div>
             </>
           )}

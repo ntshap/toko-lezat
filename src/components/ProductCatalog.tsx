@@ -157,21 +157,21 @@ export default function ProductCatalog({ onAddToCart, searchQuery }: ProductCata
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Enhanced Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 font-bold text-sm mb-8 shadow-xl">
-            <Star className="w-5 h-5 fill-white" />
+        <div className="text-center mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-red-600 to-red-700 text-white px-5 sm:px-8 py-2 sm:py-4 font-bold text-xs sm:text-sm mb-6 sm:mb-8 shadow-xl">
+            <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-white" />
             {searchQuery ? 'HASIL PENCARIAN' : 'PRODUK UNGGULAN'}
           </div>
           
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-red-900 mb-6 leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-red-900 mb-4 sm:mb-6 leading-tight">
             {searchQuery ? 'HASIL PENCARIAN' : 'NIKMATI OLEH-OLEH'}
             <span className="block text-red-600 relative">
               {searchQuery ? 'PRODUK KAMI' : 'LEZAT KAMI'}
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-red-300"></div>
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 sm:w-32 h-1 bg-red-300"></div>
             </span>
           </h2>
 
-          <p className="text-lg lg:text-xl text-red-700 max-w-3xl mx-auto mb-8 leading-relaxed font-medium">
+          <p className="text-base sm:text-lg lg:text-xl text-red-700 max-w-3xl mx-auto mb-6 sm:mb-8 leading-relaxed font-medium">
             {searchQuery 
               ? `Menampilkan ${filteredProducts.length} produk yang sesuai dengan pencarian "${searchQuery}"`
               : 'Koleksi jajanan khas Magelang yang dibuat dengan resep turun temurun, menggunakan bahan-bahan berkualitas tinggi untuk memberikan cita rasa yang tak terlupakan.'
@@ -179,11 +179,11 @@ export default function ProductCatalog({ onAddToCart, searchQuery }: ProductCata
           </p>
           
           {!searchQuery && (
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <Button 
                 onClick={() => navigate('/products')}
                 variant="outline" 
-                className="bg-white text-red-600 hover:bg-red-50 font-bold px-8 py-3 text-lg border-2 border-red-600 transform hover:scale-105 transition-all duration-300 shadow-lg"
+                className="bg-white text-red-600 hover:bg-red-50 font-bold px-5 sm:px-8 py-2 sm:py-3 text-base sm:text-lg border-2 border-red-600 transform hover:scale-105 transition-all duration-300 shadow-lg"
               >
                 🛒 LIHAT SEMUA PRODUK ({products.length})
               </Button>
@@ -205,7 +205,7 @@ export default function ProductCatalog({ onAddToCart, searchQuery }: ProductCata
 
         {/* Enhanced Product Grid */}
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-7xl mx-auto">
             {filteredProducts.map((product, index) => {
             const backgrounds = [
               'from-red-500 to-red-600',

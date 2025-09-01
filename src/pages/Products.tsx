@@ -166,18 +166,18 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
               </div>
             </div>
             
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               {/* Cart Button */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={showCart}
-                className="border-red-200 text-red-600 hover:bg-red-50 relative"
+                className="border-red-200 text-red-600 hover:bg-red-50 relative text-xs sm:text-sm py-1 px-2 sm:py-2 sm:px-3"
               >
-                <ShoppingBag className="w-4 h-4 mr-2" />
+                <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Keranjang
                 {cartItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
                     {cartItems.reduce((total, item) => total + item.quantity, 0)}
                   </span>
                 )}
@@ -185,13 +185,13 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
               
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400 w-3 h-3 sm:w-4 sm:h-4" />
                 <input
                   type="text"
                   placeholder="Cari produk..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-red-200 rounded-lg focus:border-red-400 focus:outline-none w-64"
+                  className="pl-8 sm:pl-10 pr-2 sm:pr-4 py-1 sm:py-2 text-xs sm:text-sm border border-red-200 rounded-lg focus:border-red-400 focus:outline-none w-36 sm:w-64"
                 />
               </div>
               
@@ -201,17 +201,17 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                   onClick={() => setViewMode('grid')}
                   variant={viewMode === 'grid' ? 'default' : 'ghost'}
                   size="sm"
-                  className={viewMode === 'grid' ? 'bg-red-600 text-white' : 'text-red-600'}
+                  className={`p-1 sm:p-2 ${viewMode === 'grid' ? 'bg-red-600 text-white' : 'text-red-600'}`}
                 >
-                  <Grid className="w-4 h-4" />
+                  <Grid className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
                 <Button
                   onClick={() => setViewMode('list')}
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
                   size="sm"
-                  className={viewMode === 'list' ? 'bg-red-600 text-white' : 'text-red-600'}
+                  className={`p-1 sm:p-2 ${viewMode === 'list' ? 'bg-red-600 text-white' : 'text-red-600'}`}
                 >
-                  <List className="w-4 h-4" />
+                  <List className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
               </div>
               
@@ -219,7 +219,7 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
-                className="px-3 py-2 border border-red-200 rounded-lg focus:border-red-400 focus:outline-none text-red-600"
+                className="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm border border-red-200 rounded-lg focus:border-red-400 focus:outline-none text-red-600"
               >
                 <option value="name">Urutkan: Nama</option>
                 <option value="price">Urutkan: Harga</option>

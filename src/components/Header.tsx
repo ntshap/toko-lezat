@@ -99,16 +99,16 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
       </div>
       
       {/* Main Header */}
-      <div className="container mx-auto px-4 py-6 flex items-center justify-between">
-        <div className="flex items-center space-x-8">
+      <div className="container mx-auto px-4 py-4 md:py-6 flex items-center justify-between">
+        <div className="flex items-center space-x-4 md:space-x-8">
           {/* Logo with Batik Design */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 md:space-x-3">
             <div className="relative">
-              <div className="w-14 h-14 bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center text-white font-black text-xl shadow-xl">
+              <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center text-white font-black text-lg md:text-xl shadow-xl">
                 L
               </div>
               {/* Minimalist corner decoration */}
-              <div className="absolute -top-1 -right-1 w-4 h-4 opacity-20">
+              <div className="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 opacity-20">
                 <svg viewBox="0 0 16 16" className="w-full h-full fill-yellow-400">
                   <circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.5"/>
                   <circle cx="8" cy="8" r="1.5" fill="currentColor" opacity="0.6"/>
@@ -116,10 +116,10 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-black text-red-900 leading-tight">
+              <h1 className="text-base md:text-xl lg:text-2xl font-black text-red-900 leading-tight">
                 PUSAT OLEH-OLEH
               </h1>
-              <p className="text-sm font-bold text-red-600">LEZAT</p>
+              <p className="text-xs md:text-sm font-bold text-red-600">LEZAT</p>
             </div>
           </div>
           
@@ -147,24 +147,24 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
         </div>
         
         {/* Right Actions */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-1 sm:space-x-3">
           {/* Search */}
           <div className="relative">
             {isSearchOpen ? (
-              <div className="flex items-center bg-white border-2 border-red-200 rounded-2xl px-4 py-2 shadow-lg">
+              <div className="flex items-center bg-white border-2 border-red-200 rounded-2xl px-3 sm:px-4 py-2 shadow-lg">
                 <input
                   type="text"
                   placeholder="Cari produk..."
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
-                  className="outline-none text-red-900 placeholder-red-400 w-48"
+                  className="outline-none text-red-900 placeholder-red-400 w-28 sm:w-48 text-sm"
                   autoFocus
                 />
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={() => setIsSearchOpen(false)}
-                  className="ml-2 p-1"
+                  className="ml-1 sm:ml-2 p-1"
                 >
                   <Search className="w-4 h-4 text-red-600" />
                 </Button>
@@ -173,10 +173,10 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="hover:bg-red-50 relative group rounded-2xl p-3"
+                className="hover:bg-red-50 relative group rounded-2xl p-2 sm:p-3"
                 onClick={() => setIsSearchOpen(true)}
               >
-                <Search className="w-5 h-5 text-red-600 group-hover:text-red-700 transition-colors" />
+                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 group-hover:text-red-700 transition-colors" />
                 <div className="absolute inset-0 border-2 border-transparent group-hover:border-red-200 rounded-2xl transition-colors"></div>
               </Button>
             )}
@@ -189,11 +189,11 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
             variant="ghost" 
             size="icon"
             onClick={onCartClick}
-            className="hover:bg-red-50 relative group rounded-2xl p-3"
+            className="hover:bg-red-50 relative group rounded-2xl p-2 sm:p-3"
           >
-            <ShoppingCart className="w-5 h-5 text-red-600 group-hover:text-red-700 transition-colors" />
+            <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 group-hover:text-red-700 transition-colors" />
             {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-600 to-red-700 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shadow-lg animate-pulse">
+              <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-600 to-red-700 text-white text-xs font-bold w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full shadow-lg animate-pulse">
                 {cartItemCount}
               </span>
             )}

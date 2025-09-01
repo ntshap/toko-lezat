@@ -103,14 +103,14 @@ export default function CartModal({
         onClick={onClose}
       />
       
-      <Card className="relative w-full max-w-md mx-4 max-h-[90vh] overflow-hidden shadow-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 border-b border-border">
-          <CardTitle className="text-xl font-bold flex items-center gap-2">
-            <ShoppingBag className="w-6 h-6 text-primary" />
+      <Card className="relative w-full max-w-md mx-2 sm:mx-4 max-h-[90vh] overflow-hidden shadow-card">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 sm:pb-4 border-b border-border">
+          <CardTitle className="text-lg sm:text-xl font-bold flex items-center gap-2">
+            <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             Keranjang Belanja
           </CardTitle>
           <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
         </CardHeader>
         
@@ -127,25 +127,25 @@ export default function CartModal({
             </div>
           ) : (
             <>
-              <div className="max-h-96 overflow-y-auto p-4 space-y-4">
+              <div className="max-h-96 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-4 p-3 bg-secondary/50 rounded-lg">
+                  <div key={item.id} className="flex items-center space-x-3 sm:space-x-4 p-2 sm:p-3 bg-secondary/50 rounded-lg">
                     <img 
                       src={item.image} 
                       alt={item.name}
-                      className="w-16 h-16 object-cover rounded-md"
+                      className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md"
                     />
                     
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm text-card-foreground truncate">
+                      <h4 className="font-medium text-xs sm:text-sm text-card-foreground truncate">
                         {item.name}
                       </h4>
-                      <p className="text-primary font-semibold text-sm">
+                      <p className="text-primary font-semibold text-xs sm:text-sm">
                         {formatPrice(item.price)}
                       </p>
                     </div>
                     
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-1 sm:space-x-2">
                       <Button
                         variant="outline"
                         size="sm"
@@ -154,12 +154,12 @@ export default function CartModal({
                             ? onRemoveItem(item.id)
                             : onUpdateQuantity(item.id, item.quantity - 1)
                         }
-                        className="h-8 w-8 p-0"
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0"
                       >
-                        <Minus className="w-3 h-3" />
+                        <Minus className="w-2 h-2 sm:w-3 sm:h-3" />
                       </Button>
                       
-                      <span className="w-8 text-center font-medium">
+                      <span className="w-6 sm:w-8 text-center font-medium text-sm">
                         {item.quantity}
                       </span>
                       
@@ -167,19 +167,19 @@ export default function CartModal({
                         variant="outline"
                         size="sm"
                         onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                        className="h-8 w-8 p-0"
+                        className="h-6 w-6 sm:h-8 sm:w-8 p-0"
                       >
-                        <Plus className="w-3 h-3" />
+                        <Plus className="w-2 h-2 sm:w-3 sm:h-3" />
                       </Button>
                     </div>
                   </div>
                 ))}
               </div>
               
-              <div className="border-t border-border p-4 bg-secondary/30">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="font-semibold text-lg">Total:</span>
-                  <span className="font-bold text-xl text-primary">
+              <div className="border-t border-border p-3 sm:p-4 bg-secondary/30">
+                <div className="flex justify-between items-center mb-3 sm:mb-4">
+                  <span className="font-semibold text-base sm:text-lg">Total:</span>
+                  <span className="font-bold text-lg sm:text-xl text-primary">
                     {formatPrice(totalPrice)}
                   </span>
                 </div>
@@ -190,11 +190,13 @@ export default function CartModal({
                   disabled={cartItems.length === 0}
                   onClick={() => handleCheckout(cartItems, totalPrice)}
                 >
-                  <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-5 h-5" />
-                  <span className="whitespace-nowrap">Checkout via WhatsApp {totalItems > 0 && `(${totalItems} item${totalItems !== 1 ? 's' : ''})`}</span>
+                  <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="whitespace-nowrap text-xs sm:text-sm">
+                    Checkout via WhatsApp {totalItems > 0 && `(${totalItems} item${totalItems !== 1 ? 's' : ''})`}
+                  </span>
                 </Button>
                 
-                <p className="text-xs text-muted-foreground text-center mt-2">
+                <p className="text-[10px] sm:text-xs text-muted-foreground text-center mt-2">
                   Pesanan akan dikirimkan melalui WhatsApp
                 </p>
               </div>

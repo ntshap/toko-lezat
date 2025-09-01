@@ -34,26 +34,26 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         />
       </div>
       
-      <CardContent className="p-4">
-        <h3 className="text-lg font-semibold text-card-foreground mb-2">
+      <CardContent className="p-3 sm:p-4">
+        <h3 className="text-base sm:text-lg font-semibold text-card-foreground mb-1 sm:mb-2">
           {product.name}
         </h3>
-        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+        <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-2">
           {product.description}
         </p>
-        <p className="text-xl font-bold text-primary">
+        <p className="text-lg sm:text-xl font-bold text-primary">
           {formatPrice(product.price)}
         </p>
       </CardContent>
       
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="p-3 sm:p-4 pt-0">
         <Button 
           variant="default" 
           onClick={() => onAddToCart(product)}
           className="w-full flex items-center justify-center"
         >
           <Plus className="w-4 h-4 mr-2" />
-          <span className="whitespace-nowrap">Tambah ke Keranjang</span>
+          <span className="whitespace-nowrap text-sm sm:text-base">Tambah ke Keranjang</span>
         </Button>
       </CardFooter>
     </Card>

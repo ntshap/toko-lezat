@@ -148,8 +148,87 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-white">
       {/* Header */}
       <header className="bg-white shadow-lg border-b border-red-100 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
+          {/* Mobile Header Layout */}
+          <div className="block sm:hidden">
+            <div className="flex items-center justify-between mb-2">
+              <Button 
+                onClick={() => window.history.back()}
+                variant="outline"
+                size="sm"
+                className="border-red-200 text-red-600 hover:bg-red-50 px-2 py-1 h-8"
+              >
+                <ArrowLeft className="w-3 h-3 mr-1" />
+                <span className="text-xs">Kembali</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={showCart}
+                className="border-red-200 text-red-600 hover:bg-red-50 relative px-2 py-1 h-8"
+              >
+                <ShoppingBag className="w-3 h-3 mr-1" />
+                <span className="text-xs">Keranjang</span>
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                    {cartItems.reduce((total, item) => total + item.quantity, 0)}
+                  </span>
+                )}
+              </Button>
+            </div>
+            
+            <div className="mb-2">
+              <h1 className="text-xl font-black text-red-900">SEMUA PRODUK</h1>
+              <p className="text-red-600 text-xs font-medium">Pusat Oleh-oleh Lezat</p>
+            </div>
+            
+            <div className="flex items-center justify-between gap-2 mb-2">
+              {/* Search */}
+              <div className="relative flex-1">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-400 w-3 h-3" />
+                <input
+                  type="text"
+                  placeholder="Cari produk..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-7 pr-2 py-1 text-xs border border-red-200 rounded-lg focus:border-red-400 focus:outline-none w-full"
+                />
+              </div>
+              
+              {/* View Mode & Sort combined in dropdown for mobile */}
+              <div className="flex gap-1">
+                <div className="flex border border-red-200 rounded-lg overflow-hidden h-7">
+                  <Button
+                    onClick={() => setViewMode('grid')}
+                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                    className={`p-0 w-7 h-7 ${viewMode === 'grid' ? 'bg-red-600 text-white' : 'text-red-600'}`}
+                  >
+                    <Grid className="w-3 h-3" />
+                  </Button>
+                  <Button
+                    onClick={() => setViewMode('list')}
+                    variant={viewMode === 'list' ? 'default' : 'ghost'}
+                    className={`p-0 w-7 h-7 ${viewMode === 'list' ? 'bg-red-600 text-white' : 'text-red-600'}`}
+                  >
+                    <List className="w-3 h-3" />
+                  </Button>
+                </div>
+                
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
+                  className="px-1 py-0 text-[10px] border border-red-200 rounded-lg focus:border-red-400 focus:outline-none text-red-600 h-7"
+                >
+                  <option value="name">Nama</option>
+                  <option value="price">Harga</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          {/* Desktop Header Layout */}
+          <div className="hidden sm:flex sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               <Button 
                 onClick={() => window.history.back()}
@@ -166,18 +245,18 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
               </div>
             </div>
             
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-4">
               {/* Cart Button */}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={showCart}
-                className="border-red-200 text-red-600 hover:bg-red-50 relative text-xs sm:text-sm py-1 px-2 sm:py-2 sm:px-3"
+                className="border-red-200 text-red-600 hover:bg-red-50 relative text-sm py-2 px-3"
               >
-                <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <ShoppingBag className="w-4 h-4 mr-2" />
                 Keranjang
                 {cartItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {cartItems.reduce((total, item) => total + item.quantity, 0)}
                   </span>
                 )}
@@ -185,13 +264,13 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
               
               {/* Search */}
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400 w-3 h-3 sm:w-4 sm:h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400 w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Cari produk..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8 sm:pl-10 pr-2 sm:pr-4 py-1 sm:py-2 text-xs sm:text-sm border border-red-200 rounded-lg focus:border-red-400 focus:outline-none w-36 sm:w-64"
+                  className="pl-10 pr-4 py-2 text-sm border border-red-200 rounded-lg focus:border-red-400 focus:outline-none w-64"
                 />
               </div>
               
@@ -201,17 +280,17 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                   onClick={() => setViewMode('grid')}
                   variant={viewMode === 'grid' ? 'default' : 'ghost'}
                   size="sm"
-                  className={`p-1 sm:p-2 ${viewMode === 'grid' ? 'bg-red-600 text-white' : 'text-red-600'}`}
+                  className={`p-2 ${viewMode === 'grid' ? 'bg-red-600 text-white' : 'text-red-600'}`}
                 >
-                  <Grid className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <Grid className="w-4 h-4" />
                 </Button>
                 <Button
                   onClick={() => setViewMode('list')}
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
                   size="sm"
-                  className={`p-1 sm:p-2 ${viewMode === 'list' ? 'bg-red-600 text-white' : 'text-red-600'}`}
+                  className={`p-2 ${viewMode === 'list' ? 'bg-red-600 text-white' : 'text-red-600'}`}
                 >
-                  <List className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <List className="w-4 h-4" />
                 </Button>
               </div>
               
@@ -219,7 +298,7 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
-                className="px-2 sm:px-3 py-1 sm:py-2 text-xs sm:text-sm border border-red-200 rounded-lg focus:border-red-400 focus:outline-none text-red-600"
+                className="px-3 py-2 text-sm border border-red-200 rounded-lg focus:border-red-400 focus:outline-none text-red-600"
               >
                 <option value="name">Urutkan: Nama</option>
                 <option value="price">Urutkan: Harga</option>
@@ -232,20 +311,20 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {/* Stats */}
-        <div className="mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-lg border border-red-100">
+        <div className="mb-4 sm:mb-8">
+          <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg border border-red-100">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-red-900">
+                <h2 className="text-sm sm:text-lg font-bold text-red-900 line-clamp-1">
                   {searchQuery ? `Hasil Pencarian: "${searchQuery}"` : 'Semua Produk'}
                 </h2>
-                <p className="text-red-600">
+                <p className="text-xs sm:text-sm text-red-600">
                   Menampilkan {filteredProducts.length} dari {products.length} produk
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-black text-red-900">{filteredProducts.length}</div>
-                <div className="text-sm text-red-600">Produk Tersedia</div>
+                <div className="text-xl sm:text-2xl font-black text-red-900">{filteredProducts.length}</div>
+                <div className="text-xs sm:text-sm text-red-600">Produk Tersedia</div>
               </div>
             </div>
           </div>
@@ -263,38 +342,38 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                 return (
                   <div key={product.id} className="bg-white rounded-xl shadow-lg border border-red-100 overflow-hidden hover:shadow-xl transition-all duration-300">
                     <div className="flex flex-col sm:flex-row">
-                      <div className="w-full sm:w-48 h-48 sm:h-32 flex-shrink-0">
+                      <div className="w-full sm:w-48 h-36 sm:h-32 flex-shrink-0">
                         <img 
                           src={product.image} 
                           alt={product.name}
                           className="w-full h-full object-cover"
                         />
                       </div>
-                      <div className="flex-1 p-6">
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4">
+                      <div className="flex-1 p-3 sm:p-6">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-2 sm:mb-4">
                           <div>
-                            <h3 className="text-xl font-bold text-red-900 mb-2">{product.name}</h3>
-                            <p className="text-red-700 text-sm leading-relaxed">{product.description}</p>
+                            <h3 className="text-base sm:text-xl font-bold text-red-900 mb-1 sm:mb-2">{product.name}</h3>
+                            <p className="text-red-700 text-xs sm:text-sm leading-relaxed line-clamp-2 sm:line-clamp-none">{product.description}</p>
                           </div>
-                          <div className="text-left sm:text-right mt-4 sm:mt-0">
-                            <div className="text-2xl font-black text-red-900">Rp {product.price.toLocaleString()}</div>
-                            <div className="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded-full mt-1 inline-block">
+                          <div className="text-left sm:text-right mt-2 sm:mt-0">
+                            <div className="text-lg sm:text-2xl font-black text-red-900">Rp {product.price.toLocaleString()}</div>
+                            <div className="text-[10px] sm:text-xs text-green-600 font-bold bg-green-50 px-2 py-0.5 sm:py-1 rounded-full mt-1 inline-block">
                               ✓ Ready
                             </div>
                           </div>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex gap-2 sm:gap-3 mt-2">
                           <input 
                             type="number" 
                             defaultValue="1" 
                             min="1" 
-                            className="w-16 px-3 py-2 bg-red-50 border border-red-200 text-red-900 font-bold text-center rounded-lg focus:border-red-400 focus:outline-none"
+                            className="w-12 sm:w-16 px-2 sm:px-3 py-1 sm:py-2 bg-red-50 border border-red-200 text-red-900 font-bold text-center text-xs sm:text-sm rounded-lg focus:border-red-400 focus:outline-none"
                           />
                           <Button 
                             onClick={() => addToCart(product)}
-                            className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-2 transition-all duration-300 transform hover:scale-105 rounded-lg"
+                            className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold text-xs sm:text-sm py-1 sm:py-2 transition-all duration-300 transform hover:scale-105 rounded-lg"
                           >
-                            Add to Cart
+                            Tambah ke Keranjang
                           </Button>
                         </div>
                       </div>
@@ -327,8 +406,8 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
         )}
 
         {/* Call to Action */}
-        <div className="mt-16">
-          <div className="bg-white rounded-3xl p-12 shadow-2xl border border-red-100 text-center relative overflow-hidden">
+        <div className="mt-8 sm:mt-16">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-12 shadow-xl sm:shadow-2xl border border-red-100 text-center relative overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-5">
               <svg viewBox="0 0 200 200" className="w-full h-full fill-yellow-500">
@@ -343,22 +422,22 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
             </div>
             
             <div className="relative z-10">
-              <h3 className="text-3xl md:text-4xl font-black text-red-900 mb-6">
+              <h3 className="text-xl sm:text-3xl md:text-4xl font-black text-red-900 mb-2 sm:mb-6">
                 🎉 PENAWARAN ISTIMEWA! 🎉
               </h3>
-              <p className="text-lg md:text-xl text-red-700 mb-8 max-w-2xl mx-auto leading-relaxed">
+              <p className="text-sm sm:text-lg md:text-xl text-red-700 mb-4 sm:mb-8 max-w-2xl mx-auto leading-relaxed">
                 Beli 3 produk atau lebih dan dapatkan <strong className="text-red-900">DISKON 15%</strong> + 
                 <strong className="text-green-600"> GRATIS ONGKIR</strong> ke seluruh Indonesia!
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black px-8 py-4 text-lg rounded-2xl transform hover:scale-105 transition-all duration-300 shadow-xl">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+                <Button className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-black px-4 sm:px-8 py-2 sm:py-4 text-sm sm:text-lg rounded-xl sm:rounded-2xl transform hover:scale-105 transition-all duration-300 shadow-lg sm:shadow-xl">
                   📞 HUBUNGI SEKARANG!
                 </Button>
                 <Button 
                   onClick={() => window.history.back()}
                   variant="outline" 
-                  className="bg-white text-red-600 hover:bg-red-50 font-bold px-8 py-4 text-lg border-2 border-red-600 rounded-2xl transform hover:scale-105 transition-all duration-300 shadow-xl"
+                  className="bg-white text-red-600 hover:bg-red-50 font-bold px-4 sm:px-8 py-2 sm:py-4 text-sm sm:text-lg border-2 border-red-600 rounded-xl sm:rounded-2xl transform hover:scale-105 transition-all duration-300 shadow-lg sm:shadow-xl"
                 >
                   🏠 KEMBALI KE BERANDA
                 </Button>

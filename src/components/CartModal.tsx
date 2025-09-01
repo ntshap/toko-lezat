@@ -116,43 +116,43 @@ export default function CartModal({
       />
       
       <Card className="relative w-full max-w-md mx-2 sm:mx-4 max-h-[90vh] overflow-hidden shadow-card">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 sm:pb-4 border-b border-border">
-          <CardTitle className="text-lg sm:text-xl font-bold flex items-center gap-2">
-            <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-2 sm:py-3 pb-2 sm:pb-4 px-3 sm:px-6 border-b border-border">
+          <CardTitle className="text-base sm:text-xl font-bold flex items-center gap-1 sm:gap-2">
+            <ShoppingBag className="w-4 h-4 sm:w-6 sm:h-6 text-primary" />
             Keranjang Belanja
           </CardTitle>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="w-4 h-4 sm:w-5 sm:h-5" />
+          <Button variant="ghost" size="sm" onClick={onClose} className="h-7 w-7 sm:h-9 sm:w-9 p-0">
+            <X className="w-3 h-3 sm:w-5 sm:h-5" />
           </Button>
         </CardHeader>
         
         <CardContent className="p-0">
           {cartItems.length === 0 ? (
-            <div className="p-8 text-center">
-              <ShoppingBag className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground text-lg">
+            <div className="p-4 sm:p-8 text-center">
+              <ShoppingBag className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+              <p className="text-muted-foreground text-base sm:text-lg">
                 Keranjang Anda masih kosong
               </p>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2">
                 Silakan tambahkan produk untuk mulai berbelanja
               </p>
             </div>
           ) : (
             <>
-              <div className="max-h-96 overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4">
+              <div className="max-h-64 sm:max-h-96 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-3 sm:space-x-4 p-2 sm:p-3 bg-secondary/50 rounded-lg">
+                  <div key={item.id} className="flex items-center space-x-2 sm:space-x-4 p-2 bg-secondary/50 rounded-lg">
                     <img 
                       src={item.image} 
                       alt={item.name}
-                      className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md"
+                      className="w-10 h-10 sm:w-16 sm:h-16 object-cover rounded-md"
                     />
                     
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-xs sm:text-sm text-card-foreground truncate">
+                      <h4 className="font-medium text-[11px] sm:text-sm text-card-foreground truncate">
                         {item.name}
                       </h4>
-                      <p className="text-primary font-semibold text-xs sm:text-sm">
+                      <p className="text-primary font-semibold text-[11px] sm:text-sm">
                         {formatPrice(item.price)}
                       </p>
                     </div>
@@ -166,12 +166,12 @@ export default function CartModal({
                             ? onRemoveItem(item.id)
                             : onUpdateQuantity(item.id, item.quantity - 1)
                         }
-                        className="h-6 w-6 sm:h-8 sm:w-8 p-0"
+                        className="h-5 w-5 sm:h-8 sm:w-8 p-0"
                       >
                         <Minus className="w-2 h-2 sm:w-3 sm:h-3" />
                       </Button>
                       
-                      <span className="w-6 sm:w-8 text-center font-medium text-sm">
+                      <span className="w-5 sm:w-8 text-center font-medium text-xs sm:text-sm">
                         {item.quantity}
                       </span>
                       
@@ -179,7 +179,7 @@ export default function CartModal({
                         variant="outline"
                         size="sm"
                         onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                        className="h-6 w-6 sm:h-8 sm:w-8 p-0"
+                        className="h-5 w-5 sm:h-8 sm:w-8 p-0"
                       >
                         <Plus className="w-2 h-2 sm:w-3 sm:h-3" />
                       </Button>
@@ -188,27 +188,27 @@ export default function CartModal({
                 ))}
               </div>
               
-              <div className="border-t border-border p-3 sm:p-4 bg-secondary/30">
-                <div className="flex justify-between items-center mb-3 sm:mb-4">
-                  <span className="font-semibold text-base sm:text-lg">Total:</span>
-                  <span className="font-bold text-lg sm:text-xl text-primary">
+              <div className="border-t border-border p-2 sm:p-4 bg-secondary/30">
+                <div className="flex justify-between items-center mb-2 sm:mb-4">
+                  <span className="font-semibold text-sm sm:text-lg">Total:</span>
+                  <span className="font-bold text-base sm:text-xl text-primary">
                     {formatPrice(totalPrice)}
                   </span>
                 </div>
                 
                 <Button 
                   variant="hero" 
-                  className="w-full flex items-center justify-center gap-2"
+                  className="w-full h-9 sm:h-10 flex items-center justify-center gap-1 sm:gap-2"
                   disabled={cartItems.length === 0}
                   onClick={() => handleCheckout(cartItems, totalPrice)}
                 >
-                  <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span className="whitespace-nowrap text-xs sm:text-sm">
+                  <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-3 h-3 sm:w-5 sm:h-5" />
+                  <span className="whitespace-nowrap text-[11px] sm:text-sm">
                     Checkout via WhatsApp {totalItems > 0 && `(${totalItems} item${totalItems !== 1 ? 's' : ''})`}
                   </span>
                 </Button>
                 
-                <p className="text-[10px] sm:text-xs text-muted-foreground text-center mt-2">
+                <p className="text-[9px] sm:text-xs text-muted-foreground text-center mt-1 sm:mt-2">
                   Pesanan akan dikirimkan melalui WhatsApp
                 </p>
               </div>

@@ -253,17 +253,17 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
 
         {/* Products Grid/List */}
         {filteredProducts.length > 0 ? (
-          <div className={`grid gap-6 ${
+          <div className={`grid gap-4 sm:gap-6 ${
             viewMode === 'grid' 
-              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
               : 'grid-cols-1'
           }`}>
             {filteredProducts.map((product) => {
               if (viewMode === 'list') {
                 return (
                   <div key={product.id} className="bg-white rounded-xl shadow-lg border border-red-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-                    <div className="flex">
-                      <div className="w-48 h-32 flex-shrink-0">
+                    <div className="flex flex-col sm:flex-row">
+                      <div className="w-full sm:w-48 h-48 sm:h-32 flex-shrink-0">
                         <img 
                           src={product.image} 
                           alt={product.name}
@@ -271,14 +271,14 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                         />
                       </div>
                       <div className="flex-1 p-6">
-                        <div className="flex justify-between items-start mb-4">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4">
                           <div>
                             <h3 className="text-xl font-bold text-red-900 mb-2">{product.name}</h3>
                             <p className="text-red-700 text-sm leading-relaxed">{product.description}</p>
                           </div>
-                          <div className="text-right">
+                          <div className="text-left sm:text-right mt-4 sm:mt-0">
                             <div className="text-2xl font-black text-red-900">Rp {product.price.toLocaleString()}</div>
-                            <div className="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded-full mt-1">
+                            <div className="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded-full mt-1 inline-block">
                               ✓ Ready
                             </div>
                           </div>

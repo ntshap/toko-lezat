@@ -129,11 +129,11 @@ export default function CartModal({
             <>
               <div className="max-h-96 overflow-y-auto p-4 space-y-4">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-4 p-3 bg-secondary/50">
+                  <div key={item.id} className="flex items-center space-x-4 p-3 bg-secondary/50 rounded-lg">
                     <img 
                       src={item.image} 
                       alt={item.name}
-                      className="w-16 h-16 object-cover"
+                      className="w-16 h-16 object-cover rounded-md"
                     />
                     
                     <div className="flex-1 min-w-0">
@@ -191,7 +191,7 @@ export default function CartModal({
                   onClick={() => handleCheckout(cartItems, totalPrice)}
                 >
                   <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-5 h-5" />
-                  <span>Checkout via WhatsApp ({totalItems} item{totalItems !== 1 ? 's' : ''})</span>
+                  <span className="whitespace-nowrap">Checkout via WhatsApp {totalItems > 0 && `(${totalItems} item${totalItems !== 1 ? 's' : ''})`}</span>
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center mt-2">

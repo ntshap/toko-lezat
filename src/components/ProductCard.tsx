@@ -50,10 +50,10 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
         <Button 
           variant="default" 
           onClick={() => onAddToCart(product)}
-          className="w-full"
+          className="w-full flex items-center justify-center"
         >
           <Plus className="w-4 h-4 mr-2" />
-          Tambah ke Keranjang
+          <span className="whitespace-nowrap">Tambah ke Keranjang</span>
         </Button>
       </CardFooter>
     </Card>

@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { ArrowLeft, Filter, Grid, List, Star, Heart, Eye, Search } from "lucide-react";
+import { ArrowLeft, Filter, Grid, List, Star, Heart, Eye, Search, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProductCard, { Product } from "@/components/ProductCard";
+import CartModal, { CartItem } from "@/components/CartModal";
 import bakpiaImg from "@/assets/image/Bakpia Pathok 88.png";
 import cripingTeloImg from "@/assets/image/Criping Telo.png";
 import getukEcoImg from "@/assets/image/Getuk Eco.png";
@@ -86,6 +87,8 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState<'name' | 'price'>('name');
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   // Filter and sort products
   const filteredProducts = products
@@ -99,6 +102,47 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
       }
       return a.price - b.price;
     });
+
+  // Function to add product to cart
+  const addToCart = (product: Product) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === product.id);
+      
+      if (existingItem) {
+        return prevItems.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        return [...prevItems, { ...product, quantity: 1 }];
+      }
+    });
+    
+    // Also call the parent's onAddToCart to sync with App state
+    onAddToCart(product);
+  };
+
+  // Function to update item quantity
+  const updateQuantity = (productId: number, newQuantity: number) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === productId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
+  // Function to remove item from cart
+  const removeItem = (productId: number) => {
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item.id !== productId)
+    );
+  };
+
+  // Function to show cart
+  const showCart = () => {
+    setIsCartOpen(true);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-white">
@@ -123,6 +167,22 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
             </div>
             
             <div className="flex items-center gap-4">
+              {/* Cart Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={showCart}
+                className="border-red-200 text-red-600 hover:bg-red-50 relative"
+              >
+                <ShoppingBag className="w-4 h-4 mr-2" />
+                Keranjang
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartItems.reduce((total, item) => total + item.quantity, 0)}
+                  </span>
+                )}
+              </Button>
+              
               {/* Search */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400 w-4 h-4" />
@@ -231,7 +291,7 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                             className="w-16 px-3 py-2 bg-red-50 border border-red-200 text-red-900 font-bold text-center rounded-lg focus:border-red-400 focus:outline-none"
                           />
                           <Button 
-                            onClick={() => onAddToCart(product)}
+                            onClick={() => addToCart(product)}
                             className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-2 transition-all duration-300 transform hover:scale-105 rounded-lg"
                           >
                             Add to Cart
@@ -247,7 +307,7 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                 <ProductCard 
                   key={product.id} 
                   product={product} 
-                  onAddToCart={onAddToCart} 
+                  onAddToCart={addToCart} 
                 />
               );
             })}
@@ -307,6 +367,15 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
           </div>
         </div>
       </main>
+
+      {/* Cart Modal */}
+      <CartModal
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cartItems={cartItems}
+        onUpdateQuantity={updateQuantity}
+        onRemoveItem={removeItem}
+      />
     </div>
   );
 }

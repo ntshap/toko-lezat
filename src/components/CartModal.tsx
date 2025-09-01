@@ -15,6 +15,60 @@ interface CartModalProps {
   onRemoveItem: (productId: number) => void;
 }
 
+// WhatsApp checkout function
+const handleCheckout = (cartItems: CartItem[], totalPrice: number) => {
+  // Format the date
+  const today = new Date();
+  const dateOptions: Intl.DateTimeFormatOptions = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
+  const formattedDate = today.toLocaleDateString('id-ID', dateOptions);
+  
+  // Format the price
+  const formattedPrice = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(totalPrice);
+  
+  // Prepare the message
+  let message = `*Pesanan Dari Toko Lezat Online*\n`;
+  message += `*Tanggal:* ${formattedDate}\n\n`;
+  message += `*Detail Pesanan:*\n`;
+  
+  // Add each item to the message
+  cartItems.forEach((item, index) => {
+    const itemTotalPrice = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(item.price * item.quantity);
+    
+    message += `${index + 1}. ${item.name}\n`;
+    message += `   ${item.quantity} × ${new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(item.price)} = ${itemTotalPrice}\n`;
+  });
+  
+  // Add total
+  message += `\n*Total Pembayaran: ${formattedPrice}*\n\n`;
+  message += `Mohon konfirmasi pesanan saya. Terima kasih!`;
+  
+  // Create the WhatsApp URL with the message
+  const encodedMessage = encodeURIComponent(message);
+  const whatsappNumber = "6285867989333"; // Admin's WhatsApp number
+  const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+  
+  // Open WhatsApp in a new tab
+  window.open(whatsappURL, '_blank');
+};
+
 export default function CartModal({ 
   isOpen, 
   onClose, 
@@ -132,14 +186,16 @@ export default function CartModal({
                 
                 <Button 
                   variant="hero" 
-                  className="w-full"
+                  className="w-full flex items-center justify-center gap-2"
                   disabled={cartItems.length === 0}
+                  onClick={() => handleCheckout(cartItems, totalPrice)}
                 >
-                  Checkout ({totalItems} item{totalItems !== 1 ? 's' : ''})
+                  <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-5 h-5" />
+                  <span>Checkout via WhatsApp ({totalItems} item{totalItems !== 1 ? 's' : ''})</span>
                 </Button>
                 
                 <p className="text-xs text-muted-foreground text-center mt-2">
-                  Checkout akan segera tersedia
+                  Pesanan akan dikirimkan melalui WhatsApp
                 </p>
               </div>
             </>

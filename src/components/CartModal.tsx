@@ -61,9 +61,21 @@ const handleCheckout = (cartItems: CartItem[], totalPrice: number) => {
   message += `Mohon konfirmasi pesanan saya. Terima kasih!`;
   
   // Create the WhatsApp URL with the message
+  // Double encoding fix for WhatsApp Web/Desktop compatibility
   const encodedMessage = encodeURIComponent(message);
   const whatsappNumber = "6285867989333"; // Admin's WhatsApp number
-  const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+  
+  // Check if user is on mobile or desktop
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  
+  let whatsappURL;
+  if (isMobile) {
+    // Mobile devices - standard URL format
+    whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+  } else {
+    // Desktop/Web - use api.whatsapp.com for better compatibility
+    whatsappURL = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodedMessage}`;
+  }
   
   // Open WhatsApp in a new tab
   window.open(whatsappURL, '_blank');

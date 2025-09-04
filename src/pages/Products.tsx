@@ -95,6 +95,8 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isUserDataModalOpen, setIsUserDataModalOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
   
   // Device detection for conditional rendering
   const { isMobile, deviceType } = useDeviceDetection();
@@ -226,129 +228,86 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-white">
-      {/* Header */}
-      <header className="bg-white shadow-lg border-b border-red-100 sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-4 py-4 sm:py-4">
-          {/* Mobile Header Layout - Enhanced */}
-          <div className="block sm:hidden">
-            {/* Top Navigation */}
-            <div className="flex items-center justify-between mb-6">
-              <Button 
-                onClick={() => window.history.back()}
-                variant="outline"
-                size="sm"
-                className="border-red-200 text-red-600 hover:bg-red-50 px-4 py-2 h-12 rounded-xl flex-shrink-0"
+      {/* Compact Icon Header */}
+      <header className="bg-white shadow-sm border-b border-red-100 sticky top-0 z-50">
+        <div className="container mx-auto px-3 py-2">
+          {/* Icon-only Navigation */}
+          <div className="flex items-center justify-between">
+            {/* Left Side - Back Button */}
+            <Button 
+              onClick={() => window.history.back()}
+              variant="ghost"
+              size="icon"
+              className="hover:bg-red-50 text-red-600 w-9 h-9 rounded-lg"
+              title="Kembali"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            
+            {/* Center - Title (Small) */}
+            <div className="text-center">
+              <h1 className="text-sm font-bold text-red-900 leading-tight">PRODUK</h1>
+              <div className="text-xs text-red-600 font-medium">
+                {filteredProducts.length} dari {products.length} produk
+              </div>
+            </div>
+            
+            {/* Right Side - Actions */}
+            <div className="flex items-center gap-0.5">
+              {/* Search Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className={`hover:bg-red-50 text-red-600 w-9 h-9 rounded-lg ${isSearchOpen ? 'bg-red-100' : ''}`}
+                title="Cari produk"
               >
-                <ArrowLeft className="w-5 h-5 mr-2" />
-                <span className="text-sm font-medium">Kembali</span>
+                <Search className="w-4 h-4" />
               </Button>
               
+              {/* View Mode Toggle */}
               <Button
-                variant="outline"
-                size="sm"
-                onClick={showCart}
-                className="border-red-200 text-red-600 hover:bg-red-50 relative px-4 py-2 h-12 rounded-xl flex-shrink-0"
+                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                variant="ghost"
+                size="icon"
+                className="hover:bg-red-50 text-red-600 w-9 h-9 rounded-lg"
+                title={`Ubah ke ${viewMode === 'grid' ? 'List' : 'Grid'}`}
               >
-                <ShoppingBag className="w-5 h-5 mr-2" />
-                <span className="text-sm font-medium">Keranjang</span>
+                {viewMode === 'grid' ? <List className="w-4 h-4" /> : <Grid className="w-4 h-4" />}
+              </Button>
+              
+              {/* Filter/Sort */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsSortOpen(!isSortOpen)}
+                className={`hover:bg-red-50 text-red-600 w-9 h-9 rounded-lg ${isSortOpen ? 'bg-red-100' : ''}`}
+                title="Urutkan"
+              >
+                <Filter className="w-4 h-4" />
+              </Button>
+              
+              {/* Cart */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={showCart}
+                className="hover:bg-red-50 text-red-600 w-9 h-9 rounded-lg relative"
+                title="Keranjang belanja"
+              >
+                <ShoppingBag className="w-4 h-4" />
                 {cartItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-7 h-7 flex items-center justify-center font-bold shadow-lg">
+                  <span className="absolute -top-0.5 -right-0.5 bg-red-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold">
                     {cartItems.reduce((total, item) => total + item.quantity, 0)}
                   </span>
                 )}
               </Button>
-            </div>
-            
-            {/* Title Section */}
-            <div className="text-center mb-6">
-              <h1 className="text-2xl font-black text-red-900 mb-2">SEMUA PRODUK</h1>
-              <p className="text-red-600 text-sm font-medium">Pusat Oleh-oleh Lezat</p>
-            </div>
-            
-            {/* Enhanced Search Bar */}
-            <div className="relative mb-5">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-red-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Cari produk favorit Anda..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 text-base border-2 border-red-200 rounded-2xl focus:border-red-400 focus:outline-none bg-red-50/30 focus:bg-white transition-all duration-200 shadow-sm"
-              />
-            </div>
-            
-            {/* Enhanced Filter Controls */}
-            <div className="bg-gradient-to-r from-red-50 to-red-100/50 p-4 rounded-2xl shadow-sm">
-              <div className="flex items-center justify-between">
-                <div className="flex gap-3">
-                  <div className="flex border-2 border-red-200 rounded-2xl overflow-hidden bg-white shadow-sm">
-                    <Button
-                      onClick={() => setViewMode('grid')}
-                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                      className={`px-4 py-3 h-auto rounded-none ${viewMode === 'grid' ? 'bg-red-600 text-white shadow-sm' : 'text-red-600 hover:bg-red-50'}`}
-                    >
-                      <Grid className="w-4 h-4 mr-2" />
-                      <span className="text-sm font-medium">Grid</span>
-                    </Button>
-                    <Button
-                      onClick={() => setViewMode('list')}
-                      variant={viewMode === 'list' ? 'default' : 'ghost'}
-                      className={`px-4 py-3 h-auto rounded-none ${viewMode === 'list' ? 'bg-red-600 text-white shadow-sm' : 'text-red-600 hover:bg-red-50'}`}
-                    >
-                      <List className="w-4 h-4 mr-2" />
-                      <span className="text-sm font-medium">List</span>
-                    </Button>
-                  </div>
-                  
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
-                    className="px-4 py-3 text-sm border-2 border-red-200 rounded-2xl focus:border-red-400 focus:outline-none text-red-600 bg-white font-medium shadow-sm min-w-[100px]"
-                  >
-                    <option value="name">Nama A-Z</option>
-                    <option value="price">Harga</option>
-                  </select>
-                </div>
-              </div>
             </div>
           </div>
           
-          {/* Desktop Header Layout */}
-          <div className="hidden sm:flex sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4">
-              <Button 
-                onClick={() => window.history.back()}
-                variant="outline"
-                size="sm"
-                className="border-red-200 text-red-600 hover:bg-red-50"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Kembali
-              </Button>
-              <div>
-                <h1 className="text-2xl font-black text-red-900">SEMUA PRODUK</h1>
-                <p className="text-red-600 text-sm font-medium">Pusat Oleh-oleh Lezat</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              {/* Cart Button */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={showCart}
-                className="border-red-200 text-red-600 hover:bg-red-50 relative text-sm py-2 px-3"
-              >
-                <ShoppingBag className="w-4 h-4 mr-2" />
-                Keranjang
-                {cartItems.length > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartItems.reduce((total, item) => total + item.quantity, 0)}
-                  </span>
-                )}
-              </Button>
-              
-              {/* Search */}
+          {/* Expandable Search Bar */}
+          {isSearchOpen && (
+            <div className="mt-2 pb-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-red-400 w-4 h-4" />
                 <input
@@ -356,41 +315,26 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                   placeholder="Cari produk..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 text-sm border border-red-200 rounded-lg focus:border-red-400 focus:outline-none w-64"
+                  className="w-full pl-10 pr-4 py-2 text-sm border border-red-200 rounded-lg focus:border-red-400 focus:outline-none bg-red-50/30 focus:bg-white transition-all"
+                  autoFocus
                 />
               </div>
-              
-              {/* View Mode */}
-              <div className="flex border border-red-200 rounded-lg overflow-hidden">
-                <Button
-                  onClick={() => setViewMode('grid')}
-                  variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                  size="sm"
-                  className={`p-2 ${viewMode === 'grid' ? 'bg-red-600 text-white' : 'text-red-600'}`}
-                >
-                  <Grid className="w-4 h-4" />
-                </Button>
-                <Button
-                  onClick={() => setViewMode('list')}
-                  variant={viewMode === 'list' ? 'default' : 'ghost'}
-                  size="sm"
-                  className={`p-2 ${viewMode === 'list' ? 'bg-red-600 text-white' : 'text-red-600'}`}
-                >
-                  <List className="w-4 h-4" />
-                </Button>
-              </div>
-              
-              {/* Sort */}
+            </div>
+          )}
+          
+          {/* Expandable Sort Options */}
+          {isSortOpen && (
+            <div className="mt-2 pb-2">
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
-                className="px-3 py-2 text-sm border border-red-200 rounded-lg focus:border-red-400 focus:outline-none text-red-600"
+                className="w-full px-3 py-2 text-sm border border-red-200 rounded-lg focus:border-red-400 focus:outline-none text-red-600 bg-white"
               >
-                <option value="name">Urutkan: Nama</option>
-                <option value="price">Urutkan: Harga</option>
+                <option value="name">Nama A-Z</option>
+                <option value="price">Harga</option>
               </select>
             </div>
-          </div>
+          )}
         </div>
       </header>
 

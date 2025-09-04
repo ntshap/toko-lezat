@@ -340,26 +340,6 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Stats */}
-        <div className="mb-4 sm:mb-8">
-          <div className="bg-white rounded-xl p-3 sm:p-6 shadow-lg border border-red-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-sm sm:text-lg font-bold text-red-900 line-clamp-1">
-                  {searchQuery ? `Hasil Pencarian: "${searchQuery}"` : 'Semua Produk'}
-                </h2>
-                <p className="text-xs sm:text-sm text-red-600">
-                  Menampilkan {filteredProducts.length} dari {products.length} produk
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-xl sm:text-2xl font-black text-red-900">{filteredProducts.length}</div>
-                <div className="text-xs sm:text-sm text-red-600">Produk Tersedia</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Products Grid/List */}
         {filteredProducts.length > 0 ? (
           <div className={`gap-4 sm:gap-6 ${

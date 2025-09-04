@@ -112,23 +112,41 @@ export default function UserDataModal({
 
   const generateWhatsAppMessage = () => {
     const { fullName, fullAddress, city, whatsappNumber } = userData;
-    
-    let message = "*Pesanan Dari Toko Lezat Online*\n\n";
-    
-    message += "*Data Pemesan:*\n";
-    message += `Nama: ${fullName}\n`;
-    message += `Alamat: ${fullAddress}\n`;
-    message += `Kota: ${city}\n`;
-    message += `Nomor WA: ${whatsappNumber}\n\n`;
-    
-    message += "*Detail Pesanan:*\n";
-    cartItems.forEach((item, index) => {
-      const itemTotal = item.price * item.quantity;
-      message += `${index + 1}. ${item.name} ${item.quantity} × ${formatPrice(item.price)} = ${formatPrice(itemTotal)}\n`;
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long', 
+      year: 'numeric'
+    });
+    const formattedTime = currentDate.toLocaleTimeString('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit'
     });
     
-    message += `\n*Total Pembayaran: ${formatPrice(totalPrice)}*\n\n`;
-    message += "Mohon konfirmasi pesanan saya. Terima kasih!";
+    let message = "🛒 *PESANAN TOKO LEZAT ONLINE*\n";
+    message += `📅 *Tanggal:* ${formattedDate} pukul ${formattedTime}\n`;
+    message += "═══════════════════════════\n\n";
+    
+    message += "👤 *INFORMASI PEMESAN:*\n";
+    message += `� Nama: ${fullName}\n`;
+    message += `🏠 Alamat: ${fullAddress}\n`;
+    message += `🏙️ Kota: ${city}\n`;
+    message += `📱 WhatsApp: ${whatsappNumber}\n`;
+    message += "═══════════════════════════\n\n";
+    
+    message += "🛍️ *DETAIL PESANAN:*\n";
+    cartItems.forEach((item, index) => {
+      const itemTotal = item.price * item.quantity;
+      message += `${index + 1}. *${item.name}*\n`;
+      message += `   Qty: ${item.quantity} × ${formatPrice(item.price)} = *${formatPrice(itemTotal)}*\n\n`;
+    });
+    
+    message += "═══════════════════════════\n";
+    message += `💰 *TOTAL PEMBAYARAN: ${formatPrice(totalPrice)}*\n`;
+    message += "═══════════════════════════\n\n";
+    message += "✅ Mohon konfirmasi pesanan saya.\n";
+    message += "🙏 Terima kasih!\n\n";
+    message += "_Pesan otomatis dari website Toko Lezat_";
     
     return message;
   };
@@ -142,42 +160,75 @@ export default function UserDataModal({
       const message = generateWhatsAppMessage();
       const whatsappNumber = "6285867989333"; // Admin's WhatsApp number
       
-      // Try to copy to clipboard first
+      console.log('Generated message:', message); // Debug log
+      
+      // Primary method: Try URL encoding with WhatsApp Web/App
       try {
-        await navigator.clipboard.writeText(message);
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
         
-        toast({
-          title: "Pesanan berhasil disalin!",
-          description: "Pesan telah disalin ke clipboard. Anda akan diarahkan ke WhatsApp.",
+        console.log('WhatsApp URL:', whatsappURL); // Debug log
+        
+        // Open WhatsApp with pre-filled message
+        window.open(whatsappURL, '_blank');
+        
+        // Also copy to clipboard as backup
+        try {
+          await navigator.clipboard.writeText(message);
+          toast({
+            title: "Pesanan terkirim!",
+            description: "Pesan telah dikirim ke WhatsApp dan disalin ke clipboard sebagai backup.",
+          });
+        } catch (clipboardError) {
+          console.log('Clipboard not available, but URL method used');
+          toast({
+            title: "Pesanan terkirim!",
+            description: "Pesan telah dikirim ke WhatsApp.",
+          });
+        }
+        
+        // Clear form and close modal
+        setUserData({
+          fullName: "",
+          fullAddress: "",
+          city: "",
+          whatsappNumber: ""
         });
         
-        // Wait a moment then open WhatsApp (without pre-filled text since clipboard works)
-        setTimeout(() => {
-          window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+        onCheckoutComplete();
+        onClose();
+        
+      } catch (urlError) {
+        console.error('URL method failed, trying clipboard only:', urlError);
+        
+        // Fallback: clipboard only
+        try {
+          await navigator.clipboard.writeText(message);
           
-          // Clear form and close modal
-          setUserData({
-            fullName: "",
-            fullAddress: "",
-            city: "",
-            whatsappNumber: ""
+          toast({
+            title: "Pesan disalin!",
+            description: "Pesan telah disalin ke clipboard. Silakan buka WhatsApp dan paste pesan.",
           });
           
-          onCheckoutComplete();
-          onClose();
-        }, 1000);
-        
-      } catch (clipboardError) {
-        console.error('Clipboard failed, using URL fallback:', clipboardError);
-        
-        // Fallback: try to open WhatsApp with pre-filled message
-        const encodedMessage = encodeURIComponent(message);
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
-        
-        toast({
-          title: "Diarahkan ke WhatsApp",
-          description: "Silakan paste pesan di WhatsApp jika tidak otomatis terisi.",
-        });
+          // Open WhatsApp without message
+          setTimeout(() => {
+            window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+          }, 1000);
+          
+        } catch (clipboardError) {
+          console.error('Both methods failed:', clipboardError);
+          
+          // Manual fallback
+          toast({
+            title: "Mohon salin pesan secara manual",
+            description: "Pesan akan ditampilkan di layar untuk disalin manual.",
+            variant: "destructive"
+          });
+          
+          // Show message in alert for manual copy
+          alert(`Silakan salin pesan berikut ke WhatsApp:\n\n${message}`);
+          window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+        }
         
         // Clear form and close modal
         setUserData({

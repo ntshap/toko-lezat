@@ -197,32 +197,9 @@ export default function CartModal({
                   </span>
                 </div>
                 
-                <Button 
-                  variant="hero" 
-                  className="w-full h-9 sm:h-10 flex items-center justify-center gap-1 sm:gap-2"
-                  disabled={cartItems.length === 0}
-                  onClick={() => handleCheckout(cartItems, totalPrice)}
-                >
-                  <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-3 h-3 sm:w-5 sm:h-5" />
-                  <span className="whitespace-nowrap text-[11px] sm:text-sm">
-                    Checkout via WhatsApp {totalItems > 0 && `(${totalItems} item${totalItems !== 1 ? 's' : ''})`}
-                  </span>
-                </Button>
-                
-                <p className="text-[9px] sm:text-xs text-muted-foreground text-center mt-1 mb-2">
-                  Pesanan akan dikirimkan melalui WhatsApp
+                <p className="text-xs sm:text-sm text-muted-foreground text-center">
+                  Gunakan tombol checkout mengambang di bawah untuk melanjutkan pemesanan
                 </p>
-
-                <div className="text-center">
-                  <a 
-                    href={`https://wa.me/6285867989333`} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-[9px] sm:text-xs text-primary hover:underline"
-                  >
-                    Klik disini jika mengalami masalah dengan WhatsApp Web
-                  </a>
-                </div>
               </div>
             </>
           )}

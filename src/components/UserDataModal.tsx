@@ -199,29 +199,29 @@ export default function UserDataModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div 
         className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
         onClick={onClose}
       />
       
-      <Card className="relative w-full max-w-lg max-h-[95vh] overflow-hidden shadow-2xl">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-border bg-gradient-to-r from-red-50 to-orange-50">
+      <Card className="relative w-full sm:max-w-lg h-full sm:h-auto sm:max-h-[95vh] overflow-hidden shadow-2xl rounded-t-3xl sm:rounded-xl">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-4 px-4 border-b border-border bg-gradient-to-r from-red-50 to-orange-50 sticky top-0 z-10">
           <CardTitle className="text-lg font-bold flex items-center gap-2 text-red-900">
             <User className="w-5 h-5" />
             Data Pemesan
           </CardTitle>
-          <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
-            <X className="w-4 h-4" />
+          <Button variant="ghost" size="sm" onClick={onClose} className="h-9 w-9 p-0 rounded-full">
+            <X className="w-5 h-5" />
           </Button>
         </CardHeader>
         
-        <CardContent className="p-0 overflow-y-auto max-h-[calc(95vh-120px)]">
+        <CardContent className="p-0 overflow-y-auto h-full">
           <div className="p-4 space-y-4">
             {/* User Data Form */}
-            <div className="space-y-3">
+            <div className="space-y-4">
               <div>
-                <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="fullName" className="text-sm font-semibold text-gray-700 block mb-2">
                   Nama Lengkap *
                 </Label>
                 <Input
@@ -230,12 +230,12 @@ export default function UserDataModal({
                   placeholder="Masukkan nama lengkap Anda"
                   value={userData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className="mt-1"
+                  className="h-12 text-base border-2 border-gray-200 focus:border-red-500 rounded-xl"
                 />
               </div>
               
               <div>
-                <Label htmlFor="fullAddress" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="fullAddress" className="text-sm font-semibold text-gray-700 block mb-2">
                   Alamat Lengkap *
                 </Label>
                 <Textarea
@@ -243,13 +243,13 @@ export default function UserDataModal({
                   placeholder="Masukkan alamat lengkap untuk pengiriman"
                   value={userData.fullAddress}
                   onChange={(e) => handleInputChange('fullAddress', e.target.value)}
-                  className="mt-1 resize-none"
+                  className="min-h-[80px] text-base border-2 border-gray-200 focus:border-red-500 rounded-xl resize-none"
                   rows={3}
                 />
               </div>
               
               <div>
-                <Label htmlFor="city" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="city" className="text-sm font-semibold text-gray-700 block mb-2">
                   Kota/Kabupaten *
                 </Label>
                 <Input
@@ -258,12 +258,12 @@ export default function UserDataModal({
                   placeholder="Contoh: Yogyakarta, Bantul, Sleman"
                   value={userData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
-                  className="mt-1"
+                  className="h-12 text-base border-2 border-gray-200 focus:border-red-500 rounded-xl"
                 />
               </div>
               
               <div>
-                <Label htmlFor="whatsappNumber" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="whatsappNumber" className="text-sm font-semibold text-gray-700 block mb-2">
                   Nomor WhatsApp *
                 </Label>
                 <Input
@@ -272,33 +272,33 @@ export default function UserDataModal({
                   placeholder="Contoh: 08123456789"
                   value={userData.whatsappNumber}
                   onChange={(e) => handleInputChange('whatsappNumber', e.target.value)}
-                  className="mt-1"
+                  className="h-12 text-base border-2 border-gray-200 focus:border-red-500 rounded-xl"
                 />
               </div>
             </div>
             
             {/* Order Summary */}
-            <div className="border-t pt-4 bg-gray-50 -mx-4 px-4 pb-4">
-              <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                <ShoppingBag className="w-4 h-4" />
+            <div className="border-t pt-4 bg-gray-50 -mx-4 px-4 pb-6">
+              <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                <ShoppingBag className="w-5 h-5" />
                 Ringkasan Pesanan
               </h3>
               
-              <div className="space-y-2 max-h-32 overflow-y-auto">
+              <div className="space-y-3 max-h-40 overflow-y-auto bg-white rounded-xl p-3 border">
                 {cartItems.map((item, index) => (
                   <div key={item.id} className="flex justify-between text-sm">
-                    <span className="text-gray-600">
+                    <span className="text-gray-600 flex-1">
                       {index + 1}. {item.name} × {item.quantity}
                     </span>
-                    <span className="font-medium">
+                    <span className="font-semibold ml-2">
                       {formatPrice(item.price * item.quantity)}
                     </span>
                   </div>
                 ))}
               </div>
               
-              <div className="border-t mt-3 pt-3">
-                <div className="flex justify-between font-bold text-lg text-red-600">
+              <div className="border-t mt-4 pt-4 bg-white -mx-4 px-4 rounded-xl">
+                <div className="flex justify-between font-bold text-xl text-red-600">
                   <span>Total:</span>
                   <span>{formatPrice(totalPrice)}</span>
                 </div>
@@ -306,21 +306,22 @@ export default function UserDataModal({
             </div>
           </div>
           
-          {/* Action Button */}
-          <div className="p-4 border-t bg-white">
+          {/* Action Button - Sticky at bottom on mobile */}
+          <div className="sticky bottom-0 p-4 border-t bg-white">
             <Button 
               onClick={handleCheckout}
               disabled={isSubmitting}
-              className="w-full h-12 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-semibold text-sm"
+              className="w-full h-14 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold text-base rounded-xl"
+              size="lg"
             >
               {isSubmitting ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="flex items-center gap-3">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Memproses...
                 </div>
               ) : (
-                <div className="flex items-center gap-2">
-                  <Copy className="w-4 h-4" />
+                <div className="flex items-center gap-3">
+                  <Copy className="w-5 h-5" />
                   Copy & Lanjut ke WhatsApp
                 </div>
               )}

@@ -15,6 +15,73 @@ interface CartModalProps {
   onRemoveItem: (productId: number) => void;
 }
 
+// WhatsApp checkout function
+const handleCheckout = (cartItems: CartItem[], totalPrice: number) => {
+  // Format the date
+  const today = new Date();
+  const dateOptions: Intl.DateTimeFormatOptions = { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  };
+  const formattedDate = today.toLocaleDateString('id-ID', dateOptions);
+  
+  // Format the price
+  const formattedPrice = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(totalPrice);
+  
+  // Prepare the message - Simplified format for better compatibility
+  let message = `*Pesanan Dari Toko Lezat Online* *Tanggal:* ${formattedDate} *Detail Pesanan:*`;
+  
+  // Add each item to the message
+  cartItems.forEach((item, index) => {
+    const itemTotalPrice = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(item.price * item.quantity);
+    
+    message += ` ${index + 1}. ${item.name} ${item.quantity} × ${new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(item.price)} = ${itemTotalPrice}`;
+  });
+  
+  // Add total
+  message += ` *Total Pembayaran: ${formattedPrice}* Mohon konfirmasi pesanan saya. Terima kasih!`;
+  
+  // Force use phone number format for both mobile and desktop
+  const whatsappNumber = "6285867989333"; // Admin's WhatsApp number
+
+  try {
+    // Create a textarea element to copy the message
+    const textarea = document.createElement('textarea');
+    textarea.value = message;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    
+    // Alert user that message has been copied
+    alert('Rincian pesanan telah disalin ke clipboard. Silakan paste (CTRL+V atau Command+V) di chat WhatsApp setelah halaman terbuka.');
+    
+    // Open WhatsApp directly with the number
+    window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+  } catch (error) {
+    console.error('Failed to copy message:', error);
+    
+    // Fallback to the URL with text parameter
+    const encodedMessage = encodeURIComponent(message);
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
+  }
+};
+
 export default function CartModal({ 
   isOpen, 
   onClose, 
@@ -130,9 +197,32 @@ export default function CartModal({
                   </span>
                 </div>
                 
-                <p className="text-xs text-gray-600 text-center mt-2">
-                  Gunakan tombol checkout mengambang di bawah untuk melanjutkan pemesanan
+                <Button 
+                  variant="hero" 
+                  className="w-full h-9 sm:h-10 flex items-center justify-center gap-1 sm:gap-2"
+                  disabled={cartItems.length === 0}
+                  onClick={() => handleCheckout(cartItems, totalPrice)}
+                >
+                  <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-3 h-3 sm:w-5 sm:h-5" />
+                  <span className="whitespace-nowrap text-[11px] sm:text-sm">
+                    Checkout via WhatsApp {totalItems > 0 && `(${totalItems} item${totalItems !== 1 ? 's' : ''})`}
+                  </span>
+                </Button>
+                
+                <p className="text-[9px] sm:text-xs text-muted-foreground text-center mt-1 mb-2">
+                  Pesanan akan dikirimkan melalui WhatsApp
                 </p>
+
+                <div className="text-center">
+                  <a 
+                    href={`https://wa.me/6285867989333`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-[9px] sm:text-xs text-primary hover:underline"
+                  >
+                    Klik disini jika mengalami masalah dengan WhatsApp Web
+                  </a>
+                </div>
               </div>
             </>
           )}

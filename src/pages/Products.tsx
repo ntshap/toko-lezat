@@ -3,8 +3,6 @@ import { ArrowLeft, Filter, Grid, List, Star, Heart, Eye, Search, ShoppingBag } 
 import { Button } from "@/components/ui/button";
 import ProductCard, { Product } from "@/components/ProductCard";
 import CartModal, { CartItem } from "@/components/CartModal";
-import UserDataModal from "@/components/UserDataModal";
-import FloatingCheckoutButton from "@/components/FloatingCheckoutButton";
 import bakpiaImg from "@/assets/image/Bakpia Pathok 88.png";
 import cripingTeloImg from "@/assets/image/Criping Telo.png";
 import getukEcoImg from "@/assets/image/Getuk Eco.png";
@@ -83,24 +81,14 @@ const products: Product[] = [
 
 interface ProductsPageProps {
   onAddToCart: (product: Product) => void;
-  cartItems: CartItem[];
-  onUpdateQuantity: (productId: number, newQuantity: number) => void;
-  onRemoveItem: (productId: number) => void;
-  onClearCart: () => void;
 }
 
-export default function ProductsPage({ 
-  onAddToCart, 
-  cartItems, 
-  onUpdateQuantity, 
-  onRemoveItem, 
-  onClearCart 
-}: ProductsPageProps) {
+export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState<'name' | 'price'>('name');
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isUserDataOpen, setIsUserDataOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
 
   // Filter and sort products
   const filteredProducts = products
@@ -115,27 +103,49 @@ export default function ProductsPage({
       return a.price - b.price;
     });
 
+  // Function to add product to cart
+  const addToCart = (product: Product) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === product.id);
+      
+      if (existingItem) {
+        return prevItems.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        return [...prevItems, { ...product, quantity: 1 }];
+      }
+    });
+    
+    // Also call the parent's onAddToCart to sync with App state
+    onAddToCart(product);
+  };
+
+  // Function to update item quantity
+  const updateQuantity = (productId: number, newQuantity: number) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === productId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
+  // Function to remove item from cart
+  const removeItem = (productId: number) => {
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item.id !== productId)
+    );
+  };
+
   // Function to show cart
   const showCart = () => {
     setIsCartOpen(true);
   };
 
-  // Function to open user data modal for checkout
-  const openCheckout = () => {
-    if (cartItems.length > 0) {
-      setIsUserDataOpen(true);
-    }
-  };
-
-  // Function to handle checkout completion
-  const handleCheckoutComplete = () => {
-    onClearCart();
-    setIsCartOpen(false);
-    setIsUserDataOpen(false);
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-white pb-32 sm:pb-4">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 to-white">
       {/* Header */}
       <header className="bg-white shadow-lg border-b border-red-100 sticky top-0 z-50">
         <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
@@ -360,7 +370,7 @@ export default function ProductsPage({
                             className="w-12 sm:w-16 px-2 sm:px-3 py-1 sm:py-2 bg-red-50 border border-red-200 text-red-900 font-bold text-center text-xs sm:text-sm rounded-lg focus:border-red-400 focus:outline-none"
                           />
                           <Button 
-                            onClick={() => onAddToCart(product)}
+                            onClick={() => addToCart(product)}
                             className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold text-xs sm:text-sm py-1 sm:py-2 transition-all duration-300 transform hover:scale-105 rounded-lg"
                           >
                             Tambah ke Keranjang
@@ -376,7 +386,7 @@ export default function ProductsPage({
                 <ProductCard 
                   key={product.id} 
                   product={product} 
-                  onAddToCart={onAddToCart} 
+                  onAddToCart={addToCart} 
                 />
               );
             })}
@@ -442,23 +452,8 @@ export default function ProductsPage({
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cartItems={cartItems}
-        onUpdateQuantity={onUpdateQuantity}
-        onRemoveItem={onRemoveItem}
-      />
-
-      {/* User Data Modal */}
-      <UserDataModal
-        isOpen={isUserDataOpen}
-        onClose={() => setIsUserDataOpen(false)}
-        cartItems={cartItems}
-        onCheckoutComplete={handleCheckoutComplete}
-      />
-
-      {/* Floating Checkout Button */}
-      <FloatingCheckoutButton
-        cartItems={cartItems}
-        onCheckoutClick={openCheckout}
-        onCartClick={showCart}
+        onUpdateQuantity={updateQuantity}
+        onRemoveItem={removeItem}
       />
     </div>
   );

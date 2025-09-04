@@ -59,12 +59,19 @@ All colors MUST be HSL.
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
+
     --sidebar-foreground: 240 5.3% 26.1%;
+
     --sidebar-primary: 240 5.9% 10%;
+
     --sidebar-primary-foreground: 0 0% 98%;
+
     --sidebar-accent: 240 4.8% 95.9%;
+
     --sidebar-accent-foreground: 240 5.9% 10%;
+
     --sidebar-border: 220 13% 91%;
+
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -144,68 +151,5 @@ All colors MUST be HSL.
   
   .transition-smooth {
     transition: var(--transition-smooth);
-  }
-}
-
-/* Mobile-First Optimizations for Toko Lezat */
-@layer utilities {
-  /* Ensure proper touch targets for mobile */
-  .touch-target {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  /* Smooth scrolling */
-  html {
-    scroll-behavior: smooth;
-  }
-  
-  /* Prevent horizontal scroll on mobile */
-  body {
-    overflow-x: hidden;
-  }
-  
-  /* Mobile-optimized spacing for floating elements */
-  @media (max-width: 640px) {
-    .floating-element {
-      bottom: env(safe-area-inset-bottom, 16px);
-      left: env(safe-area-inset-left, 16px);
-      right: env(safe-area-inset-right, 16px);
-    }
-    
-    /* Ensure modal content is properly sized on small screens */
-    .modal-content {
-      max-height: calc(100vh - env(safe-area-inset-top, 20px) - env(safe-area-inset-bottom, 20px));
-    }
-    
-    /* Better product grid for mobile */
-    .product-grid-mobile {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-    
-    /* Optimized button sizes for touch */
-    .btn-mobile {
-      min-height: 44px;
-      padding: 12px 16px;
-      font-size: 14px;
-    }
-  }
-  
-  /* Tablet optimizations */
-  @media (min-width: 641px) and (max-width: 1024px) {
-    .product-grid-tablet {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-  }
-  
-  /* Desktop simplifications as requested */
-  @media (min-width: 1025px) {
-    .desktop-simplified {
-      /* Keep desktop layout simple and minimal */
-      max-width: 1200px;
-      margin: 0 auto;
-    }
   }
 }

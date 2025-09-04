@@ -41,28 +41,6 @@ const App = () => {
     });
   };
 
-  const updateCartQuantity = (productId: number, newQuantity: number) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === productId ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-
-  const removeFromCart = (productId: number) => {
-    setCartItems((prevItems) =>
-      prevItems.filter((item) => item.id !== productId)
-    );
-  };
-
-  const clearCart = () => {
-    setCartItems([]);
-    toast({
-      title: "Keranjang dikosongkan",
-      description: "Terima kasih atas pesanan Anda!",
-    });
-  };
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -71,18 +49,7 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route 
-              path="/products" 
-              element={
-                <Products 
-                  onAddToCart={addToCart}
-                  cartItems={cartItems}
-                  onUpdateQuantity={updateCartQuantity}
-                  onRemoveItem={removeFromCart}
-                  onClearCart={clearCart}
-                />
-              } 
-            />
+            <Route path="/products" element={<Products onAddToCart={addToCart} />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

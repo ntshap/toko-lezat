@@ -27,7 +27,7 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
   return (
     <header className="sticky top-0 z-50 w-full bg-white shadow-2xl border-b border-red-100">
       {/* Top Banner with Batik Pattern */}
-      <div className="bg-gradient-to-r from-red-600 to-red-700 text-white py-3 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-red-600 to-red-700 text-white py-1.5 sm:py-3 relative overflow-hidden">
         {/* Enhanced Aesthetic Batik Background */}
         <div 
           className="absolute inset-0 opacity-20"
@@ -69,13 +69,14 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
           </svg>
         </div>
         
-        <div className="container mx-auto px-4 flex items-center justify-between text-sm relative z-10">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Star className="w-4 h-4 fill-white" />
-              <span className="font-bold">5 dari 1000+ customer</span>
+        <div className="container mx-auto px-4 flex items-center justify-between text-xs sm:text-sm relative z-10">
+          <div className="flex items-center gap-3 sm:gap-6">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-white" />
+              <span className="font-bold hidden sm:inline">5 dari 1000+ customer</span>
+              <span className="font-bold sm:hidden">5★ 1000+</span>
             </div>
-            <div className="hidden sm:flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-6">
               <span className="flex items-center gap-2">
                 <Truck className="w-4 h-4 text-green-400" /> <strong>GRATIS ONGKIR</strong> di atas Rp 100.000
               </span>
@@ -85,10 +86,10 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Phone className="w-4 h-4" />
-              <span className="font-bold">(0293) 313131</span>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Phone className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="font-bold text-xs sm:text-sm">(0293) 313131</span>
             </div>
             <div className="hidden md:flex items-center gap-2">
               <MapPin className="w-4 h-4" />
@@ -99,16 +100,16 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
       </div>
       
       {/* Main Header */}
-      <div className="container mx-auto px-4 py-4 md:py-6 flex items-center justify-between">
-        <div className="flex items-center space-x-4 md:space-x-8">
+      <div className="container mx-auto px-4 py-2 sm:py-4 md:py-6 flex items-center justify-between">
+        <div className="flex items-center space-x-2 sm:space-x-4 md:space-x-8">
           {/* Logo with Batik Design */}
-          <div className="flex items-center space-x-2 md:space-x-3">
+          <div className="flex items-center space-x-1.5 sm:space-x-2 md:space-x-3">
             <div className="relative">
-              <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center text-white font-black text-lg md:text-xl shadow-xl">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center text-white font-black text-sm sm:text-lg md:text-xl shadow-xl">
                 L
               </div>
               {/* Minimalist corner decoration */}
-              <div className="absolute -top-1 -right-1 w-3 h-3 md:w-4 md:h-4 opacity-20">
+              <div className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 opacity-20">
                 <svg viewBox="0 0 16 16" className="w-full h-full fill-yellow-400">
                   <circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" strokeWidth="0.8" opacity="0.5"/>
                   <circle cx="8" cy="8" r="1.5" fill="currentColor" opacity="0.6"/>
@@ -116,10 +117,10 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
               </div>
             </div>
             <div>
-              <h1 className="text-base md:text-xl lg:text-2xl font-black text-red-900 leading-tight">
+              <h1 className="text-sm sm:text-base md:text-xl lg:text-2xl font-black text-red-900 leading-tight">
                 PUSAT OLEH-OLEH
               </h1>
-              <p className="text-xs md:text-sm font-bold text-red-600">LEZAT</p>
+              <p className="text-xs sm:text-xs md:text-sm font-bold text-red-600">LEZAT</p>
             </div>
           </div>
           
@@ -147,37 +148,37 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
         </div>
         
         {/* Right Actions */}
-        <div className="flex items-center space-x-1 sm:space-x-3">
+        <div className="flex items-center space-x-1">
           {/* Search */}
           <div className="relative">
             {isSearchOpen ? (
-              <div className="flex items-center bg-white border-2 border-red-200 rounded-2xl px-3 sm:px-4 py-2 shadow-lg">
+              <div className="flex items-center bg-white border-2 border-red-200 rounded-xl px-2 sm:px-3 sm:px-4 py-1.5 sm:py-2 shadow-lg">
                 <input
                   type="text"
                   placeholder="Cari produk..."
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
-                  className="outline-none text-red-900 placeholder-red-400 w-28 sm:w-48 text-sm"
+                  className="outline-none text-red-900 placeholder-red-400 w-24 sm:w-28 sm:w-48 text-xs sm:text-sm"
                   autoFocus
                 />
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={() => setIsSearchOpen(false)}
-                  className="ml-1 sm:ml-2 p-1"
+                  className="ml-1 p-1"
                 >
-                  <Search className="w-4 h-4 text-red-600" />
+                  <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
                 </Button>
               </div>
             ) : (
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="hover:bg-red-50 relative group rounded-2xl p-2 sm:p-3"
+                className="hover:bg-red-50 relative group rounded-xl p-1.5 sm:p-2 sm:p-3"
                 onClick={() => setIsSearchOpen(true)}
               >
-                <Search className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 group-hover:text-red-700 transition-colors" />
-                <div className="absolute inset-0 border-2 border-transparent group-hover:border-red-200 rounded-2xl transition-colors"></div>
+                <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-red-600 group-hover:text-red-700 transition-colors" />
+                <div className="absolute inset-0 border-2 border-transparent group-hover:border-red-200 rounded-xl transition-colors"></div>
               </Button>
             )}
           </div>
@@ -189,15 +190,15 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
             variant="ghost" 
             size="icon"
             onClick={onCartClick}
-            className="hover:bg-red-50 relative group rounded-2xl p-2 sm:p-3"
+            className="hover:bg-red-50 relative group rounded-xl p-1.5 sm:p-2 sm:p-3"
           >
-            <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 group-hover:text-red-700 transition-colors" />
+            <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:w-5 sm:h-5 text-red-600 group-hover:text-red-700 transition-colors" />
             {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-600 to-red-700 text-white text-xs font-bold w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full shadow-lg animate-pulse">
+              <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-gradient-to-r from-red-600 to-red-700 text-white text-xs font-bold w-4 h-4 sm:w-5 sm:h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full shadow-lg animate-pulse">
                 {cartItemCount}
               </span>
             )}
-            <div className="absolute inset-0 border-2 border-transparent group-hover:border-red-200 rounded-2xl transition-colors"></div>
+            <div className="absolute inset-0 border-2 border-transparent group-hover:border-red-200 rounded-xl transition-colors"></div>
           </Button>
           
 
@@ -206,10 +207,10 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
           <Button 
             variant="ghost" 
             size="icon" 
-            className="lg:hidden hover:bg-red-50 rounded-2xl p-3"
+            className="lg:hidden hover:bg-red-50 rounded-xl p-1.5 sm:p-3"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
-            <Menu className="w-5 h-5 text-red-600" />
+            <Menu className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
           </Button>
         </div>
       </div>
@@ -217,7 +218,7 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-gradient-to-br from-red-50 to-white border-t border-red-100 shadow-xl">
-          <div className="container mx-auto px-4 py-6 space-y-4">
+          <div className="container mx-auto px-4 py-3 sm:py-6 space-y-2 sm:space-y-4">
             {['HOME', 'PRODUK', 'TENTANG', 'KONTAK'].map((item) => (
               <button 
                 key={item} 
@@ -227,7 +228,7 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
                 }}
                 className="block w-full"
               >
-                <div className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-red-100 hover:border-red-300 transition-colors shadow-sm relative overflow-hidden">
+                <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-white rounded-xl sm:rounded-2xl border border-red-100 hover:border-red-300 transition-colors shadow-sm relative overflow-hidden">
                 {/* Minimalist background for mobile menu items */}
                 <div className="absolute inset-0 opacity-2">
                   <svg viewBox="0 0 60 60" className="w-full h-full">
@@ -241,13 +242,13 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
                   </svg>
                 </div>
                 
-                <div className="w-2 h-2 relative z-10">
+                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 relative z-10">
                   <svg viewBox="0 0 8 8" className="w-full h-full fill-yellow-500">
                     <circle cx="4" cy="4" r="2" fill="currentColor" opacity="0.6"/>
                   </svg>
                 </div>
                 
-                <span className="text-red-700 font-bold text-sm uppercase tracking-wide relative z-10">
+                <span className="text-red-700 font-bold text-xs sm:text-sm uppercase tracking-wide relative z-10">
                   {item}
                 </span>
               </div>

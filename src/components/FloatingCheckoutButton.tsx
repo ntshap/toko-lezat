@@ -27,50 +27,58 @@ export default function FloatingCheckoutButton({
   if (totalItems === 0) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gradient-to-t from-white via-white to-transparent pointer-events-none">
-      <div className="pointer-events-auto flex flex-col gap-3 max-w-md mx-auto">
-        {/* Cart Summary Mini Card - Mobile Only */}
-        <div className="sm:hidden bg-white rounded-2xl shadow-xl border border-gray-200 p-4">
+    <div className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6 bg-gradient-to-t from-white via-white/95 to-transparent pointer-events-none">
+      <div className="pointer-events-auto flex flex-col gap-3 max-w-lg mx-auto">
+        {/* Enhanced Cart Summary - Mobile First */}
+        <div className="bg-white rounded-3xl shadow-2xl border border-gray-100 p-5 backdrop-blur-sm bg-white/95">
           <button 
             onClick={onCartClick}
-            className="w-full flex items-center justify-between group"
+            className="w-full flex items-center justify-between group active:scale-95 transition-transform duration-200"
           >
-            <div className="flex items-center gap-3">
-              <div className="relative p-2 bg-red-50 rounded-xl">
-                <ShoppingBag className="w-5 h-5 text-red-600" />
+            <div className="flex items-center gap-4">
+              <div className="relative p-3 bg-gradient-to-br from-red-50 to-red-100 rounded-2xl">
+                <ShoppingBag className="w-6 h-6 text-red-600" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-sm rounded-full w-7 h-7 flex items-center justify-center font-black shadow-lg border-2 border-white">
                     {totalItems}
                   </span>
                 )}
               </div>
               <div className="text-left">
-                <p className="text-sm font-semibold text-gray-800">
-                  {totalItems} Item{totalItems !== 1 ? 's' : ''}
+                <p className="text-base font-bold text-gray-900">
+                  {totalItems} Item{totalItems !== 1 ? 's' : ''} di Keranjang
                 </p>
-                <p className="text-xs text-gray-600">Tap untuk lihat keranjang</p>
+                <p className="text-sm text-gray-600">Tap untuk melihat detail</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-red-600">
-                {formatPrice(totalPrice)}
-              </span>
-              <ChevronUp className="w-4 h-4 text-gray-400 group-hover:text-red-600 transition-colors" />
+            <div className="flex items-center gap-3">
+              <div className="text-right">
+                <p className="text-lg font-black text-red-600">
+                  {formatPrice(totalPrice)}
+                </p>
+                <p className="text-xs text-gray-500">Total Belanja</p>
+              </div>
+              <ChevronUp className="w-5 h-5 text-gray-400 group-hover:text-red-600 transition-colors duration-200" />
             </div>
           </button>
         </div>
 
-        {/* Main Checkout Button */}
+        {/* Enhanced Main Checkout Button */}
         <Button
           onClick={onCheckoutClick}
-          className="w-full h-16 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold text-base rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] border-0"
+          className="w-full h-20 bg-gradient-to-r from-green-600 via-green-600 to-green-700 hover:from-green-700 hover:via-green-700 hover:to-green-800 text-white font-bold text-lg rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] border-0 relative overflow-hidden"
           size="lg"
         >
-          <div className="flex items-center justify-center gap-3">
-            <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-7 h-7" />
+          {/* Background Animation */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+          
+          <div className="flex items-center justify-center gap-4 relative z-10">
+            <div className="p-2 bg-white/20 rounded-xl">
+              <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-8 h-8" />
+            </div>
             <div className="flex flex-col items-start">
-              <span className="text-base font-bold leading-tight">Checkout Sekarang</span>
-              <span className="text-sm opacity-90 leading-tight">
+              <span className="text-lg font-black leading-tight">CHECKOUT VIA WHATSAPP</span>
+              <span className="text-sm opacity-95 leading-tight font-medium">
                 {totalItems} item • {formatPrice(totalPrice)}
               </span>
             </div>

@@ -25,35 +25,40 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   };
 
   return (
-    <Card className="overflow-hidden shadow-card hover:shadow-card transition-smooth hover:-translate-y-1 border-0 bg-card">
+    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 bg-white rounded-2xl sm:rounded-xl group">
       <div className="aspect-[4/3] overflow-hidden">
         <img 
           src={product.image} 
           alt={product.name}
-          className="w-full h-full object-cover transition-smooth hover:scale-105"
+          className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
         />
       </div>
       
-      <CardContent className="p-3 sm:p-4">
-        <h3 className="text-base sm:text-lg font-semibold text-card-foreground mb-1 sm:mb-2">
+      <CardContent className="p-4 sm:p-4">
+        <h3 className="text-lg sm:text-lg font-bold text-gray-900 mb-2 sm:mb-2 leading-tight">
           {product.name}
         </h3>
-        <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-2">
+        <p className="text-sm sm:text-sm text-gray-600 mb-3 sm:mb-3 line-clamp-2 leading-relaxed">
           {product.description}
         </p>
-        <p className="text-lg sm:text-xl font-bold text-primary">
-          {formatPrice(product.price)}
-        </p>
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-xl sm:text-xl font-black text-red-600">
+            {formatPrice(product.price)}
+          </p>
+          <div className="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+            ✓ Ready
+          </div>
+        </div>
       </CardContent>
       
-      <CardFooter className="p-3 sm:p-4 pt-0">
+      <CardFooter className="p-4 sm:p-4 pt-0">
         <Button 
           variant="default" 
           onClick={() => onAddToCart(product)}
-          className="w-full flex items-center justify-center"
+          className="w-full h-12 sm:h-10 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl sm:rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 text-base sm:text-sm"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          <span className="whitespace-nowrap text-sm sm:text-base">Tambah ke Keranjang</span>
+          <Plus className="w-5 h-5 mr-2" />
+          <span className="whitespace-nowrap">Tambah ke Keranjang</span>
         </Button>
       </CardFooter>
     </Card>

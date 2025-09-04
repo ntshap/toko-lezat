@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { ArrowLeft, Filter, Grid, List, Star, Heart, Eye, Search, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useDeviceDetection } from "@/hooks/use-device-detection";
+import MobileProducts from "@/components/MobileProducts";
+import DesktopProducts from "@/components/DesktopProducts";
 import ProductCard, { Product } from "@/components/ProductCard";
 import CartModal, { CartItem } from "@/components/CartModal";
+import FloatingCheckoutButton from "@/components/FloatingCheckoutButton";
+import UserDataModal from "@/components/UserDataModal";
 import bakpiaImg from "@/assets/image/Bakpia Pathok 88.png";
 import cripingTeloImg from "@/assets/image/Criping Telo.png";
 import getukEcoImg from "@/assets/image/Getuk Eco.png";
@@ -89,6 +94,13 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
   const [sortBy, setSortBy] = useState<'name' | 'price'>('name');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isUserDataModalOpen, setIsUserDataModalOpen] = useState(false);
+  
+  // Device detection for conditional rendering
+  const { isMobile, deviceType } = useDeviceDetection();
+  
+  // Option to force separate components (set to false for unified responsive design)
+  const useSeparateComponents = false; // Change to true if you want separate mobile/desktop components
 
   // Filter and sort products
   const filteredProducts = products
@@ -144,85 +156,159 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
     setIsCartOpen(true);
   };
 
+  const handleCheckoutClick = () => {
+    setIsUserDataModalOpen(true);
+  };
+
+  const handleCheckoutComplete = () => {
+    setCartItems([]);
+  };
+
+  // Conditional rendering based on device and preference
+  if (useSeparateComponents) {
+    if (isMobile) {
+      return (
+        <>
+          <MobileProducts 
+            products={products}
+            cartItems={cartItems}
+            onAddToCart={addToCart}
+            onCartClick={showCart}
+          />
+          <FloatingCheckoutButton 
+            cartItems={cartItems}
+            onCheckoutClick={handleCheckoutClick}
+            onCartClick={showCart}
+          />
+          <CartModal 
+            isOpen={isCartOpen}
+            onClose={() => setIsCartOpen(false)}
+            cartItems={cartItems}
+            onUpdateQuantity={updateQuantity}
+            onRemoveItem={removeItem}
+          />
+          <UserDataModal 
+            isOpen={isUserDataModalOpen}
+            onClose={() => setIsUserDataModalOpen(false)}
+            cartItems={cartItems}
+            onCheckoutComplete={handleCheckoutComplete}
+          />
+        </>
+      );
+    } else {
+      return (
+        <>
+          <DesktopProducts 
+            products={products}
+            cartItems={cartItems}
+            onAddToCart={addToCart}
+            onCartClick={showCart}
+          />
+          <CartModal 
+            isOpen={isCartOpen}
+            onClose={() => setIsCartOpen(false)}
+            cartItems={cartItems}
+            onUpdateQuantity={updateQuantity}
+            onRemoveItem={removeItem}
+          />
+          <UserDataModal 
+            isOpen={isUserDataModalOpen}
+            onClose={() => setIsUserDataModalOpen(false)}
+            cartItems={cartItems}
+            onCheckoutComplete={handleCheckoutComplete}
+          />
+        </>
+      );
+    }
+  }
+
+  // Default: Unified responsive design (recommended)
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-white">
       {/* Header */}
       <header className="bg-white shadow-lg border-b border-red-100 sticky top-0 z-50">
-        <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
-          {/* Mobile Header Layout */}
+        <div className="container mx-auto px-4 sm:px-4 py-4 sm:py-4">
+          {/* Mobile Header Layout - Enhanced */}
           <div className="block sm:hidden">
-            <div className="flex items-center justify-between mb-2">
+            {/* Top Navigation */}
+            <div className="flex items-center justify-between mb-6">
               <Button 
                 onClick={() => window.history.back()}
                 variant="outline"
                 size="sm"
-                className="border-red-200 text-red-600 hover:bg-red-50 px-2 py-1 h-8"
+                className="border-red-200 text-red-600 hover:bg-red-50 px-4 py-2 h-12 rounded-xl flex-shrink-0"
               >
-                <ArrowLeft className="w-3 h-3 mr-1" />
-                <span className="text-xs">Kembali</span>
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                <span className="text-sm font-medium">Kembali</span>
               </Button>
               
               <Button
                 variant="outline"
                 size="sm"
                 onClick={showCart}
-                className="border-red-200 text-red-600 hover:bg-red-50 relative px-2 py-1 h-8"
+                className="border-red-200 text-red-600 hover:bg-red-50 relative px-4 py-2 h-12 rounded-xl flex-shrink-0"
               >
-                <ShoppingBag className="w-3 h-3 mr-1" />
-                <span className="text-xs">Keranjang</span>
+                <ShoppingBag className="w-5 h-5 mr-2" />
+                <span className="text-sm font-medium">Keranjang</span>
                 {cartItems.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-7 h-7 flex items-center justify-center font-bold shadow-lg">
                     {cartItems.reduce((total, item) => total + item.quantity, 0)}
                   </span>
                 )}
               </Button>
             </div>
             
-            <div className="mb-2">
-              <h1 className="text-xl font-black text-red-900">SEMUA PRODUK</h1>
-              <p className="text-red-600 text-xs font-medium">Pusat Oleh-oleh Lezat</p>
+            {/* Title Section */}
+            <div className="text-center mb-6">
+              <h1 className="text-2xl font-black text-red-900 mb-2">SEMUA PRODUK</h1>
+              <p className="text-red-600 text-sm font-medium">Pusat Oleh-oleh Lezat</p>
             </div>
             
-            <div className="flex items-center justify-between gap-2 mb-2">
-              {/* Search */}
-              <div className="relative flex-1">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-red-400 w-3 h-3" />
-                <input
-                  type="text"
-                  placeholder="Cari produk..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-7 pr-2 py-1 text-xs border border-red-200 rounded-lg focus:border-red-400 focus:outline-none w-full"
-                />
-              </div>
-              
-              {/* View Mode & Sort combined in dropdown for mobile */}
-              <div className="flex gap-1">
-                <div className="flex border border-red-200 rounded-lg overflow-hidden h-7">
-                  <Button
-                    onClick={() => setViewMode('grid')}
-                    variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                    className={`p-0 w-7 h-7 ${viewMode === 'grid' ? 'bg-red-600 text-white' : 'text-red-600'}`}
+            {/* Enhanced Search Bar */}
+            <div className="relative mb-5">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-red-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Cari produk favorit Anda..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 text-base border-2 border-red-200 rounded-2xl focus:border-red-400 focus:outline-none bg-red-50/30 focus:bg-white transition-all duration-200 shadow-sm"
+              />
+            </div>
+            
+            {/* Enhanced Filter Controls */}
+            <div className="bg-gradient-to-r from-red-50 to-red-100/50 p-4 rounded-2xl shadow-sm">
+              <div className="flex items-center justify-between">
+                <div className="flex gap-3">
+                  <div className="flex border-2 border-red-200 rounded-2xl overflow-hidden bg-white shadow-sm">
+                    <Button
+                      onClick={() => setViewMode('grid')}
+                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                      className={`px-4 py-3 h-auto rounded-none ${viewMode === 'grid' ? 'bg-red-600 text-white shadow-sm' : 'text-red-600 hover:bg-red-50'}`}
+                    >
+                      <Grid className="w-4 h-4 mr-2" />
+                      <span className="text-sm font-medium">Grid</span>
+                    </Button>
+                    <Button
+                      onClick={() => setViewMode('list')}
+                      variant={viewMode === 'list' ? 'default' : 'ghost'}
+                      className={`px-4 py-3 h-auto rounded-none ${viewMode === 'list' ? 'bg-red-600 text-white shadow-sm' : 'text-red-600 hover:bg-red-50'}`}
+                    >
+                      <List className="w-4 h-4 mr-2" />
+                      <span className="text-sm font-medium">List</span>
+                    </Button>
+                  </div>
+                  
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
+                    className="px-4 py-3 text-sm border-2 border-red-200 rounded-2xl focus:border-red-400 focus:outline-none text-red-600 bg-white font-medium shadow-sm min-w-[100px]"
                   >
-                    <Grid className="w-3 h-3" />
-                  </Button>
-                  <Button
-                    onClick={() => setViewMode('list')}
-                    variant={viewMode === 'list' ? 'default' : 'ghost'}
-                    className={`p-0 w-7 h-7 ${viewMode === 'list' ? 'bg-red-600 text-white' : 'text-red-600'}`}
-                  >
-                    <List className="w-3 h-3" />
-                  </Button>
+                    <option value="name">Nama A-Z</option>
+                    <option value="price">Harga</option>
+                  </select>
                 </div>
-                
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as 'name' | 'price')}
-                  className="px-1 py-0 text-[10px] border border-red-200 rounded-lg focus:border-red-400 focus:outline-none text-red-600 h-7"
-                >
-                  <option value="name">Nama</option>
-                  <option value="price">Harga</option>
-                </select>
               </div>
             </div>
           </div>
@@ -332,10 +418,10 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
 
         {/* Products Grid/List */}
         {filteredProducts.length > 0 ? (
-          <div className={`grid gap-4 sm:gap-6 ${
+          <div className={`gap-4 sm:gap-6 ${
             viewMode === 'grid' 
-              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-              : 'grid-cols-1'
+              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+              : 'flex flex-col space-y-4'
           }`}>
             {filteredProducts.map((product) => {
               if (viewMode === 'list') {
@@ -454,6 +540,21 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
         cartItems={cartItems}
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeItem}
+      />
+
+      {/* Floating Checkout Button - Mobile Only */}
+      <FloatingCheckoutButton 
+        cartItems={cartItems}
+        onCheckoutClick={handleCheckoutClick}
+        onCartClick={showCart}
+      />
+
+      {/* User Data Modal */}
+      <UserDataModal 
+        isOpen={isUserDataModalOpen}
+        onClose={() => setIsUserDataModalOpen(false)}
+        cartItems={cartItems}
+        onCheckoutComplete={handleCheckoutComplete}
       />
     </div>
   );

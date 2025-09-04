@@ -1,0 +1,211 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 42 21% 98%;
+    --foreground: 0 15% 15%;
+
+    --card: 42 21% 98%;
+    --card-foreground: 0 15% 15%;
+
+    --popover: 42 21% 98%;
+    --popover-foreground: 0 15% 15%;
+
+    --primary: 0 75% 50%;
+    --primary-foreground: 42 21% 98%;
+
+    --secondary: 42 35% 92%;
+    --secondary-foreground: 0 15% 25%;
+
+    --muted: 42 25% 90%;
+    --muted-foreground: 0 10% 55%;
+
+    --accent: 45 90% 60%;
+    --accent-foreground: 0 15% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 42 21% 98%;
+
+    --border: 42 20% 85%;
+    --input: 42 20% 85%;
+    --ring: 0 75% 50%;
+
+    /* Custom design tokens for Pusat Oleh-Oleh Lezat */
+    --traditional-red: 0 75% 50%;
+    --warm-gold: 45 90% 60%;
+    --cream-white: 42 35% 95%;
+    --deep-brown: 25 25% 25%;
+    --soft-beige: 42 25% 90%;
+    
+    /* Gradients inspired by traditional Indonesian patterns */
+    --gradient-traditional: linear-gradient(135deg, hsl(var(--traditional-red)), hsl(var(--warm-gold)));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--cream-white)), hsl(var(--background)));
+    
+    /* Shadows with traditional red accent */
+    --shadow-soft: 0 4px 20px -8px hsl(var(--traditional-red) / 0.15);
+    --shadow-card: 0 8px 30px -12px hsl(var(--traditional-red) / 0.2);
+    
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 25 25% 8%;
+    --foreground: 42 21% 95%;
+
+    --card: 25 25% 12%;
+    --card-foreground: 42 21% 95%;
+
+    --popover: 25 25% 12%;
+    --popover-foreground: 42 21% 95%;
+
+    --primary: 15 75% 60%;
+    --primary-foreground: 25 25% 8%;
+
+    --secondary: 25 15% 20%;
+    --secondary-foreground: 42 21% 95%;
+
+    --muted: 25 15% 18%;
+    --muted-foreground: 25 10% 65%;
+
+    --accent: 115 50% 50%;
+    --accent-foreground: 25 25% 8%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 42 21% 95%;
+
+    --border: 25 15% 20%;
+    --input: 25 15% 20%;
+    --ring: 15 75% 60%;
+
+    /* Custom design tokens for dark mode */
+    --traditional-red: 0 75% 60%;
+    --warm-gold: 45 90% 70%;
+    --cream-white: 25 15% 15%;
+    --deep-brown: 42 21% 95%;
+    --soft-beige: 25 15% 18%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer utilities {
+  .gradient-traditional {
+    background: var(--gradient-traditional);
+  }
+  
+  .gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+}
+
+/* Mobile-First Optimizations for Toko Lezat */
+@layer utilities {
+  /* Ensure proper touch targets for mobile */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Prevent horizontal scroll on mobile */
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Mobile-optimized spacing for floating elements */
+  @media (max-width: 640px) {
+    .floating-element {
+      bottom: env(safe-area-inset-bottom, 16px);
+      left: env(safe-area-inset-left, 16px);
+      right: env(safe-area-inset-right, 16px);
+    }
+    
+    /* Ensure modal content is properly sized on small screens */
+    .modal-content {
+      max-height: calc(100vh - env(safe-area-inset-top, 20px) - env(safe-area-inset-bottom, 20px));
+    }
+    
+    /* Better product grid for mobile */
+    .product-grid-mobile {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    
+    /* Optimized button sizes for touch */
+    .btn-mobile {
+      min-height: 44px;
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+  }
+  
+  /* Tablet optimizations */
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .product-grid-tablet {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+  }
+  
+  /* Desktop simplifications as requested */
+  @media (min-width: 1025px) {
+    .desktop-simplified {
+      /* Keep desktop layout simple and minimal */
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+  }
+}

@@ -140,19 +140,44 @@ export default function UserDataModal({
     
     try {
       const message = generateWhatsAppMessage();
+      const whatsappNumber = "6285867989333"; // Admin's WhatsApp number
       
-      // Copy to clipboard
-      await navigator.clipboard.writeText(message);
-      
-      toast({
-        title: "Pesanan berhasil disalin!",
-        description: "Pesan telah disalin ke clipboard. Anda akan diarahkan ke WhatsApp.",
-      });
-      
-      // Wait a moment then open WhatsApp
-      setTimeout(() => {
-        const whatsappNumber = "6285867989333"; // Admin's WhatsApp number
-        window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+      // Try to copy to clipboard first
+      try {
+        await navigator.clipboard.writeText(message);
+        
+        toast({
+          title: "Pesanan berhasil disalin!",
+          description: "Pesan telah disalin ke clipboard. Anda akan diarahkan ke WhatsApp.",
+        });
+        
+        // Wait a moment then open WhatsApp (without pre-filled text since clipboard works)
+        setTimeout(() => {
+          window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+          
+          // Clear form and close modal
+          setUserData({
+            fullName: "",
+            fullAddress: "",
+            city: "",
+            whatsappNumber: ""
+          });
+          
+          onCheckoutComplete();
+          onClose();
+        }, 1000);
+        
+      } catch (clipboardError) {
+        console.error('Clipboard failed, using URL fallback:', clipboardError);
+        
+        // Fallback: try to open WhatsApp with pre-filled message
+        const encodedMessage = encodeURIComponent(message);
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
+        
+        toast({
+          title: "Diarahkan ke WhatsApp",
+          description: "Silakan paste pesan di WhatsApp jika tidak otomatis terisi.",
+        });
         
         // Clear form and close modal
         setUserData({
@@ -164,33 +189,15 @@ export default function UserDataModal({
         
         onCheckoutComplete();
         onClose();
-      }, 1000);
+      }
       
     } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
-      
-      // Fallback: try to open WhatsApp with pre-filled message
-      try {
-        const message = generateWhatsAppMessage();
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappNumber = "6285867989333";
-        
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
-        
-        toast({
-          title: "Diarahkan ke WhatsApp",
-          description: "Silakan paste pesan di WhatsApp jika tidak otomatis terisi.",
-        });
-        
-        onCheckoutComplete();
-        onClose();
-      } catch (fallbackError) {
-        toast({
-          title: "Terjadi kesalahan",
-          description: "Mohon coba lagi atau hubungi admin langsung.",
-          variant: "destructive"
-        });
-      }
+      console.error('Checkout failed:', error);
+      toast({
+        title: "Terjadi kesalahan",
+        description: "Mohon coba lagi atau hubungi admin langsung.",
+        variant: "destructive"
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -201,15 +208,15 @@ export default function UserDataModal({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div 
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm" 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
         onClick={onClose}
       />
       
-      <Card className="relative w-full sm:max-w-2xl h-full sm:h-auto sm:max-h-[95vh] overflow-hidden shadow-2xl rounded-t-3xl sm:rounded-2xl bg-white border-0">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-6 px-6 border-b border-gray-100 bg-gradient-to-r from-red-50 via-red-50 to-orange-50 sticky top-0 z-10 shadow-sm">
-          <CardTitle className="text-xl font-black flex items-center gap-3 text-red-900">
-            <div className="p-2 bg-red-100 rounded-xl">
-              <User className="w-6 h-6 text-red-600" />
+      <Card className="relative w-full sm:max-w-md h-full sm:h-auto sm:max-h-[90vh] overflow-hidden shadow-xl rounded-t-2xl sm:rounded-xl bg-white border-0">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-4 px-5 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50 sticky top-0 z-10">
+          <CardTitle className="text-lg font-bold flex items-center gap-2 text-red-900">
+            <div className="p-1.5 bg-red-100 rounded-lg">
+              <User className="w-4 h-4 text-red-600" />
             </div>
             Data Pemesan
           </CardTitle>
@@ -217,18 +224,18 @@ export default function UserDataModal({
             variant="ghost" 
             size="sm" 
             onClick={onClose} 
-            className="h-12 w-12 p-0 rounded-full hover:bg-red-100 active:scale-95 transition-all duration-200"
+            className="h-9 w-9 p-0 rounded-full hover:bg-red-100 active:scale-95 transition-all duration-200"
           >
             <X className="w-6 h-6 text-gray-500" />
           </Button>
         </CardHeader>
         
         <CardContent className="p-0 overflow-y-auto h-full">
-          <div className="p-6 space-y-6">
+          <div className="p-4 space-y-4">
             {/* User Data Form */}
-            <div className="space-y-5">
+            <div className="space-y-4">
               <div>
-                <Label htmlFor="fullName" className="text-base font-bold text-gray-800 block mb-3 flex items-center gap-2">
+                <Label htmlFor="fullName" className="text-sm font-semibold text-gray-700 block mb-2 flex items-center gap-2">
                   <User className="w-4 h-4 text-red-600" />
                   Nama Lengkap *
                 </Label>
@@ -238,12 +245,12 @@ export default function UserDataModal({
                   placeholder="Masukkan nama lengkap Anda"
                   value={userData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className="h-14 text-base border-2 border-gray-200 focus:border-red-500 rounded-2xl px-4 bg-gray-50 focus:bg-white transition-all duration-200 touch-target"
+                  className="h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-all duration-200"
                 />
               </div>
               
               <div>
-                <Label htmlFor="fullAddress" className="text-base font-bold text-gray-800 block mb-3 flex items-center gap-2">
+                <Label htmlFor="fullAddress" className="text-sm font-semibold text-gray-700 block mb-2 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-red-600" />
                   Alamat Lengkap *
                 </Label>
@@ -252,13 +259,13 @@ export default function UserDataModal({
                   placeholder="Masukkan alamat lengkap untuk pengiriman"
                   value={userData.fullAddress}
                   onChange={(e) => handleInputChange('fullAddress', e.target.value)}
-                  className="min-h-[100px] text-base border-2 border-gray-200 focus:border-red-500 rounded-2xl px-4 py-4 resize-none bg-gray-50 focus:bg-white transition-all duration-200"
-                  rows={4}
+                  className="min-h-[80px] text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 py-2 resize-none bg-white transition-all duration-200"
+                  rows={3}
                 />
               </div>
               
               <div>
-                <Label htmlFor="city" className="text-base font-bold text-gray-800 block mb-3 flex items-center gap-2">
+                <Label htmlFor="city" className="text-sm font-semibold text-gray-700 block mb-2 flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-red-600" />
                   Kota/Kabupaten *
                 </Label>
@@ -268,12 +275,12 @@ export default function UserDataModal({
                   placeholder="Contoh: Yogyakarta, Bantul, Sleman"
                   value={userData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
-                  className="h-14 text-base border-2 border-gray-200 focus:border-red-500 rounded-2xl px-4 bg-gray-50 focus:bg-white transition-all duration-200 touch-target"
+                  className="h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-all duration-200"
                 />
               </div>
               
               <div>
-                <Label htmlFor="whatsappNumber" className="text-base font-bold text-gray-800 block mb-3 flex items-center gap-2">
+                <Label htmlFor="whatsappNumber" className="text-sm font-semibold text-gray-700 block mb-2 flex items-center gap-2">
                   <Phone className="w-4 h-4 text-red-600" />
                   Nomor WhatsApp *
                 </Label>
@@ -283,73 +290,65 @@ export default function UserDataModal({
                   placeholder="Contoh: 08123456789"
                   value={userData.whatsappNumber}
                   onChange={(e) => handleInputChange('whatsappNumber', e.target.value)}
-                  className="h-14 text-base border-2 border-gray-200 focus:border-red-500 rounded-2xl px-4 bg-gray-50 focus:bg-white transition-all duration-200 touch-target"
+                  className="h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-all duration-200"
                 />
               </div>
             </div>
             
-            {/* Enhanced Order Summary */}
-            <div className="border-t-2 border-gray-100 pt-6 bg-gradient-to-br from-gray-50 to-gray-100 -mx-6 px-6 pb-8 rounded-t-3xl">
-              <h3 className="font-black text-lg text-gray-900 mb-4 flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-xl">
-                  <ShoppingBag className="w-5 h-5 text-red-600" />
+            {/* Compact Order Summary */}
+            <div className="border-t border-gray-200 pt-4 bg-gray-50 -mx-4 px-4 pb-4 rounded-lg">
+              <h3 className="font-bold text-base text-gray-800 mb-3 flex items-center gap-2">
+                <div className="p-1.5 bg-red-100 rounded-lg">
+                  <ShoppingBag className="w-4 h-4 text-red-600" />
                 </div>
                 Ringkasan Pesanan
               </h3>
               
-              <div className="space-y-3 max-h-48 overflow-y-auto bg-white rounded-2xl p-4 border border-gray-200 shadow-sm">
+              <div className="space-y-2 max-h-32 overflow-y-auto bg-white rounded-lg p-3 border border-gray-200">
                 {cartItems.map((item, index) => (
-                  <div key={item.id} className="flex justify-between items-center text-sm py-2 border-b border-gray-100 last:border-b-0">
-                    <span className="text-gray-700 flex-1 font-medium">
+                  <div key={item.id} className="flex justify-between text-sm py-1">
+                    <span className="text-gray-600 flex-1">
                       {index + 1}. {item.name} × {item.quantity}
                     </span>
-                    <span className="font-bold text-red-600 ml-3 text-base">
+                    <span className="font-semibold text-red-600 ml-2">
                       {formatPrice(item.price * item.quantity)}
                     </span>
                   </div>
                 ))}
               </div>
               
-              <div className="border-t-2 border-red-100 mt-6 pt-4 bg-gradient-to-r from-red-50 to-orange-50 -mx-4 px-4 rounded-2xl">
-                <div className="flex justify-between items-center font-black text-xl text-red-700">
-                  <span>Total Pembayaran:</span>
-                  <span className="text-2xl">{formatPrice(totalPrice)}</span>
+              <div className="border-t border-gray-200 mt-3 pt-3 bg-white -mx-3 px-3 rounded-lg">
+                <div className="flex justify-between items-center font-bold text-lg text-red-600">
+                  <span>Total:</span>
+                  <span>{formatPrice(totalPrice)}</span>
                 </div>
               </div>
             </div>
           </div>
           
-          {/* Enhanced Action Button - Sticky at bottom on mobile */}
-          <div className="sticky bottom-0 p-6 border-t-2 border-gray-100 bg-white shadow-2xl">
+          {/* Compact Action Button */}
+          <div className="sticky bottom-0 p-4 border-t border-gray-200 bg-white">
             <Button 
               onClick={handleCheckout}
               disabled={isSubmitting}
-              className="w-full h-16 bg-gradient-to-r from-green-600 via-green-600 to-green-700 hover:from-green-700 hover:via-green-700 hover:to-green-800 text-white font-black text-lg rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] border-0 relative overflow-hidden"
+              className="w-full h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold text-base rounded-lg shadow-lg transition-all duration-200"
               size="lg"
             >
               {isSubmitting ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                  <span className="text-lg">Memproses Pesanan...</span>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Memproses...</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-4 relative z-10">
-                  <div className="p-2 bg-white/20 rounded-xl">
-                    <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-6 h-6" />
-                  </div>
-                  <div className="flex flex-col items-start">
-                    <span className="text-lg font-black leading-tight">CHECKOUT VIA WHATSAPP</span>
-                    <span className="text-sm opacity-95 leading-tight font-medium">Pesan otomatis disalin</span>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-5 h-5" />
+                  <span>Checkout via WhatsApp</span>
                 </div>
               )}
-              
-              {/* Background Animation */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             </Button>
             
-            <p className="text-sm text-gray-600 text-center mt-3 font-medium">
-              🔒 Data Anda aman • ✅ Pesan otomatis disalin ke clipboard
+            <p className="text-xs text-gray-500 text-center mt-2">
+              Pesan akan disalin otomatis ke clipboard
             </p>
           </div>
         </CardContent>

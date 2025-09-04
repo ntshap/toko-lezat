@@ -5,6 +5,8 @@ import Gallery from "@/components/Gallery";
 import ProductCatalog from "@/components/ProductCatalog";
 import Footer from "@/components/Footer";
 import CartModal, { CartItem } from "@/components/CartModal";
+import FloatingCheckoutButton from "@/components/FloatingCheckoutButton";
+import UserDataModal from "@/components/UserDataModal";
 import { Product } from "@/components/ProductCard";
 import { useToast } from "@/hooks/use-toast";
 import "@/components/animations.css";
@@ -12,6 +14,7 @@ import "@/components/animations.css";
 const Index = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isUserDataModalOpen, setIsUserDataModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
 
@@ -71,11 +74,23 @@ const Index = () => {
     }
   };
 
+  const handleCartClick = () => {
+    setIsCartOpen(true);
+  };
+
+  const handleCheckoutClick = () => {
+    setIsUserDataModalOpen(true);
+  };
+
+  const handleCheckoutComplete = () => {
+    setCartItems([]);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header 
         cartItemCount={getTotalItems()} 
-        onCartClick={() => setIsCartOpen(true)}
+        onCartClick={handleCartClick}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
       />
@@ -83,17 +98,38 @@ const Index = () => {
       <main>
         <Hero onViewProducts={scrollToProducts} />
         <Gallery />
-        <ProductCatalog onAddToCart={addToCart} searchQuery={searchQuery} />
+        <ProductCatalog 
+          onAddToCart={addToCart} 
+          searchQuery={searchQuery}
+          cartItems={cartItems}
+          onCartClick={handleCartClick}
+        />
       </main>
       
       <Footer />
       
+      {/* Floating Checkout Button */}
+      <FloatingCheckoutButton 
+        cartItems={cartItems}
+        onCheckoutClick={handleCheckoutClick}
+        onCartClick={handleCartClick}
+      />
+      
+      {/* Cart Modal */}
       <CartModal
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cartItems={cartItems}
         onUpdateQuantity={updateQuantity}
         onRemoveItem={removeFromCart}
+      />
+      
+      {/* User Data Modal */}
+      <UserDataModal 
+        isOpen={isUserDataModalOpen}
+        onClose={() => setIsUserDataModalOpen(false)}
+        cartItems={cartItems}
+        onCheckoutComplete={handleCheckoutComplete}
       />
     </div>
   );

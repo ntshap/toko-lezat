@@ -1,4 +1,5 @@
 import ProductCard, { Product } from "./ProductCard";
+import { CartItem } from "./CartModal";
 import { useState } from "react";
 import { Filter, Grid, List, Star, Heart, Eye, PartyPopper } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -83,9 +84,16 @@ const products: Product[] = [
 interface ProductCatalogProps {
   onAddToCart: (product: Product) => void;
   searchQuery: string;
+  cartItems?: CartItem[];
+  onCartClick?: () => void;
 }
 
-export default function ProductCatalog({ onAddToCart, searchQuery }: ProductCatalogProps) {
+export default function ProductCatalog({ 
+  onAddToCart, 
+  searchQuery, 
+  cartItems = [], 
+  onCartClick 
+}: ProductCatalogProps) {
   const navigate = useNavigate();
   // Show only featured products (first 4) for showcase, unless searching
   const featuredProducts = products.slice(0, 4);

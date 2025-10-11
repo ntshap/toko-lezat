@@ -3,10 +3,13 @@ import Header from "@/components/Header";
 import BannerSlider from "@/components/BannerSlider";
 import GoogleReviews from "@/components/GoogleReviews";
 import Footer from "@/components/Footer";
+import CartModal, { CartItem } from "@/components/CartModal";
+import UserDataModal from "@/components/UserDataModal";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, MapPin, Eye, Star, Plus } from "lucide-react";
+import { ShoppingCart, MapPin, Eye, Star, Plus, Minus } from "lucide-react";
 import SnackKiloanCard, { SnackKiloanProduct, SnackKiloanCartItem } from "@/components/SnackKiloanCard";
+import { useToast } from "@/hooks/use-toast";
 
 // Kue Kering imports
 import susCoklat from "@/assets/image/KUE KERING/1_SUS COKLAT.jpg";
@@ -925,8 +928,12 @@ const snackKiloanProducts: SnackKiloanProduct[] = [
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isUserDataModalOpen, setIsUserDataModalOpen] = useState(false);
 
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
@@ -972,16 +979,98 @@ const HomePage = () => {
       ? snackKiloanProducts
       : [];
 
-  const handleAddToCart = (item: any) => {
-    // Placeholder for cart functionality
-    console.log("Added to cart:", item);
+  const handleAddToCart = (product: any, quantityChange: number = 1) => {
+    // Prevent page refresh by ensuring this function doesn't cause navigation
+    const existingItem = cartItems.find(item => item.id === product.id);
+    
+    if (existingItem) {
+      // Update quantity if item already exists
+      const newQuantity = existingItem.quantity + quantityChange;
+      if (newQuantity <= 0) {
+        // Remove item if quantity becomes 0 or less
+        setCartItems(prevItems => prevItems.filter(item => item.id !== product.id));
+      } else {
+        setCartItems(prevItems =>
+          prevItems.map(item =>
+            item.id === product.id
+              ? { ...item, quantity: newQuantity }
+              : item
+          )
+        );
+      }
+    } else if (quantityChange > 0) {
+      // Add new item to cart only if quantity is positive
+      const newCartItem: CartItem = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        description: product.description || "",
+        quantity: quantityChange
+      };
+      setCartItems(prevItems => [...prevItems, newCartItem]);
+    }
+
+    // Show success toast only when adding (positive quantity)
+    if (quantityChange > 0) {
+      toast({
+        title: "Produk ditambahkan!",
+        description: `${product.name} berhasil ditambahkan ke keranjang`,
+        duration: 2000,
+      });
+    }
+  };
+
+  const handleSnackKiloanAddToCart = (item: SnackKiloanCartItem) => {
+    const cartItem: CartItem = {
+      id: Date.now(),
+      name: `${item.name} (${item.weightKg}kg)`,
+      price: item.price,
+      image: item.image,
+      description: item.description || "",
+      quantity: item.quantity
+    };
+
+    setCartItems(prevItems => [...prevItems, cartItem]);
+    
+    toast({
+      title: "Produk ditambahkan!",
+      description: `${cartItem.name} berhasil ditambahkan ke keranjang`,
+      duration: 2000,
+    });
+  };
+
+  const handleRemoveFromCart = (id: number) => {
+    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+  };
+
+  const handleUpdateQuantity = (id: number, quantity: number) => {
+    if (quantity <= 0) {
+      handleRemoveFromCart(id);
+    } else {
+      setCartItems(prevItems =>
+        prevItems.map(item =>
+          item.id === id ? { ...item, quantity } : item
+        )
+      );
+    }
+  };
+
+  const getTotalItemsInCart = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const handleCheckoutComplete = () => {
+    setCartItems([]);
+    setIsUserDataModalOpen(false);
+    setIsCartOpen(false);
   };
 
   return (
     <div className="min-h-screen bg-background">
       <Header 
-        cartItemCount={0} 
-        onCartClick={() => navigate('/products')}
+        cartItemCount={getTotalItemsInCart()} 
+        onCartClick={() => setIsCartOpen(true)}
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
       />
@@ -1115,14 +1204,64 @@ const HomePage = () => {
                         </div>
                       )}
                       
-                      {/* Add Button - White circle with red plus */}
+                      {/* Add Button with Quantity Control */}
                       <div className="absolute bottom-1 sm:bottom-2 right-1 sm:right-2">
-                        <button 
-                          onClick={() => navigate('/products')}
-                          className="w-6 h-6 sm:w-8 sm:h-8 bg-white hover:bg-gray-100 text-red-600 rounded-full shadow-lg flex items-center justify-center"
-                        >
-                          <Plus className="h-3 w-3 sm:h-4 sm:w-4 font-bold" />
-                        </button>
+                        {(() => {
+                          const cartItem = cartItems.find(item => item.id === product.id);
+                          const currentQuantity = cartItem ? cartItem.quantity : 0;
+                          
+                          if (currentQuantity === 0) {
+                            return (
+                              <button 
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  console.log('Home: Add button clicked - should not refresh');
+                                  handleAddToCart(product, 1);
+                                  return false;
+                                }}
+                                className="w-6 h-6 sm:w-8 sm:h-8 bg-white hover:bg-gray-100 text-red-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-150"
+                              >
+                                <Plus className="h-3 w-3 sm:h-4 sm:w-4 font-bold" />
+                              </button>
+                            );
+                          } else {
+                            return (
+                              <div className="bg-white rounded-full shadow-lg flex items-center justify-center">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('Home: Minus button clicked');
+                                    handleAddToCart(product, -1);
+                                    return false;
+                                  }}
+                                  className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 hover:bg-gray-100 rounded-l-full flex items-center justify-center transition-colors"
+                                >
+                                  <Minus className="h-2 w-2 sm:h-3 sm:w-3" />
+                                </button>
+                                <span className="px-1 sm:px-2 text-xs sm:text-sm font-bold text-red-600 min-w-[16px] sm:min-w-[20px] text-center">
+                                  {currentQuantity}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    console.log('Home: Plus button clicked');
+                                    handleAddToCart(product, 1);
+                                    return false;
+                                  }}
+                                  className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 hover:bg-gray-100 rounded-r-full flex items-center justify-center transition-colors"
+                                >
+                                  <Plus className="h-2 w-2 sm:h-3 sm:w-3" />
+                                </button>
+                              </div>
+                            );
+                          }
+                        })()}
                       </div>
                     </div>
 
@@ -1146,7 +1285,7 @@ const HomePage = () => {
                 <SnackKiloanCard 
                   key={product.id} 
                   product={product} 
-                  onAddToCart={handleAddToCart}
+                  onAddToCart={handleSnackKiloanAddToCart}
                 />
               ))}
             </div>
@@ -1154,13 +1293,15 @@ const HomePage = () => {
             {/* Shopping Cart Icon - Floating */}
             <div className="fixed bottom-6 right-6 z-50">
               <button 
-                onClick={() => navigate('/products')}
+                onClick={() => setIsCartOpen(true)}
                 className="w-14 h-14 bg-white rounded-full shadow-xl flex items-center justify-center hover:shadow-2xl transition-all duration-200 transform hover:scale-110"
               >
                 <ShoppingCart className="w-6 h-6 text-red-600" />
-                <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                  0
-                </div>
+                {getTotalItemsInCart() > 0 && (
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                    {getTotalItemsInCart()}
+                  </div>
+                )}
               </button>
             </div>
           </div>
@@ -1198,6 +1339,23 @@ const HomePage = () => {
       </main>
       
       <Footer />
+      
+      {/* Cart Modal */}
+      <CartModal
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cartItems={cartItems}
+        onRemoveItem={handleRemoveFromCart}
+        onUpdateQuantity={handleUpdateQuantity}
+      />
+
+      {/* User Data Modal */}
+      <UserDataModal
+        isOpen={isUserDataModalOpen}
+        onClose={() => setIsUserDataModalOpen(false)}
+        cartItems={cartItems}
+        onCheckoutComplete={handleCheckoutComplete}
+      />
     </div>
   );
 };

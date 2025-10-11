@@ -7,7 +7,7 @@ import { CartItem } from "@/components/CartModal";
 interface MobileProductsProps {
   products: Product[];
   cartItems: CartItem[];
-  onAddToCart: (product: Product) => void;
+  onAddToCart: (product: Product, quantity: number) => void;
   onCartClick: () => void;
 }
 

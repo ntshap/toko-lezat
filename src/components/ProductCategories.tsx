@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import ProductCard, { Product } from "./ProductCard";
 import { CartItem } from "./CartModal";
 import { Button } from "@/components/ui/button";
-import { Plus, ShoppingBag } from "lucide-react";
+import { Plus, Minus, ShoppingBag } from "lucide-react";
 
 // Kue Kering imports
 import susCoklat from "@/assets/image/KUE KERING/1_SUS COKLAT.jpg";
@@ -952,7 +952,7 @@ const products: Product[] = [
 ];
 
 interface ProductCategoriesProps {
-  onAddToCart: (product: Product) => void;
+  onAddToCart: (product: Product, quantity: number) => void;
   searchQuery: string;
   cartItems: CartItem[];
   onCartClick: () => void;
@@ -1101,14 +1101,58 @@ export default function ProductCategories({
                       </div>
                     )}
                     
-                    {/* Add Button - White circle with red plus exactly like your UI */}
+                    {/* Add Button with Quantity Control */}
                     <div className="absolute bottom-2 right-2">
-                      <button
-                        onClick={() => onAddToCart(product)}
-                        className="w-8 h-8 bg-white hover:bg-gray-100 text-red-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 transform hover:scale-110"
-                      >
-                        <Plus className="h-4 w-4 font-bold" />
-                      </button>
+                      {(() => {
+                        const cartItem = cartItems.find(item => item.id === product.id);
+                        const currentQuantity = cartItem ? cartItem.quantity : 0;
+                        
+                        if (currentQuantity === 0) {
+                          return (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onAddToCart(product, 1);
+                              }}
+                              className="w-8 h-8 bg-white hover:bg-gray-100 text-red-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 transform hover:scale-110"
+                            >
+                              <Plus className="h-4 w-4 font-bold" />
+                            </button>
+                          );
+                        } else {
+                          return (
+                            <div className="bg-white rounded-full shadow-lg flex items-center justify-center">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  onAddToCart(product, -1);
+                                }}
+                                className="w-6 h-6 text-red-600 hover:bg-gray-100 rounded-l-full flex items-center justify-center transition-colors"
+                              >
+                                <Minus className="h-3 w-3" />
+                              </button>
+                              <span className="px-2 text-sm font-bold text-red-600 min-w-[20px] text-center">
+                                {currentQuantity}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  onAddToCart(product, 1);
+                                }}
+                                className="w-6 h-6 text-red-600 hover:bg-gray-100 rounded-r-full flex items-center justify-center transition-colors"
+                              >
+                                <Plus className="h-3 w-3" />
+                              </button>
+                            </div>
+                          );
+                        }
+                      })()}
                     </div>
                   </div>
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, User, MapPin, Phone, ShoppingBag, Copy, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +36,35 @@ export default function UserDataModal({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  // Prevent body scroll when modal is open and optimize for mobile
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      
+      // Add viewport meta optimization for mobile
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+      }
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      
+      // Restore original viewport
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+      }
+    };
+  }, [isOpen]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -257,16 +286,16 @@ export default function UserDataModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div 
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+        className="absolute inset-0 bg-black/50 backdrop-blur-none" 
         onClick={onClose}
       />
       
-      <Card className="relative w-full sm:max-w-md h-full sm:h-auto sm:max-h-[90vh] overflow-hidden shadow-xl rounded-t-2xl sm:rounded-xl bg-white border-0">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-4 px-5 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50 sticky top-0 z-10">
-          <CardTitle className="text-lg font-bold flex items-center gap-2 text-red-900">
-            <div className="p-1.5 bg-red-100 rounded-lg">
+      <Card className="relative w-full sm:max-w-md h-[95vh] sm:h-auto sm:max-h-[90vh] overflow-hidden shadow-2xl rounded-t-3xl sm:rounded-2xl bg-white border-0 transform transition-transform duration-300 ease-out">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50 sticky top-0 z-10 backdrop-blur-sm bg-opacity-95">
+          <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2 text-red-900">
+            <div className="p-1 bg-red-100 rounded-lg">
               <User className="w-4 h-4 text-red-600" />
             </div>
             Data Pemesan
@@ -275,19 +304,19 @@ export default function UserDataModal({
             variant="ghost" 
             size="sm" 
             onClick={onClose} 
-            className="h-9 w-9 p-0 rounded-full hover:bg-red-100 active:scale-95 transition-all duration-200"
+            className="h-8 w-8 p-0 rounded-full hover:bg-red-100 active:scale-95 transition-all duration-150 touch-manipulation"
           >
-            <X className="w-6 h-6 text-gray-500" />
+            <X className="w-5 h-5 text-gray-500" />
           </Button>
         </CardHeader>
         
-        <CardContent className="p-0 overflow-y-auto h-full">
-          <div className="p-4 space-y-4">
+        <CardContent className="p-0 overflow-y-auto flex-1 overscroll-contain">
+          <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
             {/* User Data Form */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <Label htmlFor="fullName" className="text-sm font-semibold text-gray-700 block mb-2 flex items-center gap-2">
-                  <User className="w-4 h-4 text-red-600" />
+                <Label htmlFor="fullName" className="text-sm font-semibold text-gray-700 block mb-1.5 flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-red-600" />
                   Nama Lengkap *
                 </Label>
                 <Input
@@ -296,13 +325,14 @@ export default function UserDataModal({
                   placeholder="Masukkan nama lengkap Anda"
                   value={userData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className="h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-all duration-200"
+                  className="h-10 sm:h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-colors duration-150 touch-manipulation"
+                  autoComplete="name"
                 />
               </div>
               
               <div>
-                <Label htmlFor="fullAddress" className="text-sm font-semibold text-gray-700 block mb-2 flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-red-600" />
+                <Label htmlFor="fullAddress" className="text-sm font-semibold text-gray-700 block mb-1.5 flex items-center gap-2">
+                  <MapPin className="w-3.5 h-3.5 text-red-600" />
                   Alamat Lengkap *
                 </Label>
                 <Textarea
@@ -310,14 +340,15 @@ export default function UserDataModal({
                   placeholder="Masukkan alamat lengkap untuk pengiriman"
                   value={userData.fullAddress}
                   onChange={(e) => handleInputChange('fullAddress', e.target.value)}
-                  className="min-h-[80px] text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 py-2 resize-none bg-white transition-all duration-200"
+                  className="min-h-[70px] sm:min-h-[80px] text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 py-2 resize-none bg-white transition-colors duration-150 touch-manipulation"
                   rows={3}
+                  autoComplete="street-address"
                 />
               </div>
               
               <div>
-                <Label htmlFor="city" className="text-sm font-semibold text-gray-700 block mb-2 flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-red-600" />
+                <Label htmlFor="city" className="text-sm font-semibold text-gray-700 block mb-1.5 flex items-center gap-2">
+                  <MapPin className="w-3.5 h-3.5 text-red-600" />
                   Kota/Kabupaten *
                 </Label>
                 <Input
@@ -326,13 +357,14 @@ export default function UserDataModal({
                   placeholder="Contoh: Yogyakarta, Bantul, Sleman"
                   value={userData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
-                  className="h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-all duration-200"
+                  className="h-10 sm:h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-colors duration-150 touch-manipulation"
+                  autoComplete="address-level2"
                 />
               </div>
               
               <div>
-                <Label htmlFor="whatsappNumber" className="text-sm font-semibold text-gray-700 block mb-2 flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-red-600" />
+                <Label htmlFor="whatsappNumber" className="text-sm font-semibold text-gray-700 block mb-1.5 flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5 text-red-600" />
                   Nomor WhatsApp *
                 </Label>
                 <Input
@@ -341,35 +373,36 @@ export default function UserDataModal({
                   placeholder="Contoh: 08123456789"
                   value={userData.whatsappNumber}
                   onChange={(e) => handleInputChange('whatsappNumber', e.target.value)}
-                  className="h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-all duration-200"
+                  className="h-10 sm:h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-colors duration-150 touch-manipulation"
+                  autoComplete="tel"
                 />
               </div>
             </div>
             
-            {/* Compact Order Summary */}
-            <div className="border-t border-gray-200 pt-4 bg-gray-50 -mx-4 px-4 pb-4 rounded-lg">
-              <h3 className="font-bold text-base text-gray-800 mb-3 flex items-center gap-2">
-                <div className="p-1.5 bg-red-100 rounded-lg">
-                  <ShoppingBag className="w-4 h-4 text-red-600" />
+            {/* Mobile-optimized Order Summary */}
+            <div className="border-t border-gray-200 pt-3 bg-gray-50 -mx-3 sm:-mx-4 px-3 sm:px-4 pb-3 rounded-lg">
+              <h3 className="font-bold text-sm sm:text-base text-gray-800 mb-2 sm:mb-3 flex items-center gap-2">
+                <div className="p-1 bg-red-100 rounded-lg">
+                  <ShoppingBag className="w-3.5 h-3.5 text-red-600" />
                 </div>
                 Ringkasan Pesanan
               </h3>
               
-              <div className="space-y-2 max-h-32 overflow-y-auto bg-white rounded-lg p-3 border border-gray-200">
+              <div className="space-y-1 max-h-28 sm:max-h-32 overflow-y-auto bg-white rounded-lg p-2 sm:p-3 border border-gray-200">
                 {cartItems.map((item, index) => (
-                  <div key={item.id} className="flex justify-between text-sm py-1">
-                    <span className="text-gray-600 flex-1">
+                  <div key={item.id} className="flex justify-between text-xs sm:text-sm py-1">
+                    <span className="text-gray-600 flex-1 leading-tight">
                       {index + 1}. {item.name} × {item.quantity}
                     </span>
-                    <span className="font-semibold text-red-600 ml-2">
+                    <span className="font-semibold text-red-600 ml-2 text-xs sm:text-sm">
                       {formatPrice(item.price * item.quantity)}
                     </span>
                   </div>
                 ))}
               </div>
               
-              <div className="border-t border-gray-200 mt-3 pt-3 bg-white -mx-3 px-3 rounded-lg">
-                <div className="flex justify-between items-center font-bold text-lg text-red-600">
+              <div className="border-t border-gray-200 mt-2 pt-2 bg-white -mx-2 sm:-mx-3 px-2 sm:px-3 rounded-lg">
+                <div className="flex justify-between items-center font-bold text-base sm:text-lg text-red-600">
                   <span>Total:</span>
                   <span>{formatPrice(totalPrice)}</span>
                 </div>
@@ -377,12 +410,12 @@ export default function UserDataModal({
             </div>
           </div>
           
-          {/* Compact Action Button */}
-          <div className="sticky bottom-0 p-4 border-t border-gray-200 bg-white">
+          {/* Mobile-optimized Action Button */}
+          <div className="sticky bottom-0 p-3 sm:p-4 border-t border-gray-200 bg-white shadow-lg">
             <Button 
               onClick={handleCheckout}
               disabled={isSubmitting}
-              className="w-full h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold text-base rounded-lg shadow-lg transition-all duration-200"
+              className="w-full h-11 sm:h-12 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 active:scale-[0.98] text-white font-bold text-sm sm:text-base rounded-xl shadow-lg transition-all duration-150 touch-manipulation"
               size="lg"
             >
               {isSubmitting ? (
@@ -392,13 +425,13 @@ export default function UserDataModal({
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <img src="/whatsapp-icon.svg" alt="WhatsApp" className="w-5 h-5" />
+                  <Phone className="w-4 h-4" />
                   <span>Checkout via WhatsApp</span>
                 </div>
               )}
             </Button>
             
-            <p className="text-xs text-gray-500 text-center mt-2">
+            <p className="text-xs text-gray-500 text-center mt-1.5">
               Pesan akan disalin otomatis ke clipboard
             </p>
           </div>

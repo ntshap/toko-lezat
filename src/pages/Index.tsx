@@ -20,27 +20,36 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, quantityChange: number = 1) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
       
       if (existingItem) {
-        toast({
-          title: "Produk ditambahkan!",
-          description: `${product.name} telah ditambahkan ke keranjang Anda.`,
-        });
+        const newQuantity = existingItem.quantity + quantityChange;
+        if (newQuantity <= 0) {
+          return prevItems.filter(item => item.id !== product.id);
+        }
+        
+        if (quantityChange > 0) {
+          toast({
+            title: "Produk ditambahkan!",
+            description: `${product.name} telah ditambahkan ke keranjang Anda.`,
+          });
+        }
+        
         return prevItems.map((item) =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: newQuantity }
             : item
         );
-      } else {
+      } else if (quantityChange > 0) {
         toast({
           title: "Produk ditambahkan!",
           description: `${product.name} telah ditambahkan ke keranjang Anda.`,
         });
-        return [...prevItems, { ...product, quantity: 1 }];
+        return [...prevItems, { ...product, quantity: quantityChange }];
       }
+      return prevItems;
     });
   };
 

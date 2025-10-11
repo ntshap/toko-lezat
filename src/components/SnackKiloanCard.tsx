@@ -126,7 +126,12 @@ export default function SnackKiloanCard({ product, onAddToCart }: SnackKiloanCar
 
         {/* Add to Cart Button */}
         <button 
-          onClick={handleAddToCart}
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAddToCart();
+          }}
           className="w-full bg-orange-500 hover:bg-orange-600 text-white text-sm sm:text-base font-bold py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 shadow-lg"
         >
           <Plus className="w-4 h-4" />

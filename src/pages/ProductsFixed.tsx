@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, ShoppingCart } from "lucide-react";
+import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -926,7 +926,7 @@ const snackKiloanProducts: SnackKiloanProduct[] = [
 const categories = ["Semua", "Kripik dan Snack Ringan", "Kue Kering", "Permen & Manisan", "Kue Basah", "Kacang-kacangan", "Snack Kiloan", "Minuman", "Lain-lain"];
 
 interface ProductsPageProps {
-  onAddToCart?: (product: Product) => void;
+  onAddToCart?: (product: Product, quantity: number) => void;
 }
 
 export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
@@ -952,27 +952,35 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
     return matchesCategory && matchesSearch;
   });
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, quantityChange: number = 1) => {
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
       if (existingItem) {
+        const newQuantity = existingItem.quantity + quantityChange;
+        if (newQuantity <= 0) {
+          return prevItems.filter(item => item.id !== product.id);
+        }
         return prevItems.map(item =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: newQuantity }
             : item
         );
+      } else if (quantityChange > 0) {
+        return [...prevItems, { ...product, quantity: quantityChange }];
       }
-      return [...prevItems, { ...product, quantity: 1 }];
+      return prevItems;
     });
 
     if (onAddToCart) {
-      onAddToCart(product);
+      onAddToCart(product, quantityChange);
     }
 
-    toast({
-      title: "Produk ditambahkan!",
-      description: `${product.name} telah ditambahkan ke keranjang`,
-    });
+    if (quantityChange > 0) {
+      toast({
+        title: "Produk ditambahkan!",
+        description: `${product.name} telah ditambahkan ke keranjang`,
+      });
+    }
   };
 
   const addSnackKiloanToCart = (item: SnackKiloanCartItem) => {
@@ -1093,14 +1101,58 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                     </div>
                   )}
                   
-                  {/* Add Button */}
+                  {/* Add Button with Quantity Control */}
                   <div className="absolute bottom-2 right-2">
-                    <button 
-                      onClick={() => addToCart(product)}
-                      className="w-8 h-8 bg-white hover:bg-gray-100 text-red-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
-                    >
-                      <Plus className="h-4 w-4 font-bold" />
-                    </button>
+                    {(() => {
+                      const cartItem = cartItems.find(item => item.id === product.id);
+                      const currentQuantity = cartItem ? cartItem.quantity : 0;
+                      
+                      if (currentQuantity === 0) {
+                        return (
+                          <button 
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              addToCart(product, 1);
+                            }}
+                            className="w-8 h-8 bg-white hover:bg-gray-100 text-red-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
+                          >
+                            <Plus className="h-4 w-4 font-bold" />
+                          </button>
+                        );
+                      } else {
+                        return (
+                          <div className="bg-white rounded-full shadow-lg flex items-center justify-center">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                addToCart(product, -1);
+                              }}
+                              className="w-6 h-6 text-red-600 hover:bg-gray-100 rounded-l-full flex items-center justify-center transition-colors"
+                            >
+                              <Minus className="h-3 w-3" />
+                            </button>
+                            <span className="px-2 text-sm font-bold text-red-600 min-w-[20px] text-center">
+                              {currentQuantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                addToCart(product, 1);
+                              }}
+                              className="w-6 h-6 text-red-600 hover:bg-gray-100 rounded-r-full flex items-center justify-center transition-colors"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </button>
+                          </div>
+                        );
+                      }
+                    })()}
                   </div>
                 </div>
 

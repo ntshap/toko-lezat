@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, ShoppingCart } from "lucide-react";
+import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -926,7 +926,7 @@ const snackKiloanProducts: SnackKiloanProduct[] = [
 const categories = ["Semua", "Kripik dan Snack Ringan", "Kue Kering", "Permen & Manisan", "Bakpia dan Kue Basah", "Kacang-kacangan", "Snack Kiloan", "Minuman", "Lain-lain"];
 
 interface ProductsPageProps {
-  onAddToCart?: (product: Product) => void;
+  onAddToCart?: (product: Product, quantity: number) => void;
 }
 
 export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
@@ -975,15 +975,14 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
     // Handle special category mappings
     if (selectedCategory === "Semua") {
       if (searchQuery) {
-        // If there's a search query, filter first then randomize
-        const searchFiltered = products.filter(product =>
+        // If there's a search query, show all matching products
+        return products.filter(product =>
           product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           product.description.toLowerCase().includes(searchQuery.toLowerCase())
         );
-        return getRandomProducts(searchFiltered, 10);
       } else {
-        // No search query, just get random products
-        return getRandomProducts(products, 10);
+        // No search query, show all products from all categories
+        return products;
       }
     }
     
@@ -1015,15 +1014,14 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
   const filteredSnackKiloanProducts = (() => {
     // Handle special category mappings for SnackKiloan products
     if (selectedCategory === "Semua") {
-      // For "Semua", include some random snack kiloan products (max 2)
+      // For "Semua", include all snack kiloan products
       if (searchQuery) {
-        const searchFiltered = snackKiloanProducts.filter(product =>
+        return snackKiloanProducts.filter(product =>
           product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           product.description.toLowerCase().includes(searchQuery.toLowerCase())
         );
-        return searchFiltered.sort(() => 0.5 - Math.random()).slice(0, 2);
       } else {
-        return snackKiloanProducts.sort(() => 0.5 - Math.random()).slice(0, 2);
+        return snackKiloanProducts;
       }
     }
     
@@ -1040,27 +1038,35 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
     return [];
   })();
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, quantityChange: number = 1) => {
+    console.log('addToCart called:', product.name, quantityChange);
+    
     setCartItems(prevItems => {
+      console.log('Current cart items:', prevItems.length);
       const existingItem = prevItems.find(item => item.id === product.id);
+      
       if (existingItem) {
+        const newQuantity = existingItem.quantity + quantityChange;
+        console.log('Existing item, new quantity:', newQuantity);
+        
+        if (newQuantity <= 0) {
+          return prevItems.filter(item => item.id !== product.id);
+        }
         return prevItems.map(item =>
           item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
+            ? { ...item, quantity: newQuantity }
             : item
         );
+      } else if (quantityChange > 0) {
+        console.log('New item added');
+        return [...prevItems, { ...product, quantity: quantityChange }];
       }
-      return [...prevItems, { ...product, quantity: 1 }];
+      return prevItems;
     });
 
     if (onAddToCart) {
-      onAddToCart(product);
+      onAddToCart(product, quantityChange);
     }
-
-    toast({
-      title: "Produk ditambahkan!",
-      description: `${product.name} telah ditambahkan ke keranjang`,
-    });
   };
 
   const addSnackKiloanToCart = (item: SnackKiloanCartItem) => {
@@ -1184,14 +1190,63 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                     </div>
                   )}
                   
-                  {/* Add Button */}
+                  {/* Add Button with Quantity Control */}
                   <div className="absolute bottom-2 right-2">
-                    <button 
-                      onClick={() => addToCart(product)}
-                      className="w-8 h-8 bg-white hover:bg-gray-100 text-red-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
-                    >
-                      <Plus className="h-4 w-4 font-bold" />
-                    </button>
+                    {(() => {
+                      const cartItem = cartItems.find(item => item.id === product.id);
+                      const currentQuantity = cartItem ? cartItem.quantity : 0;
+                      
+                      if (currentQuantity === 0) {
+                        return (
+                          <button 
+                            type="button"
+                            onPointerDown={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              console.log('Add button clicked - no refresh should happen');
+                              setTimeout(() => addToCart(product, 1), 0);
+                            }}
+                            className="w-8 h-8 bg-white hover:bg-gray-100 text-red-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
+                          >
+                            <Plus className="h-4 w-4 font-bold" />
+                          </button>
+                        );
+                      } else {
+                        return (
+                          <div className="bg-white rounded-full shadow-lg flex items-center justify-center">
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('Minus button clicked');
+                                addToCart(product, -1);
+                                return false;
+                              }}
+                              className="w-6 h-6 text-red-600 hover:bg-gray-100 rounded-l-full flex items-center justify-center transition-colors"
+                            >
+                              <Minus className="h-3 w-3" />
+                            </button>
+                            <span className="px-2 text-sm font-bold text-red-600 min-w-[20px] text-center">
+                              {currentQuantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('Plus button clicked');
+                                addToCart(product, 1);
+                                return false;
+                              }}
+                              className="w-6 h-6 text-red-600 hover:bg-gray-100 rounded-r-full flex items-center justify-center transition-colors"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </button>
+                          </div>
+                        );
+                      }
+                    })()}
                   </div>
                 </div>
 

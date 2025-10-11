@@ -1,7 +1,7 @@
 import ProductCard, { Product } from "./ProductCard";
 import { CartItem } from "./CartModal";
 import { useState } from "react";
-import { Filter, Grid, List, Star, Heart, Eye, PartyPopper } from "lucide-react";
+import { Filter, Grid, List, Star, Heart, Eye, PartyPopper, Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -820,7 +820,7 @@ const products: Product[] = [
 ];
 
 interface ProductCatalogProps {
-  onAddToCart: (product: Product) => void;
+  onAddToCart: (product: Product, quantity: number) => void;
   searchQuery: string;
   cartItems?: CartItem[];
   onCartClick?: () => void;
@@ -1043,21 +1043,59 @@ export default function ProductCatalog({
                       </div>
                     </div>
 
-                    {/* Action Area - Simplified */}
+                    {/* Action Area - Quantity Selector */}
                     <div className="flex gap-2">
-                      <input 
-                        type="number" 
-                        defaultValue="1" 
-                        min="1" 
-                        className="w-12 px-2 py-2 bg-red-50 border border-red-200 text-red-900 font-bold text-center text-sm focus:border-red-400 focus:outline-none"
-                      />
-                      
-                      <Button 
-                        onClick={() => onAddToCart(product)}
-                        className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-2 text-sm transition-all duration-300 transform hover:scale-105"
-                      >
-                        Add to Cart
-                      </Button>
+                      {(() => {
+                        const cartItem = cartItems?.find(item => item.id === product.id);
+                        const currentQuantity = cartItem ? cartItem.quantity : 0;
+                        
+                        if (currentQuantity === 0) {
+                          return (
+                            <Button 
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onAddToCart(product, 1);
+                              }}
+                              className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold py-2 text-sm transition-all duration-300 transform hover:scale-105"
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
+                              Add to Cart
+                            </Button>
+                          );
+                        } else {
+                          return (
+                            <div className="w-full bg-white rounded border border-red-200 flex items-center justify-center">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  onAddToCart(product, -1);
+                                }}
+                                className="w-8 h-8 text-red-600 hover:bg-gray-100 flex items-center justify-center transition-colors"
+                              >
+                                <Minus className="h-3 w-3" />
+                              </button>
+                              <span className="px-3 text-sm font-bold text-red-600 min-w-[30px] text-center">
+                                {currentQuantity}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  onAddToCart(product, 1);
+                                }}
+                                className="w-8 h-8 text-red-600 hover:bg-gray-100 flex items-center justify-center transition-colors"
+                              >
+                                <Plus className="h-3 w-3" />
+                              </button>
+                            </div>
+                          );
+                        }
+                      })()}
                     </div>
                   </div>
                 </div>

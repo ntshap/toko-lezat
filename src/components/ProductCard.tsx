@@ -9,6 +9,7 @@ export interface Product {
   image: string;
   description: string;
   category?: string;
+  weight?: string; // Berat produk (misal: "240 g", "235 g")
 }
 
 interface ProductCardProps {
@@ -26,13 +27,20 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
   };
 
   return (
-    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 bg-white rounded-2xl sm:rounded-xl group">
-      <div className="aspect-[4/3] overflow-hidden">
+    <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 bg-white rounded-2xl sm:rounded-xl group relative">
+      <div className="aspect-[4/3] overflow-hidden relative">
         <img 
           src={product.image} 
           alt={product.name}
           className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110"
         />
+        {product.weight && (
+          <div className="absolute top-2 right-2 bg-white bg-opacity-90 backdrop-blur-sm px-2 py-1 rounded-md shadow-md">
+            <span className="text-xs font-bold text-gray-800">
+              {product.weight}
+            </span>
+          </div>
+        )}
       </div>
       
       <CardContent className="p-4 sm:p-4">

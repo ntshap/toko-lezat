@@ -2,6 +2,7 @@ import { ShoppingCart, Search, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import logoImage from "@/assets/logo.png";
 
 interface HeaderProps {
   cartItemCount: number;
@@ -55,14 +56,14 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
 
       {/* Main Header */}
       <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-600 flex items-center justify-center text-white font-black text-lg sm:text-xl rounded-lg shadow-lg">
-            L
-          </div>
-          <div>
-            <p className="text-sm sm:text-base font-bold text-red-600">pusatoleholehlezat</p>
-          </div>
+        {/* Logo - Centered */}
+        <div className="flex justify-center">
+          <img 
+            src={logoImage} 
+            alt="Lezat Logo" 
+            className="h-10 sm:h-12 md:h-14 object-contain drop-shadow-lg"
+            style={{ maxWidth: '200px', maxHeight: '60px' }}
+          />
         </div>
 
         {/* Desktop Navigation */}

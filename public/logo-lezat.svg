@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 160" width="800" height="160">
+  <defs>
+    <linearGradient id="redGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff4444;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#cc2222;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="brownGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#d4a574;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a68650;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- L -->
+  <path d="M20 20 L20 140 L100 140 L100 120 L40 120 L40 20 Z" fill="url(#redGradient)" stroke="#a68650" stroke-width="3"/>
+  
+  <!-- E -->
+  <path d="M120 20 L120 140 L200 140 L200 120 L140 120 L140 85 L190 85 L190 75 L140 75 L140 40 L200 40 L200 20 Z" fill="url(#redGradient)" stroke="#a68650" stroke-width="3"/>
+  
+  <!-- Z -->
+  <path d="M220 20 L220 40 L260 40 L220 120 L220 140 L300 140 L300 120 L260 120 L300 40 L300 20 Z" fill="url(#redGradient)" stroke="#a68650" stroke-width="3"/>
+  
+  <!-- A -->
+  <path d="M340 140 L340 100 L380 100 L380 140 L400 140 L400 20 L360 20 L320 140 Z M350 80 L370 80 L360 50 Z" fill="url(#redGradient)" stroke="#a68650" stroke-width="3"/>
+  
+  <!-- T -->
+  <path d="M420 20 L420 40 L450 40 L450 140 L470 140 L470 40 L500 40 L500 20 Z" fill="url(#redGradient)" stroke="#a68650" stroke-width="3"/>
+  
+  <!-- 3D Effect shadows -->
+  <path d="M25 25 L25 145 L105 145 L105 125 L45 125 L45 25 Z" fill="url(#brownGradient)" opacity="0.7"/>
+  <path d="M125 25 L125 145 L205 145 L205 125 L145 125 L145 90 L195 90 L195 80 L145 80 L145 45 L205 45 L205 25 Z" fill="url(#brownGradient)" opacity="0.7"/>
+  <path d="M225 25 L225 45 L265 45 L225 125 L225 145 L305 145 L305 125 L265 125 L305 45 L305 25 Z" fill="url(#brownGradient)" opacity="0.7"/>
+  <path d="M345 145 L345 105 L385 105 L385 145 L405 145 L405 25 L365 25 L325 145 Z M355 85 L375 85 L365 55 Z" fill="url(#brownGradient)" opacity="0.7"/>
+  <path d="M425 25 L425 45 L455 45 L455 145 L475 145 L475 45 L505 45 L505 25 Z" fill="url(#brownGradient)" opacity="0.7"/>
+</svg>

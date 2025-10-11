@@ -2,6 +2,7 @@ import { Search, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import logoImage from "@/assets/logo.png";
 
 interface HeaderProps {
   cartItemCount: number;
@@ -39,14 +40,14 @@ export default function Header({ cartItemCount, onCartClick, searchQuery, onSear
     <header className="sticky top-0 z-50 bg-red-600 shadow-lg">
       {/* Red Header with responsive design */}
       <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
-        {/* Logo Section - Responsive sizing */}
-        <div className="text-center mb-3 sm:mb-4">
-          <h1 className="text-white text-2xl sm:text-3xl md:text-4xl font-black tracking-wider mb-2 sm:mb-4" style={{
-            textShadow: '2px 2px 4px rgba(0,0,0,0.3)',
-            fontFamily: 'serif'
-          }}>
-            pusatoleholehlezat
-          </h1>
+        {/* Logo Section - Centered */}
+        <div className="flex justify-center mb-3 sm:mb-4">
+          <img 
+            src={logoImage} 
+            alt="Lezat Logo" 
+            className="h-12 sm:h-16 md:h-20 lg:h-24 object-contain drop-shadow-lg"
+            style={{ maxWidth: '300px', maxHeight: '100px' }}
+          />
         </div>
 
         {/* Search Bar - Responsive */}

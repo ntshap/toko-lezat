@@ -20,9 +20,10 @@ export interface SnackKiloanCartItem {
   name: string;
   price: number;
   image: string;
-  weight: number;
+  weightKg: number; // berat dalam kg
   quantity: number;
   category: "Snack Kiloan";
+  description: string;
 }
 
 interface SnackKiloanCardProps {
@@ -42,9 +43,10 @@ export default function SnackKiloanCard({ product, onAddToCart }: SnackKiloanCar
       name: `${product.name} (${selectedWeight.label})`,
       price: selectedWeight.price,
       image: product.image,
-      weight: selectedWeight.weight,
+      weightKg: selectedWeight.weight,
       quantity: quantity,
-      category: "Snack Kiloan"
+      category: "Snack Kiloan",
+      description: product.description
     };
     onAddToCart(cartItem);
     setQuantity(1); // Reset quantity after adding to cart

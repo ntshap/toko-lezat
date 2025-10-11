@@ -8,8 +8,18 @@
     <meta name="author" content="pusatoleholehlezat" />
     
     <!-- Favicon -->
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" />
+    <link rel="shortcut icon" href="/favicon-32.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/favicon-32.png" />
+    
+    <!-- CSS to prevent favicon stretching -->
+    <style>
+      /* Force browser to use original aspect ratio */
+      link[rel="icon"], link[rel="shortcut icon"] {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+      }
+    </style>
 
     <meta property="og:title" content="Pusat Oleh-Oleh Lezat Magelang - Camilan Tradisional Indonesia" />
     <meta property="og:description" content="Pusat oleh-oleh khas Magelang dengan beragam camilan tradisional, kacang-kacangan, dan makanan ringan berkualitas." />

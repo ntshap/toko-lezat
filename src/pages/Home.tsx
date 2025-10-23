@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import BannerSlider from "@/components/BannerSlider";
 import GoogleReviews from "@/components/GoogleReviews";
 import Footer from "@/components/Footer";
 import CartModal, { CartItem } from "@/components/CartModal";
 import UserDataModal from "@/components/UserDataModal";
+import ProductDetailModal from "@/components/ProductDetailModal";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, MapPin, Eye, Star, Plus, Minus } from "lucide-react";
+import { ShoppingCart, MapPin, Eye, Star, Plus, Minus, Check, ArrowUp } from "lucide-react";
 import SnackKiloanCard, { SnackKiloanProduct, SnackKiloanCartItem } from "@/components/SnackKiloanCard";
 import { useToast } from "@/hooks/use-toast";
 import { snackKiloanProducts } from "@/data/snackKiloanData";
@@ -902,9 +903,47 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserDataModalOpen, setIsUserDataModalOpen] = useState(false);
+  const [cartBounce, setCartBounce] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
+  };
+
+  // Trigger bounce animation when cart count changes
+  useEffect(() => {
+    const totalItems = getTotalItemsInCart();
+    if (totalItems > 0) {
+      setCartBounce(true);
+      const timer = setTimeout(() => setCartBounce(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [cartItems]);
+
+  // Show/hide scroll to top button based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Simulate initial loading
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000); // 1 second loading simulation
+    return () => clearTimeout(timer);
+  }, [selectedCategory, searchQuery]); // Re-trigger on category or search change
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Helper function to get random products from all categories
@@ -931,23 +970,63 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
     return selectedProducts.sort(() => 0.5 - Math.random()).slice(0, count);
   };
 
-  // Filter products based on selected category
-  const filteredProducts = selectedCategory === "Snack Kiloan"
-    ? [] // Don't show regular products when Snack Kiloan is selected
-    : selectedCategory === "Semua" 
-      ? getRandomProducts(allProducts, 10)
-      : selectedCategory === "Bakpia dan Kue Basah"
-        ? allProducts.filter(product => product.category === "Bakpia & Kue Basah" || product.category === "Kue Basah")
-        : selectedCategory === "Minuman"
-          ? allProducts.filter(product => product.category === "Minuman Instan")
-          : allProducts.filter(product => product.category === selectedCategory);
+  // Filter products based on selected category AND search query
+  const filteredProducts = (() => {
+    // If Snack Kiloan category is selected, don't show regular products
+    if (selectedCategory === "Snack Kiloan") {
+      return [];
+    }
+    
+    // Start with category filtering
+    let products: Product[] = [];
+    
+    if (selectedCategory === "Semua") {
+      products = allProducts; // Show all products for "Semua"
+    } else if (selectedCategory === "Bakpia dan Kue Basah") {
+      products = allProducts.filter(product => 
+        product.category === "Bakpia & Kue Basah" || product.category === "Kue Basah"
+      );
+    } else if (selectedCategory === "Minuman") {
+      products = allProducts.filter(product => product.category === "Minuman Instan");
+    } else {
+      products = allProducts.filter(product => product.category === selectedCategory);
+    }
+    
+    // Apply search filter if there's a search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      products = products.filter(product =>
+        product.name.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query) ||
+        product.category.toLowerCase().includes(query)
+      );
+    }
+    
+    return products;
+  })();
 
-  // Filter snack kiloan products
-  const filteredSnackKiloan = selectedCategory === "Semua" 
-    ? snackKiloanProducts.sort(() => 0.5 - Math.random()).slice(0, 2) // Only 2 random products for "Semua"
-    : selectedCategory === "Snack Kiloan"
+  // Filter snack kiloan products with search
+  const filteredSnackKiloan = (() => {
+    let products = selectedCategory === "Semua" || selectedCategory === "Snack Kiloan"
       ? snackKiloanProducts
       : [];
+    
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      products = products.filter(product =>
+        product.name.toLowerCase().includes(query) ||
+        (product.description && product.description.toLowerCase().includes(query))
+      );
+    }
+    
+    // For "Semua" category, only show 2 random snack kiloan products if no search
+    if (selectedCategory === "Semua" && !searchQuery.trim()) {
+      return products.sort(() => 0.5 - Math.random()).slice(0, 2);
+    }
+    
+    return products;
+  })();
 
   const handleAddToCart = (product: any, quantityChange: number = 1) => {
     // Call the parent's onAddToCart handler
@@ -956,9 +1035,9 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
     // Show success toast only when adding (positive quantity)
     if (quantityChange > 0) {
       toast({
-        title: "Produk ditambahkan!",
+        title: "✅ Produk ditambahkan!",
         description: `${product.name} berhasil ditambahkan ke keranjang`,
-        duration: 2000,
+        duration: 3000, // Increased from 2000 to 3000ms
       });
     }
   };
@@ -977,9 +1056,9 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
     onAddToCart(cartItem, cartItem.quantity);
     
     toast({
-      title: "Produk ditambahkan!",
+      title: "✅ Produk ditambahkan!",
       description: `${cartItem.name} berhasil ditambahkan ke keranjang`,
-      duration: 2000,
+      duration: 3000, // Increased duration
     });
   };
 
@@ -999,6 +1078,15 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
     onClearCart();
     setIsUserDataModalOpen(false);
     setIsCartOpen(false);
+  };
+
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleDetailModalAddToCart = (product: Product, quantity: number) => {
+    handleAddToCart(product, quantity);
   };
 
   return (
@@ -1025,112 +1113,192 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
             </div>
 
             {/* Category Filter Buttons - White buttons exactly like mockup */}
-            <div className="flex overflow-x-auto scrollbar-hide gap-2 pb-4 mb-4 sm:mb-6">
+            <div className="relative">
+              {/* Gradient fade indicators */}
+              <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-red-600 to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-red-600 to-transparent z-10 pointer-events-none"></div>
+              
+              <div className="flex overflow-x-auto scrollbar-hide gap-2 pb-4 mb-4 sm:mb-6 px-1">
               <button 
                 onClick={() => handleCategoryClick('Semua')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
                   selectedCategory === 'Semua' 
-                    ? 'bg-orange-600 text-white' 
+                    ? 'bg-orange-600 text-white shadow-lg scale-105' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
+                {selectedCategory === 'Semua' && <Check className="w-4 h-4" />}
                 Semua
               </button>
               <button 
                 onClick={() => handleCategoryClick('Kripik dan Snack Ringan')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
                   selectedCategory === 'Kripik dan Snack Ringan' 
-                    ? 'bg-orange-600 text-white' 
+                    ? 'bg-orange-600 text-white shadow-lg scale-105' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
+                {selectedCategory === 'Kripik dan Snack Ringan' && <Check className="w-4 h-4" />}
                 Kripik dan Snack Ringan
               </button>
               <button 
                 onClick={() => handleCategoryClick('Kue Kering')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
                   selectedCategory === 'Kue Kering' 
-                    ? 'bg-orange-600 text-white' 
+                    ? 'bg-orange-600 text-white shadow-lg scale-105' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
+                {selectedCategory === 'Kue Kering' && <Check className="w-4 h-4" />}
                 Kue Kering
               </button>
               <button 
                 onClick={() => handleCategoryClick('Permen & Manisan')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
                   selectedCategory === 'Permen & Manisan' 
-                    ? 'bg-orange-600 text-white' 
+                    ? 'bg-orange-600 text-white shadow-lg scale-105' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
+                {selectedCategory === 'Permen & Manisan' && <Check className="w-4 h-4" />}
                 Permen & Manisan
               </button>
               <button 
                 onClick={() => handleCategoryClick('Bakpia dan Kue Basah')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
                   selectedCategory === 'Bakpia dan Kue Basah' 
-                    ? 'bg-orange-600 text-white' 
+                    ? 'bg-orange-600 text-white shadow-lg scale-105' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
+                {selectedCategory === 'Bakpia dan Kue Basah' && <Check className="w-4 h-4" />}
                 Bakpia dan Kue Basah
               </button>
               <button 
                 onClick={() => handleCategoryClick('Kacang-kacangan')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
                   selectedCategory === 'Kacang-kacangan' 
-                    ? 'bg-orange-600 text-white' 
+                    ? 'bg-orange-600 text-white shadow-lg scale-105' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
+                {selectedCategory === 'Kacang-kacangan' && <Check className="w-4 h-4" />}
                 Kacang-kacangan
               </button>
               <button 
                 onClick={() => handleCategoryClick('Snack Kiloan')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
                   selectedCategory === 'Snack Kiloan' 
-                    ? 'bg-orange-600 text-white' 
+                    ? 'bg-orange-600 text-white shadow-lg scale-105' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
+                {selectedCategory === 'Snack Kiloan' && <Check className="w-4 h-4" />}
                 Snack Kiloan
               </button>
               <button 
                 onClick={() => handleCategoryClick('Minuman')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
                   selectedCategory === 'Minuman' 
-                    ? 'bg-orange-600 text-white' 
+                    ? 'bg-orange-600 text-white shadow-lg scale-105' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
+                {selectedCategory === 'Minuman' && <Check className="w-4 h-4" />}
                 Minuman
               </button>
               <button 
                 onClick={() => handleCategoryClick('Lain-lain')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
                   selectedCategory === 'Lain-lain' 
-                    ? 'bg-orange-600 text-white' 
+                    ? 'bg-orange-600 text-white shadow-lg scale-105' 
                     : 'bg-white text-gray-700 hover:bg-gray-100'
                 }`}
               >
+                {selectedCategory === 'Lain-lain' && <Check className="w-4 h-4" />}
                 Lain-lain
               </button>
+              </div>
             </div>
 
+            {/* Empty State - No Results Found */}
+            {filteredProducts.length === 0 && filteredSnackKiloan.length === 0 && !isLoading && (
+              <div className="text-center py-12 px-4">
+                <div className="max-w-md mx-auto">
+                  <div className="text-6xl mb-4">🔍</div>
+                  <h3 className="text-xl font-bold text-white mb-2">
+                    {searchQuery ? 'Produk Tidak Ditemukan' : 'Belum Ada Produk'}
+                  </h3>
+                  <p className="text-white/80 mb-6">
+                    {searchQuery 
+                      ? `Tidak ada produk yang cocok dengan "${searchQuery}"`
+                      : 'Belum ada produk di kategori ini'
+                    }
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    {searchQuery && (
+                      <button
+                        onClick={() => setSearchQuery("")}
+                        className="px-6 py-3 bg-white text-red-600 rounded-full font-bold hover:bg-gray-100 transition-colors"
+                      >
+                        Reset Pencarian
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        setSelectedCategory('Semua');
+                        setSearchQuery("");
+                      }}
+                      className="px-6 py-3 bg-orange-600 text-white rounded-full font-bold hover:bg-orange-700 transition-colors"
+                    >
+                      Lihat Semua Produk
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Loading Skeleton */}
+            {isLoading && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6">
+                {[...Array(8)].map((_, index) => (
+                  <div key={index} className="animate-pulse">
+                    <div className="bg-amber-700/50 rounded-lg sm:rounded-xl p-2 sm:p-3 shadow-lg border border-amber-600/50">
+                      {/* Image Skeleton */}
+                      <div className="aspect-square bg-amber-600/30 rounded-md sm:rounded-lg mb-2"></div>
+                      {/* Title Skeleton */}
+                      <div className="h-4 bg-amber-600/30 rounded mb-2"></div>
+                      <div className="h-4 bg-amber-600/30 rounded w-3/4 mb-2"></div>
+                      {/* Price Skeleton */}
+                      <div className="h-5 bg-amber-600/30 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Products Grid - Responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6">
-              {/* Regular Products - Only show if there are products */}
-              {filteredProducts.length > 0 && filteredProducts.map((product) => (
+            {(filteredProducts.length > 0 || filteredSnackKiloan.length > 0) && !isLoading && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6">
+                {/* Regular Products - Only show if there are products */}
+                {filteredProducts.map((product) => (
                 <div key={product.id} className="group">
                   <div className="bg-amber-700 rounded-lg sm:rounded-xl p-2 sm:p-3 shadow-lg border border-amber-600 relative">
                     {/* Product Image */}
-                    <div className="aspect-square bg-amber-600 rounded-md sm:rounded-lg mb-2 overflow-hidden relative">
+                    <div 
+                      className="aspect-square bg-amber-600 rounded-md sm:rounded-lg mb-2 overflow-hidden relative cursor-pointer"
+                      onClick={() => handleProductClick(product)}
+                    >
                       <img
                         src={product.image}
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
+                      
+                      {/* Eye Icon Overlay */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                        <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      </div>
                       
                       {/* Weight Badge - Top Left */}
                       {product.weight && (
@@ -1202,7 +1370,7 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
 
                     {/* Product Info */}
                     <div className="space-y-1">
-                      <h3 className="font-bold text-white text-xs sm:text-sm leading-tight">
+                      <h3 className="font-bold text-white text-xs sm:text-sm leading-tight line-clamp-2">
                         {product.name}
                       </h3>
                       <div className="flex items-center justify-between">
@@ -1223,7 +1391,8 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
                   onAddToCart={handleSnackKiloanAddToCart}
                 />
               ))}
-            </div>
+              </div>
+            )}
 
             {/* Shopping Cart Icon - Floating */}
             <div className="fixed bottom-6 right-6 z-50">
@@ -1233,12 +1402,29 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
               >
                 <ShoppingCart className="w-6 h-6 text-red-600" />
                 {getTotalItemsInCart() > 0 && (
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                  <div 
+                    className={`absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white text-xs rounded-full flex items-center justify-center font-bold transition-transform duration-300 ${
+                      cartBounce ? 'animate-bounce scale-110' : ''
+                    }`}
+                  >
                     {getTotalItemsInCart()}
                   </div>
                 )}
               </button>
             </div>
+
+            {/* Scroll to Top Button - Floating */}
+            {showScrollTop && (
+              <div className="fixed bottom-24 right-6 z-50">
+                <button
+                  onClick={scrollToTop}
+                  className="w-12 h-12 bg-orange-600 text-white rounded-full shadow-xl flex items-center justify-center hover:bg-orange-700 hover:shadow-2xl transition-all duration-200 transform hover:scale-110 animate-fade-in"
+                  aria-label="Scroll to top"
+                >
+                  <ArrowUp className="w-5 h-5" />
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
@@ -1290,6 +1476,15 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
         onClose={() => setIsUserDataModalOpen(false)}
         cartItems={cartItems}
         onCheckoutComplete={handleCheckoutComplete}
+      />
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        onAddToCart={handleDetailModalAddToCart}
+        currentQuantity={selectedProduct ? (cartItems.find(item => item.id === selectedProduct.id)?.quantity || 0) : 0}
       />
     </div>
   );

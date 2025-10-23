@@ -2,6 +2,7 @@ import { X, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Product } from "./ProductCard";
+import { useToast } from "@/hooks/use-toast";
 
 export interface CartItem extends Product {
   quantity: number;
@@ -15,8 +16,8 @@ interface CartModalProps {
   onRemoveItem: (productId: number) => void;
 }
 
-// WhatsApp checkout function
-const handleCheckout = (cartItems: CartItem[], totalPrice: number) => {
+// WhatsApp checkout function with toast notification
+const handleCheckout = (cartItems: CartItem[], totalPrice: number, toast: any) => {
   // Format the date
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { 
@@ -60,6 +61,13 @@ const handleCheckout = (cartItems: CartItem[], totalPrice: number) => {
   const whatsappNumber = "6285867989333"; // Admin's WhatsApp number
 
   try {
+    // Show loading toast
+    toast({
+      title: "⏳ Memproses...",
+      description: "Menyiapkan pesanan Anda",
+      duration: 2000,
+    });
+
     // Create a textarea element to copy the message
     const textarea = document.createElement('textarea');
     textarea.value = message;
@@ -68,13 +76,26 @@ const handleCheckout = (cartItems: CartItem[], totalPrice: number) => {
     document.execCommand('copy');
     document.body.removeChild(textarea);
     
-    // Alert user that message has been copied
-    alert('Rincian pesanan telah disalin ke clipboard. Silakan paste (CTRL+V atau Command+V) di chat WhatsApp setelah halaman terbuka.');
+    // Show success toast instead of alert
+    toast({
+      title: "✅ Pesanan Siap!",
+      description: "Rincian pesanan telah disalin. Silakan paste di chat WhatsApp!",
+      duration: 4000,
+    });
     
-    // Open WhatsApp directly with the number
-    window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+    // Small delay before opening WhatsApp for better UX
+    setTimeout(() => {
+      window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+    }, 500);
   } catch (error) {
     console.error('Failed to copy message:', error);
+    
+    // Show error toast
+    toast({
+      title: "❌ Gagal menyalin",
+      description: "Mencoba cara lain...",
+      duration: 2000,
+    });
     
     // Fallback to the URL with text parameter
     const encodedMessage = encodeURIComponent(message);
@@ -89,6 +110,8 @@ export default function CartModal({
   onUpdateQuantity, 
   onRemoveItem 
 }: CartModalProps) {
+  const { toast } = useToast();
+  
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -127,7 +150,7 @@ export default function CartModal({
           </Button>
         </CardHeader>
         
-        <CardContent className="p-0">
+        <CardContent className="p-0 flex flex-col max-h-[calc(90vh-180px)]">
           {cartItems.length === 0 ? (
             <div className="p-4 sm:p-8 text-center">
               <ShoppingBag className="w-12 h-12 sm:w-16 sm:h-16 text-muted-foreground mx-auto mb-3 sm:mb-4" />
@@ -140,7 +163,8 @@ export default function CartModal({
             </div>
           ) : (
             <>
-              <div className="max-h-64 sm:max-h-96 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
+              {/* Scrollable Cart Items */}
+              <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4">
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex items-center space-x-2 sm:space-x-4 p-2 bg-secondary/50 rounded-lg">
                     <img 
@@ -189,7 +213,8 @@ export default function CartModal({
                 ))}
               </div>
               
-              <div className="border-t border-border p-2 sm:p-4 bg-secondary/30">
+              {/* Sticky Footer with Total and Checkout Button */}
+              <div className="sticky bottom-0 border-t border-border p-2 sm:p-4 bg-white shadow-lg">
                 <div className="flex justify-between items-center mb-2 sm:mb-4">
                   <span className="font-semibold text-sm sm:text-lg">Total ({totalItems} item{totalItems !== 1 ? 's' : ''}):</span>
                   <span className="font-bold text-base sm:text-xl text-primary">
@@ -198,7 +223,7 @@ export default function CartModal({
                 </div>
                 
                 <Button
-                  onClick={() => handleCheckout(cartItems, totalPrice)}
+                  onClick={() => handleCheckout(cartItems, totalPrice, toast)}
                   className="w-full h-12 sm:h-14 bg-gradient-to-r from-green-600 via-green-600 to-green-700 hover:from-green-700 hover:via-green-700 hover:to-green-800 text-white font-bold text-sm sm:text-base rounded-xl shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] border-0"
                   size="lg"
                 >

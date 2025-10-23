@@ -1,5 +1,6 @@
 import { ShoppingBag } from "lucide-react";
 import { CartItem } from "./CartModal";
+import { useEffect, useState } from "react";
 
 interface FloatingCheckoutButtonProps {
   cartItems: CartItem[];
@@ -13,6 +14,16 @@ export default function FloatingCheckoutButton({
   onCartClick 
 }: FloatingCheckoutButtonProps) {
   const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const [bounce, setBounce] = useState(false);
+
+  // Trigger bounce animation when cart count changes
+  useEffect(() => {
+    if (totalItems > 0) {
+      setBounce(true);
+      const timer = setTimeout(() => setBounce(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [totalItems]);
 
   if (totalItems === 0) return null;
 
@@ -29,7 +40,9 @@ export default function FloatingCheckoutButton({
         <ShoppingBag className="w-7 h-7 text-gray-700" />
         {totalItems > 0 && (
           <span 
-            className="absolute -top-3 -right-3 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg"
+            className={`absolute -top-3 -right-3 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold shadow-lg transition-transform duration-300 ${
+              bounce ? 'animate-bounce scale-110' : ''
+            }`}
             style={{ fontSize: '11px' }}
           >
             {totalItems > 99 ? '99+' : totalItems}

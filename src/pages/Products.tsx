@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Plus, Minus, ShoppingCart } from "lucide-react";
+import { Plus, Minus, ShoppingCart, Check, ArrowUp, Eye } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartModal, { CartItem } from "@/components/CartModal";
 import FloatingCheckoutButton from "@/components/FloatingCheckoutButton";
 import UserDataModal from "@/components/UserDataModal";
+import ProductDetailModal from "@/components/ProductDetailModal";
 import { useToast } from "@/hooks/use-toast";
 import SnackKiloanCard, { SnackKiloanProduct, SnackKiloanCartItem } from "@/components/SnackKiloanCard";
 import { snackKiloanProducts } from "@/data/snackKiloanData";
@@ -906,6 +907,10 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserDataModalOpen, setIsUserDataModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Handle category parameter from URL
   useEffect(() => {
@@ -914,6 +919,28 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
       setSelectedCategory(categoryParam);
     }
   }, [searchParams]);
+
+  // Scroll to top button visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Simulate initial loading
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [selectedCategory, searchQuery]);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Helper function to get random products from all categories
   const getRandomProducts = (products: Product[], count: number = 10) => {
@@ -946,76 +973,51 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
       return [];
     }
     
-    // Handle special category mappings
+    // Start with category filtering
+    let productList: Product[] = [];
+    
     if (selectedCategory === "Semua") {
-      if (searchQuery) {
-        // If there's a search query, show all matching products
-        return products.filter(product =>
-          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.description.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-      } else {
-        // No search query, show all products from all categories
-        return products;
-      }
+      productList = products; // Show all products
+    } else if (selectedCategory === "Bakpia dan Kue Basah") {
+      productList = products.filter(product => 
+        product.category === "Bakpia & Kue Basah" || product.category === "Kue Basah"
+      );
+    } else if (selectedCategory === "Minuman") {
+      productList = products.filter(product => product.category === "Minuman Instan");
+    } else {
+      productList = products.filter(product => product.category === selectedCategory);
     }
     
-    // For other categories, use normal filtering
-    return products.filter(product => {
-      if (selectedCategory === "Minuman") {
-        const matchesCategory = product.category === "Minuman Instan";
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                             product.description.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch;
-      }
-      
-      if (selectedCategory === "Bakpia dan Kue Basah") {
-        const matchesCategory = product.category === "Bakpia & Kue Basah" || 
-                               product.category === "Kue Basah";
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                             product.description.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCategory && matchesSearch;
-      }
-      
-      // Default category matching
-      const matchesCategory = product.category === selectedCategory;
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           product.description.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
+    // Apply search filter if there's a search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      productList = productList.filter(product =>
+        product.name.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query) ||
+        product.category.toLowerCase().includes(query)
+      );
+    }
+    
+    return productList;
   })();
 
   const filteredSnackKiloanProducts = (() => {
     // Handle special category mappings for SnackKiloan products
-    if (selectedCategory === "Semua") {
-      // For "Semua", include all snack kiloan products
-      if (searchQuery) {
-        const filtered = snackKiloanProducts.filter(product =>
-          product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.description.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        console.log('🔍 Filtered Snack Kiloan (Semua + search):', filtered.length);
-        return filtered;
-      } else {
-        console.log('🔍 All Snack Kiloan (Semua):', snackKiloanProducts.length);
-        return snackKiloanProducts;
-      }
+    let products = selectedCategory === "Semua" || selectedCategory === "Snack Kiloan"
+      ? snackKiloanProducts
+      : [];
+    
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      products = products.filter(product =>
+        product.name.toLowerCase().includes(query) ||
+        (product.description && product.description.toLowerCase().includes(query))
+      );
     }
     
-    // SnackKiloan products only appear when "Snack Kiloan" category is selected
-    if (selectedCategory === "Snack Kiloan") {
-      const filtered = snackKiloanProducts.filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                             product.description.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesSearch;
-      });
-      console.log('🔍 Filtered Snack Kiloan (category selected):', filtered.length);
-      return filtered;
-    }
-    
-    // For other categories, don't show SnackKiloan products
-    console.log('🔍 Snack Kiloan hidden (other category selected)');
-    return [];
+    console.log('🔍 Filtered Snack Kiloan:', products.length);
+    return products;
   })();
 
   const addToCart = (product: Product, quantityChange: number = 1) => {
@@ -1027,9 +1029,9 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
     // Show toast for positive quantity changes
     if (quantityChange > 0) {
       toast({
-        title: "Produk ditambahkan!",
+        title: "✅ Produk ditambahkan!",
         description: `${product.name} berhasil ditambahkan ke keranjang`,
-        duration: 2000,
+        duration: 3000, // Increased duration
       });
     }
   };
@@ -1047,8 +1049,9 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
     onAddToCart(cartItem, cartItem.quantity);
 
     toast({
-      title: "Produk ditambahkan!",
+      title: "✅ Produk ditambahkan!",
       description: `${item.name} (${item.weightKg}kg) telah ditambahkan ke keranjang`,
+      duration: 3000,
     });
   };
 
@@ -1080,6 +1083,15 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
     });
   };
 
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleDetailModalAddToCart = (product: Product, quantity: number) => {
+    addToCart(product, quantity);
+  };
+
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
@@ -1099,35 +1111,106 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
         </div>
 
         {/* Category Filter - Rounded full design like Home page */}
-        <div className="flex overflow-x-auto gap-2 mb-6 pb-2">
+        <div className="relative">
+          {/* Gradient fade indicators */}
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+          
+          <div className="flex overflow-x-auto gap-2 mb-6 pb-2 px-1">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap ${
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 whitespace-nowrap flex items-center gap-2 ${
                 selectedCategory === category 
-                  ? 'bg-orange-600 text-white' 
+                  ? 'bg-orange-600 text-white shadow-lg scale-105' 
                   : 'bg-white text-gray-700 hover:bg-gray-100'
               }`}
             >
+              {selectedCategory === category && <Check className="w-4 h-4" />}
               {category}
             </button>
           ))}
+          </div>
         </div>
 
+        {/* Empty State */}
+        {filteredProducts.length === 0 && filteredSnackKiloanProducts.length === 0 && !isLoading && (
+          <div className="text-center py-12 px-4">
+            <div className="max-w-md mx-auto">
+              <div className="text-6xl mb-4">🔍</div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {searchQuery ? 'Produk Tidak Ditemukan' : 'Belum Ada Produk'}
+              </h3>
+              <p className="text-gray-600 mb-6">
+                {searchQuery 
+                  ? `Tidak ada produk yang cocok dengan "${searchQuery}"`
+                  : 'Belum ada produk di kategori ini'
+                }
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="px-6 py-3 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition-colors shadow-md"
+                  >
+                    Reset Pencarian
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setSelectedCategory('Semua');
+                    setSearchQuery("");
+                  }}
+                  className="px-6 py-3 bg-orange-600 text-white rounded-full font-bold hover:bg-orange-700 transition-colors shadow-md"
+                >
+                  Lihat Semua Produk
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Loading Skeleton */}
+        {isLoading && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6">
+            {[...Array(8)].map((_, index) => (
+              <div key={index} className="animate-pulse">
+                <div className="bg-amber-700/50 rounded-lg sm:rounded-xl p-2 sm:p-3 shadow-lg border border-amber-600/50">
+                  {/* Image Skeleton */}
+                  <div className="aspect-square bg-amber-600/30 rounded-md sm:rounded-lg mb-2"></div>
+                  {/* Title Skeleton */}
+                  <div className="h-4 bg-amber-600/30 rounded mb-2"></div>
+                  <div className="h-4 bg-amber-600/30 rounded w-3/4 mb-2"></div>
+                  {/* Price Skeleton */}
+                  <div className="h-5 bg-amber-600/30 rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Products Grid - Only show if there are regular products */}
-        {filteredProducts.length > 0 && (
+        {filteredProducts.length > 0 && !isLoading && (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6">
             {filteredProducts.map((product) => (
             <div key={product.id} className="group">
               <div className="bg-amber-700 rounded-lg sm:rounded-xl p-2 sm:p-3 shadow-lg border border-amber-600 relative">
                 {/* Product Image */}
-                <div className="aspect-square bg-amber-600 rounded-md sm:rounded-lg mb-2 overflow-hidden relative">
+                <div 
+                  className="aspect-square bg-amber-600 rounded-md sm:rounded-lg mb-2 overflow-hidden relative cursor-pointer"
+                  onClick={() => handleProductClick(product)}
+                >
                   <img
                     src={product.image}
                     alt={product.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
+                  
+                  {/* Eye Icon Overlay */}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+                    <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
                   
                   {/* Weight Badge - Top Left */}
                   {product.weight && (
@@ -1199,7 +1282,7 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
 
                 {/* Product Info */}
                 <div className="space-y-1">
-                  <h3 className="font-bold text-white text-xs sm:text-sm leading-tight">
+                  <h3 className="font-bold text-white text-xs sm:text-sm leading-tight line-clamp-2">
                     {product.name}
                   </h3>
                   <div className="flex items-center justify-between">
@@ -1215,7 +1298,7 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
         )}
 
         {/* Snack Kiloan Products - Only show if there are snack kiloan products */}
-        {filteredSnackKiloanProducts.length > 0 && (
+        {filteredSnackKiloanProducts.length > 0 && !isLoading && (
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filteredSnackKiloanProducts.map((product) => (
               <SnackKiloanCard
@@ -1224,13 +1307,6 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
                 onAddToCart={addSnackKiloanToCart}
               />
             ))}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {filteredProducts.length === 0 && filteredSnackKiloanProducts.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Tidak ada produk yang ditemukan.</p>
           </div>
         )}
       </main>
@@ -1244,6 +1320,19 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
           onCheckoutClick={handleCheckout}
           onCartClick={handleCheckout}
         />
+      )}
+
+      {/* Scroll to Top Button - Floating */}
+      {showScrollTop && (
+        <div className="fixed bottom-24 right-6 z-50">
+          <button
+            onClick={scrollToTop}
+            className="w-12 h-12 bg-orange-600 text-white rounded-full shadow-xl flex items-center justify-center hover:bg-orange-700 hover:shadow-2xl transition-all duration-200 transform hover:scale-110 animate-fade-in"
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </button>
+        </div>
       )}
 
       {/* Cart Modal */}
@@ -1261,6 +1350,15 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
         onClose={() => setIsUserDataModalOpen(false)}
         cartItems={cartItems}
         onCheckoutComplete={handleCheckoutComplete}
+      />
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        onAddToCart={handleDetailModalAddToCart}
+        currentQuantity={selectedProduct ? (cartItems.find(item => item.id === selectedProduct.id)?.quantity || 0) : 0}
       />
     </div>
   );

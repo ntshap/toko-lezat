@@ -70,29 +70,34 @@ export default function SnackKiloanCard({ product, onAddToCart }: SnackKiloanCar
 
       {/* Product Info */}
       <div className="space-y-3">
-        <h3 className="font-bold text-white text-sm sm:text-base leading-tight">
+        <h3 className="font-bold text-white text-sm sm:text-base leading-tight line-clamp-2">
           {product.name}
         </h3>
         
-        {/* Weight Options */}
+        {/* Quick Add Buttons - Popular Weights */}
         <div className="space-y-2">
           <label className="text-white text-xs sm:text-sm font-medium block">Pilih Berat:</label>
-          <select 
-            value={selectedWeight.weight}
-            onChange={(e) => {
-              const weight = Number(e.target.value);
-              const option = product.weightOptions.find(opt => opt.weight === weight);
-              if (option) setSelectedWeight(option);
-            }}
-            className="w-full px-3 py-2 text-sm rounded-lg bg-white text-gray-800 border-0 focus:ring-2 focus:ring-orange-500"
-          >
+          <div className="grid grid-cols-3 gap-2">
             {product.weightOptions.map((option) => (
-              <option key={option.weight} value={option.weight}>
-                {option.label} - Rp {option.price.toLocaleString('id-ID')}
-              </option>
+              <button
+                key={option.weight}
+                onClick={() => setSelectedWeight(option)}
+                className={`px-2 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all duration-200 ${
+                  selectedWeight.weight === option.weight
+                    ? 'bg-orange-500 text-white shadow-lg scale-105'
+                    : 'bg-white text-amber-700 hover:bg-orange-100'
+                }`}
+              >
+                {option.label}
+              </button>
             ))}
-          </select>
+          </div>
+          <div className="text-center text-white text-sm font-semibold mt-2">
+            Rp {selectedWeight.price.toLocaleString('id-ID')}
+          </div>
         </div>
+
+        {/* Removed old dropdown - now using buttons only */}
 
         {/* Quantity Selector */}
         <div className="space-y-2">

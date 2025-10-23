@@ -908,6 +908,7 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
   const [isLoading, setIsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [randomSemuaProducts, setRandomSemuaProducts] = useState<Product[]>([]);
 
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
@@ -922,6 +923,13 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Generate random products for "Semua" category only once
+  useEffect(() => {
+    if (selectedCategory === "Semua" && !searchQuery.trim()) {
+      setRandomSemuaProducts(getRandomProducts(allProducts, 10));
+    }
+  }, [selectedCategory]); // Only re-generate when category changes, not on every render
 
   // Simulate initial loading
   useEffect(() => {
@@ -971,9 +979,9 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
     let products: Product[] = [];
     
     if (selectedCategory === "Semua") {
-      // For "Semua" category, show only 10 random products from different categories (if no search)
+      // For "Semua" category, use the cached random products (if no search)
       if (!searchQuery.trim()) {
-        products = getRandomProducts(allProducts, 10);
+        products = randomSemuaProducts;
       } else {
         // If there's a search query, show all matching products
         products = allProducts;

@@ -1080,7 +1080,10 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
   };
 
   const handleCheckout = () => {
-    setIsCartOpen(true);
+    // Langsung buka form data user, bukan cart modal
+    if (cartItems.length > 0) {
+      setIsUserDataModalOpen(true);
+    }
   };
 
   return (

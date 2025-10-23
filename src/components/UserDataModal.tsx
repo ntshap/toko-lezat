@@ -425,7 +425,7 @@ export default function UserDataModal({
               </div>
             </div>
             
-            {/* Mobile-optimized Order Summary - IMPROVED VERSION */}
+            {/* Mobile-optimized Order Summary - SCROLLABLE VERSION */}
             <div className="border border-gray-200 rounded-xl overflow-hidden bg-gradient-to-br from-red-50 to-orange-50">
               <div className="bg-gradient-to-r from-red-600 to-orange-600 px-4 py-2.5">
                 <h3 className="font-bold text-sm text-white flex items-center gap-2">
@@ -434,29 +434,34 @@ export default function UserDataModal({
                 </h3>
               </div>
               
-              {/* Compact Item List */}
-              <div className="px-4 py-3 bg-white space-y-2">
-                {cartItems.slice(0, 3).map((item, index) => (
-                  <div key={item.id} className="flex justify-between items-start gap-3 text-sm">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 truncate leading-snug">
-                        {item.name}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-0.5">
-                        {item.quantity} × {formatPrice(item.price)}
-                      </p>
-                    </div>
-                    <span className="font-semibold text-red-600 text-sm whitespace-nowrap">
-                      {formatPrice(item.price * item.quantity)}
-                    </span>
-                  </div>
-                ))}
-                
-                {/* Show "and X more items" if there are more than 3 */}
+              {/* Scrollable Item List with max-height */}
+              <div className="relative">
+                {/* Gradient fade at top */}
                 {cartItems.length > 3 && (
-                  <div className="text-xs text-gray-500 italic pt-1 border-t border-gray-100">
-                    + {cartItems.length - 3} item lainnya
-                  </div>
+                  <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
+                )}
+                
+                <div className="px-4 py-3 bg-white space-y-2 max-h-[180px] overflow-y-auto overscroll-contain">
+                  {cartItems.map((item, index) => (
+                    <div key={item.id} className="flex justify-between items-start gap-3 text-sm">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-900 truncate leading-snug">
+                          {item.name}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {item.quantity} × {formatPrice(item.price)}
+                        </p>
+                      </div>
+                      <span className="font-semibold text-red-600 text-sm whitespace-nowrap">
+                        {formatPrice(item.price * item.quantity)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Gradient fade at bottom */}
+                {cartItems.length > 3 && (
+                  <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white to-transparent pointer-events-none" />
                 )}
               </div>
               

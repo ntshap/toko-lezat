@@ -307,8 +307,8 @@ export default function UserDataModal({
       />
       
       <Card className="relative w-full sm:max-w-md h-[95vh] sm:h-auto sm:max-h-[90vh] flex flex-col shadow-2xl rounded-t-3xl sm:rounded-2xl bg-white border-0 transform transition-transform duration-300 ease-out overflow-hidden">
-        {/* STICKY HEADER */}
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50 flex-shrink-0">
+        {/* STICKY HEADER - with top padding for mobile */}
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 pt-5 sm:pt-3 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50 flex-shrink-0">
           <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2 text-red-900">
             <div className="p-1 bg-red-100 rounded-lg">
               <User className="w-4 h-4 text-red-600" />

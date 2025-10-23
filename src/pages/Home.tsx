@@ -1445,8 +1445,8 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
       
       <Footer />
 
-      {/* Floating Checkout Button */}
-      {getTotalItemsInCart() > 0 && (
+      {/* Floating Checkout Button - Hide when modals are open */}
+      {getTotalItemsInCart() > 0 && !isUserDataModalOpen && !isCartOpen && (
         <FloatingCheckoutButton 
           cartItems={cartItems}
           onCheckoutClick={handleCheckout}

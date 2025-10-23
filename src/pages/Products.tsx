@@ -1313,8 +1313,8 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
 
       <Footer />
 
-      {/* Floating Checkout Button */}
-      {totalItems > 0 && (
+      {/* Floating Checkout Button - Hide when modals are open */}
+      {totalItems > 0 && !isUserDataModalOpen && !isCartOpen && (
         <FloatingCheckoutButton 
           cartItems={cartItems}
           onCheckoutClick={handleCheckout}

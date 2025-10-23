@@ -306,8 +306,9 @@ export default function UserDataModal({
         onClick={onClose}
       />
       
-      <Card className="relative w-full sm:max-w-md h-[95vh] sm:h-auto sm:max-h-[90vh] overflow-hidden shadow-2xl rounded-t-3xl sm:rounded-2xl bg-white border-0 transform transition-transform duration-300 ease-out">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50 sticky top-0 z-10 backdrop-blur-sm bg-opacity-95">
+      <Card className="relative w-full sm:max-w-md h-[95vh] sm:h-auto sm:max-h-[90vh] flex flex-col shadow-2xl rounded-t-3xl sm:rounded-2xl bg-white border-0 transform transition-transform duration-300 ease-out overflow-hidden">
+        {/* STICKY HEADER */}
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50 flex-shrink-0">
           <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2 text-red-900">
             <div className="p-1 bg-red-100 rounded-lg">
               <User className="w-4 h-4 text-red-600" />
@@ -324,8 +325,9 @@ export default function UserDataModal({
           </Button>
         </CardHeader>
         
-        <CardContent className="p-0 overflow-y-auto flex-1 overscroll-contain">
-          <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
+        {/* SCROLLABLE CONTENT AREA */}
+        <div className="flex-1 overflow-y-auto overscroll-contain">
+          <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 pb-4">
             {/* User Data Form */}
             <div className="space-y-3 sm:space-y-4">
               <div>
@@ -474,39 +476,39 @@ export default function UserDataModal({
               </div>
             </div>
           </div>
+        </div>
+        
+        {/* STICKY FOOTER - CHECKOUT BUTTON */}
+        <div className="flex-shrink-0 p-3 sm:p-4 border-t border-gray-200 bg-gradient-to-t from-white via-white to-transparent shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+          <Button 
+            onClick={handleCheckout}
+            disabled={isSubmitting}
+            className="w-full h-12 sm:h-13 bg-gradient-to-r from-green-600 via-green-600 to-green-700 hover:from-green-700 hover:via-green-700 hover:to-green-800 active:scale-[0.98] text-white font-bold text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
+            size="lg"
+          >
+            {isSubmitting ? (
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span>Memproses Pesanan...</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <div className="bg-white/20 p-1.5 rounded-lg">
+                  <Phone className="w-5 h-5" />
+                </div>
+                <span>Checkout via WhatsApp</span>
+                <div className="ml-1 bg-white/20 px-2 py-0.5 rounded-full text-xs font-normal">
+                  {formatPrice(totalPrice)}
+                </div>
+              </div>
+            )}
+          </Button>
           
-          {/* Mobile-optimized Action Button - IMPROVED */}
-          <div className="sticky bottom-0 p-3 sm:p-4 border-t border-gray-200 bg-gradient-to-t from-white via-white to-transparent shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
-            <Button 
-              onClick={handleCheckout}
-              disabled={isSubmitting}
-              className="w-full h-12 sm:h-13 bg-gradient-to-r from-green-600 via-green-600 to-green-700 hover:from-green-700 hover:via-green-700 hover:to-green-800 active:scale-[0.98] text-white font-bold text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
-              size="lg"
-            >
-              {isSubmitting ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Memproses Pesanan...</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="bg-white/20 p-1.5 rounded-lg">
-                    <Phone className="w-5 h-5" />
-                  </div>
-                  <span>Checkout via WhatsApp</span>
-                  <div className="ml-1 bg-white/20 px-2 py-0.5 rounded-full text-xs font-normal">
-                    {formatPrice(totalPrice)}
-                  </div>
-                </div>
-              )}
-            </Button>
-            
-            <p className="text-xs text-gray-500 text-center mt-2 flex items-center justify-center gap-1">
-              <Copy className="w-3 h-3" />
-              <span>Pesan akan disalin otomatis ke clipboard</span>
-            </p>
-          </div>
-        </CardContent>
+          <p className="text-xs text-gray-500 text-center mt-2 flex items-center justify-center gap-1">
+            <Copy className="w-3 h-3" />
+            <span>Pesan akan disalin otomatis ke clipboard</span>
+          </p>
+        </div>
       </Card>
     </div>
   );

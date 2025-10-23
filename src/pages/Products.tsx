@@ -891,15 +891,18 @@ console.log('🔍 Products.tsx - snackKiloanProducts loaded:', snackKiloanProduc
 const categories = ["Semua", "Kripik dan Snack Ringan", "Kue Kering", "Permen & Manisan", "Bakpia dan Kue Basah", "Kacang-kacangan", "Snack Kiloan", "Minuman", "Lain-lain"];
 
 interface ProductsPageProps {
-  onAddToCart?: (product: Product, quantity: number) => void;
+  cartItems: CartItem[];
+  onAddToCart: (product: any, quantityChange?: number) => void;
+  onRemoveFromCart: (id: number) => void;
+  onUpdateQuantity: (id: number, quantity: number) => void;
+  onClearCart: () => void;
 }
 
-export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
+export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, onClearCart }: ProductsPageProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState("Semua");
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserDataModalOpen, setIsUserDataModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -1018,59 +1021,30 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
   const addToCart = (product: Product, quantityChange: number = 1) => {
     console.log('addToCart called:', product.name, quantityChange);
     
-    setCartItems(prevItems => {
-      console.log('Current cart items:', prevItems.length);
-      const existingItem = prevItems.find(item => item.id === product.id);
-      
-      if (existingItem) {
-        const newQuantity = existingItem.quantity + quantityChange;
-        console.log('Existing item, new quantity:', newQuantity);
-        
-        if (newQuantity <= 0) {
-          return prevItems.filter(item => item.id !== product.id);
-        }
-        return prevItems.map(item =>
-          item.id === product.id
-            ? { ...item, quantity: newQuantity }
-            : item
-        );
-      } else if (quantityChange > 0) {
-        console.log('New item added');
-        return [...prevItems, { ...product, quantity: quantityChange }];
-      }
-      return prevItems;
-    });
-
-    if (onAddToCart) {
-      onAddToCart(product, quantityChange);
+    // Use parent's onAddToCart handler
+    onAddToCart(product, quantityChange);
+    
+    // Show toast for positive quantity changes
+    if (quantityChange > 0) {
+      toast({
+        title: "Produk ditambahkan!",
+        description: `${product.name} berhasil ditambahkan ke keranjang`,
+        duration: 2000,
+      });
     }
   };
 
   const addSnackKiloanToCart = (item: SnackKiloanCartItem) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(cartItem => 
-        cartItem.id === item.id && 
-        (cartItem as any).weightKg === item.weightKg
-      );
-      
-      if (existingItem) {
-        return prevItems.map(cartItem =>
-          cartItem.id === item.id && (cartItem as any).weightKg === item.weightKg
-            ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
-            : cartItem
-        );
-      }
-      
-      // Find the original product to get description
-      const originalProduct = snackKiloanProducts.find(p => p.id === item.id);
-      const cartItem: CartItem = {
-        ...item,
-        description: originalProduct?.description || '',
-        id: typeof item.id === 'string' ? parseInt((item.id as string).replace('sk', '')) + 1000 : item.id as number
-      };
-      
-      return [...prevItems, cartItem];
-    });
+    // Find the original product to get description
+    const originalProduct = snackKiloanProducts.find(p => p.id === item.id);
+    const cartItem: CartItem = {
+      ...item,
+      description: originalProduct?.description || '',
+      id: typeof item.id === 'string' ? parseInt((item.id as string).replace('sk', '')) + 1000 : item.id as number
+    };
+    
+    // Use parent's onAddToCart handler
+    onAddToCart(cartItem, cartItem.quantity);
 
     toast({
       title: "Produk ditambahkan!",
@@ -1079,17 +1053,11 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
   };
 
   const updateCartItemQuantity = (id: number, quantity: number) => {
-    setCartItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
+    onUpdateQuantity(id, quantity);
   };
 
   const removeFromCart = (id: number) => {
-    setCartItems(prevItems =>
-      prevItems.filter(item => item.id !== id)
-    );
+    onRemoveFromCart(id);
   };
 
   const openCart = () => {
@@ -1104,7 +1072,7 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
   };
 
   const handleCheckoutComplete = () => {
-    setCartItems([]);
+    onClearCart();
     setIsUserDataModalOpen(false);
     toast({
       title: "Pesanan berhasil!",
@@ -1149,12 +1117,12 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
 
         {/* Products Grid - Only show if there are regular products */}
         {filteredProducts.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6">
             {filteredProducts.map((product) => (
             <div key={product.id} className="group">
-              <div className="bg-amber-700 rounded-xl p-3 shadow-lg border border-amber-600 relative">
+              <div className="bg-amber-700 rounded-lg sm:rounded-xl p-2 sm:p-3 shadow-lg border border-amber-600 relative">
                 {/* Product Image */}
-                <div className="aspect-square bg-amber-600 rounded-lg mb-2 overflow-hidden relative">
+                <div className="aspect-square bg-amber-600 rounded-md sm:rounded-lg mb-2 overflow-hidden relative">
                   <img
                     src={product.image}
                     alt={product.name}
@@ -1163,13 +1131,13 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                   
                   {/* Weight Badge - Top Left */}
                   {product.weight && (
-                    <div className="absolute top-2 left-2 bg-white bg-opacity-90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-gray-800 shadow-md">
+                    <div className="absolute top-1 left-1 sm:top-2 sm:left-2 bg-white bg-opacity-90 backdrop-blur-sm px-1 py-0.5 sm:px-2 sm:py-1 rounded text-xs font-bold text-gray-800 shadow-md">
                       {product.weight}
                     </div>
                   )}
                   
                   {/* Add Button with Quantity Control */}
-                  <div className="absolute bottom-2 right-2">
+                  <div className="absolute bottom-1 sm:bottom-2 right-1 sm:right-2">
                     {(() => {
                       const cartItem = cartItems.find(item => item.id === product.id);
                       const currentQuantity = cartItem ? cartItem.quantity : 0;
@@ -1178,15 +1146,16 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                         return (
                           <button 
                             type="button"
-                            onPointerDown={(e) => {
+                            onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              console.log('Add button clicked - no refresh should happen');
-                              setTimeout(() => addToCart(product, 1), 0);
+                              console.log('Products: Add button clicked - should not refresh');
+                              addToCart(product, 1);
+                              return false;
                             }}
-                            className="w-8 h-8 bg-white hover:bg-gray-100 text-red-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
+                            className="w-6 h-6 sm:w-8 sm:h-8 bg-white hover:bg-gray-100 text-red-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-150"
                           >
-                            <Plus className="h-4 w-4 font-bold" />
+                            <Plus className="h-3 w-3 sm:h-4 sm:w-4 font-bold" />
                           </button>
                         );
                       } else {
@@ -1197,15 +1166,15 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                console.log('Minus button clicked');
+                                console.log('Products: Minus button clicked');
                                 addToCart(product, -1);
                                 return false;
                               }}
-                              className="w-6 h-6 text-red-600 hover:bg-gray-100 rounded-l-full flex items-center justify-center transition-colors"
+                              className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 hover:bg-gray-100 rounded-l-full flex items-center justify-center transition-colors"
                             >
-                              <Minus className="h-3 w-3" />
+                              <Minus className="h-2 w-2 sm:h-3 sm:w-3" />
                             </button>
-                            <span className="px-2 text-sm font-bold text-red-600 min-w-[20px] text-center">
+                            <span className="px-1 sm:px-2 text-xs sm:text-sm font-bold text-red-600 min-w-[16px] sm:min-w-[20px] text-center">
                               {currentQuantity}
                             </span>
                             <button
@@ -1213,13 +1182,13 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                console.log('Plus button clicked');
+                                console.log('Products: Plus button clicked');
                                 addToCart(product, 1);
                                 return false;
                               }}
-                              className="w-6 h-6 text-red-600 hover:bg-gray-100 rounded-r-full flex items-center justify-center transition-colors"
+                              className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 hover:bg-gray-100 rounded-r-full flex items-center justify-center transition-colors"
                             >
-                              <Plus className="h-3 w-3" />
+                              <Plus className="h-2 w-2 sm:h-3 sm:w-3" />
                             </button>
                           </div>
                         );
@@ -1230,11 +1199,11 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
 
                 {/* Product Info */}
                 <div className="space-y-1">
-                  <h3 className="font-bold text-white text-sm leading-tight">
+                  <h3 className="font-bold text-white text-xs sm:text-sm leading-tight">
                     {product.name}
                   </h3>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-white">
+                    <span className="text-xs sm:text-sm font-bold text-white">
                       Rp {product.price.toLocaleString('id-ID')}
                     </span>
                   </div>

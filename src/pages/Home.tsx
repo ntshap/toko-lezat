@@ -113,6 +113,14 @@ interface Product {
   weight?: string; // Berat produk (misal: "240 g", "235 g")
 }
 
+interface HomePageProps {
+  cartItems: CartItem[];
+  onAddToCart: (product: any, quantityChange?: number) => void;
+  onRemoveFromCart: (id: number) => void;
+  onUpdateQuantity: (id: number, quantity: number) => void;
+  onClearCart: () => void;
+}
+
 const allProducts: Product[] = [
   // Kue Kering Products
   {
@@ -887,12 +895,11 @@ const allProducts: Product[] = [
 // snackKiloanProducts is now imported from @/data/snackKiloanData
 // Contains 32 products with complete pricing for 1/4kg, 1/2kg, and 1kg
 
-const HomePage = () => {
+const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, onClearCart }: HomePageProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserDataModalOpen, setIsUserDataModalOpen] = useState(false);
 
@@ -943,36 +950,8 @@ const HomePage = () => {
       : [];
 
   const handleAddToCart = (product: any, quantityChange: number = 1) => {
-    // Prevent page refresh by ensuring this function doesn't cause navigation
-    const existingItem = cartItems.find(item => item.id === product.id);
-    
-    if (existingItem) {
-      // Update quantity if item already exists
-      const newQuantity = existingItem.quantity + quantityChange;
-      if (newQuantity <= 0) {
-        // Remove item if quantity becomes 0 or less
-        setCartItems(prevItems => prevItems.filter(item => item.id !== product.id));
-      } else {
-        setCartItems(prevItems =>
-          prevItems.map(item =>
-            item.id === product.id
-              ? { ...item, quantity: newQuantity }
-              : item
-          )
-        );
-      }
-    } else if (quantityChange > 0) {
-      // Add new item to cart only if quantity is positive
-      const newCartItem: CartItem = {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        description: product.description || "",
-        quantity: quantityChange
-      };
-      setCartItems(prevItems => [...prevItems, newCartItem]);
-    }
+    // Call the parent's onAddToCart handler
+    onAddToCart(product, quantityChange);
 
     // Show success toast only when adding (positive quantity)
     if (quantityChange > 0) {
@@ -994,7 +973,8 @@ const HomePage = () => {
       quantity: item.quantity
     };
 
-    setCartItems(prevItems => [...prevItems, cartItem]);
+    // Use parent's onAddToCart to add the converted cart item
+    onAddToCart(cartItem, cartItem.quantity);
     
     toast({
       title: "Produk ditambahkan!",
@@ -1004,19 +984,11 @@ const HomePage = () => {
   };
 
   const handleRemoveFromCart = (id: number) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+    onRemoveFromCart(id);
   };
 
   const handleUpdateQuantity = (id: number, quantity: number) => {
-    if (quantity <= 0) {
-      handleRemoveFromCart(id);
-    } else {
-      setCartItems(prevItems =>
-        prevItems.map(item =>
-          item.id === id ? { ...item, quantity } : item
-        )
-      );
-    }
+    onUpdateQuantity(id, quantity);
   };
 
   const getTotalItemsInCart = () => {
@@ -1024,7 +996,7 @@ const HomePage = () => {
   };
 
   const handleCheckoutComplete = () => {
-    setCartItems([]);
+    onClearCart();
     setIsUserDataModalOpen(false);
     setIsCartOpen(false);
   };

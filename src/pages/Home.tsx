@@ -971,7 +971,13 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
     let products: Product[] = [];
     
     if (selectedCategory === "Semua") {
-      products = allProducts; // Show all products for "Semua"
+      // For "Semua" category, show only 10 random products from different categories (if no search)
+      if (!searchQuery.trim()) {
+        products = getRandomProducts(allProducts, 10);
+      } else {
+        // If there's a search query, show all matching products
+        products = allProducts;
+      }
     } else if (selectedCategory === "Bakpia dan Kue Basah") {
       products = allProducts.filter(product => 
         product.category === "Bakpia & Kue Basah" || product.category === "Kue Basah"

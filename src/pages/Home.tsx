@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { ShoppingCart, MapPin, Eye, Star, Plus, Minus } from "lucide-react";
 import SnackKiloanCard, { SnackKiloanProduct, SnackKiloanCartItem } from "@/components/SnackKiloanCard";
 import { useToast } from "@/hooks/use-toast";
+import { snackKiloanProducts } from "@/data/snackKiloanData";
 
 // Kue Kering imports
 import susCoklat from "@/assets/image/KUE KERING/1_SUS COKLAT.jpg";
@@ -883,48 +884,8 @@ const allProducts: Product[] = [
   }
 ];
 
-// Data produk snack kiloan
-const snackKiloanProducts: SnackKiloanProduct[] = [
-  {
-    id: 93,
-    name: "Kacang Bawang Premium",
-    basePrice: 25000,
-    image: susCoklat,
-    description: "Kacang bawang renyah dengan bumbu meresap, dijual per kilogram",
-    category: "Snack Kiloan",
-    weightOptions: [
-      { weight: 1, price: 25000, label: "1 Kg" },
-      { weight: 2, price: 48000, label: "2 Kg" },
-      { weight: 4, price: 90000, label: "4 Kg" }
-    ]
-  },
-  {
-    id: 102,
-    name: "Kacang Oven Original",
-    basePrice: 22000,
-    image: susMelati,
-    description: "Kacang oven tanpa minyak, renyah dan gurih, dijual per kilogram",
-    category: "Snack Kiloan",
-    weightOptions: [
-      { weight: 1, price: 22000, label: "1 Kg" },
-      { weight: 2, price: 42000, label: "2 Kg" },
-      { weight: 4, price: 80000, label: "4 Kg" }
-    ]
-  },
-  {
-    id: 103,
-    name: "Kacang Mete Panggang",
-    basePrice: 35000,
-    image: susCoklat,
-    description: "Kacang mete panggang premium dengan rasa gurih, dijual per kilogram",
-    category: "Snack Kiloan",
-    weightOptions: [
-      { weight: 1, price: 35000, label: "1 Kg" },
-      { weight: 2, price: 68000, label: "2 Kg" },
-      { weight: 4, price: 130000, label: "4 Kg" }
-    ]
-  }
-];
+// snackKiloanProducts is now imported from @/data/snackKiloanData
+// Contains 32 products with complete pricing for 1/4kg, 1/2kg, and 1kg
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -964,13 +925,15 @@ const HomePage = () => {
   };
 
   // Filter products based on selected category
-  const filteredProducts = selectedCategory === "Semua" 
-    ? getRandomProducts(allProducts, 10)
-    : selectedCategory === "Bakpia dan Kue Basah"
-      ? allProducts.filter(product => product.category === "Bakpia & Kue Basah" || product.category === "Kue Basah")
-      : selectedCategory === "Minuman"
-        ? allProducts.filter(product => product.category === "Minuman Instan")
-        : allProducts.filter(product => product.category === selectedCategory);
+  const filteredProducts = selectedCategory === "Snack Kiloan"
+    ? [] // Don't show regular products when Snack Kiloan is selected
+    : selectedCategory === "Semua" 
+      ? getRandomProducts(allProducts, 10)
+      : selectedCategory === "Bakpia dan Kue Basah"
+        ? allProducts.filter(product => product.category === "Bakpia & Kue Basah" || product.category === "Kue Basah")
+        : selectedCategory === "Minuman"
+          ? allProducts.filter(product => product.category === "Minuman Instan")
+          : allProducts.filter(product => product.category === selectedCategory);
 
   // Filter snack kiloan products
   const filteredSnackKiloan = selectedCategory === "Semua" 
@@ -1185,8 +1148,8 @@ const HomePage = () => {
 
             {/* Products Grid - Responsive: 2 cols mobile, 3 cols tablet, 4 cols desktop */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mb-6">
-              {/* Regular Products */}
-              {filteredProducts.map((product) => (
+              {/* Regular Products - Only show if there are products */}
+              {filteredProducts.length > 0 && filteredProducts.map((product) => (
                 <div key={product.id} className="group">
                   <div className="bg-amber-700 rounded-lg sm:rounded-xl p-2 sm:p-3 shadow-lg border border-amber-600 relative">
                     {/* Product Image */}

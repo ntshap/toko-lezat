@@ -8,6 +8,7 @@ import FloatingCheckoutButton from "@/components/FloatingCheckoutButton";
 import UserDataModal from "@/components/UserDataModal";
 import { useToast } from "@/hooks/use-toast";
 import SnackKiloanCard, { SnackKiloanProduct, SnackKiloanCartItem } from "@/components/SnackKiloanCard";
+import { snackKiloanProducts } from "@/data/snackKiloanData";
 
 // Kue Kering imports
 import susCoklat from "@/assets/image/KUE KERING/1_SUS COKLAT.jpg";
@@ -881,47 +882,8 @@ const products: Product[] = [
   }
 ];
 
-const snackKiloanProducts: SnackKiloanProduct[] = [
-  {
-    id: 100,
-    name: 'Keripik Singkong Aneka Rasa',
-    basePrice: 35000,
-    image: susCoklat,
-    description: 'Keripik singkong renyah dengan berbagai pilihan rasa, cocok untuk cemilan keluarga',
-    category: 'Snack Kiloan',
-    weightOptions: [
-      { weight: 1, price: 35000, label: '1 kg' },
-      { weight: 2, price: 65000, label: '2 kg' },
-      { weight: 4, price: 120000, label: '4 kg' }
-    ]
-  },
-  {
-    id: 101,
-    name: 'Keripik Pisang Original',
-    basePrice: 40000,
-    image: susCoklat,
-    description: 'Keripik pisang original yang manis dan renyah, dibuat dari pisang pilihan',
-    category: 'Snack Kiloan',
-    weightOptions: [
-      { weight: 1, price: 40000, label: '1 kg' },
-      { weight: 2, price: 75000, label: '2 kg' },
-      { weight: 4, price: 140000, label: '4 kg' }
-    ]
-  },
-  {
-    id: 102,
-    name: 'Mix Nuts Premium',
-    basePrice: 55000,
-    image: susCoklat,
-    description: 'Campuran kacang-kacangan premium yang gurih dan bergizi tinggi',
-    category: 'Snack Kiloan',
-    weightOptions: [
-      { weight: 1, price: 55000, label: '1 kg' },
-      { weight: 2, price: 105000, label: '2 kg' },
-      { weight: 4, price: 200000, label: '4 kg' }
-    ]
-  }
-];
+// snackKiloanProducts is now imported from @/data/snackKiloanData
+// Contains 32 products with complete pricing for 1/4kg, 1/2kg, and 1kg
 
 const categories = ["Semua", "Kripik dan Snack Ringan", "Kue Kering", "Permen & Manisan", "Kue Basah", "Kacang-kacangan", "Snack Kiloan", "Minuman", "Lain-lain"];
 

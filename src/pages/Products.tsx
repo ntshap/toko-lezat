@@ -8,6 +8,7 @@ import FloatingCheckoutButton from "@/components/FloatingCheckoutButton";
 import UserDataModal from "@/components/UserDataModal";
 import { useToast } from "@/hooks/use-toast";
 import SnackKiloanCard, { SnackKiloanProduct, SnackKiloanCartItem } from "@/components/SnackKiloanCard";
+import { snackKiloanProducts } from "@/data/snackKiloanData";
 
 // Kue Kering imports
 import susCoklat from "@/assets/image/KUE KERING/1_SUS COKLAT.jpg";
@@ -881,47 +882,11 @@ const products: Product[] = [
   }
 ];
 
-const snackKiloanProducts: SnackKiloanProduct[] = [
-  {
-    id: 92,
-    name: 'Keripik Singkong Aneka Rasa',
-    basePrice: 35000,
-    image: susCoklat,
-    description: 'Keripik singkong renyah dengan berbagai pilihan rasa, cocok untuk cemilan keluarga',
-    category: 'Snack Kiloan',
-    weightOptions: [
-      { weight: 1, price: 35000, label: '1 kg' },
-      { weight: 2, price: 65000, label: '2 kg' },
-      { weight: 4, price: 120000, label: '4 kg' }
-    ]
-  },
-  {
-    id: 93,
-    name: 'Keripik Pisang Original',
-    basePrice: 40000,
-    image: susCoklat,
-    description: 'Keripik pisang original yang manis dan renyah, dibuat dari pisang pilihan',
-    category: 'Snack Kiloan',
-    weightOptions: [
-      { weight: 1, price: 40000, label: '1 kg' },
-      { weight: 2, price: 75000, label: '2 kg' },
-      { weight: 4, price: 140000, label: '4 kg' }
-    ]
-  },
-  {
-    id: 102,
-    name: 'Mix Nuts Premium',
-    basePrice: 55000,
-    image: susCoklat,
-    description: 'Campuran kacang-kacangan premium yang gurih dan bergizi tinggi',
-    category: 'Snack Kiloan',
-    weightOptions: [
-      { weight: 1, price: 55000, label: '1 kg' },
-      { weight: 2, price: 105000, label: '2 kg' },
-      { weight: 4, price: 200000, label: '4 kg' }
-    ]
-  }
-];
+// snackKiloanProducts is now imported from @/data/snackKiloanData
+// Contains 32 products with complete pricing for 1/4kg, 1/2kg, and 1kg
+
+// Debug log untuk memastikan data ter-load
+console.log('🔍 Products.tsx - snackKiloanProducts loaded:', snackKiloanProducts.length);
 
 const categories = ["Semua", "Kripik dan Snack Ringan", "Kue Kering", "Permen & Manisan", "Bakpia dan Kue Basah", "Kacang-kacangan", "Snack Kiloan", "Minuman", "Lain-lain"];
 
@@ -972,6 +937,12 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
   };
 
   const filteredProducts = (() => {
+    // If Snack Kiloan category is selected, don't show regular products
+    if (selectedCategory === "Snack Kiloan") {
+      console.log('🔍 Snack Kiloan selected - hiding regular products');
+      return [];
+    }
+    
     // Handle special category mappings
     if (selectedCategory === "Semua") {
       if (searchQuery) {
@@ -1016,25 +987,31 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
     if (selectedCategory === "Semua") {
       // For "Semua", include all snack kiloan products
       if (searchQuery) {
-        return snackKiloanProducts.filter(product =>
+        const filtered = snackKiloanProducts.filter(product =>
           product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           product.description.toLowerCase().includes(searchQuery.toLowerCase())
         );
+        console.log('🔍 Filtered Snack Kiloan (Semua + search):', filtered.length);
+        return filtered;
       } else {
+        console.log('🔍 All Snack Kiloan (Semua):', snackKiloanProducts.length);
         return snackKiloanProducts;
       }
     }
     
     // SnackKiloan products only appear when "Snack Kiloan" category is selected
     if (selectedCategory === "Snack Kiloan") {
-      return snackKiloanProducts.filter(product => {
+      const filtered = snackKiloanProducts.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                              product.description.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesSearch;
       });
+      console.log('🔍 Filtered Snack Kiloan (category selected):', filtered.length);
+      return filtered;
     }
     
     // For other categories, don't show SnackKiloan products
+    console.log('🔍 Snack Kiloan hidden (other category selected)');
     return [];
   })();
 
@@ -1170,9 +1147,10 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
           ))}
         </div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-20">
-          {filteredProducts.map((product) => (
+        {/* Products Grid - Only show if there are regular products */}
+        {filteredProducts.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 mb-8">
+            {filteredProducts.map((product) => (
             <div key={product.id} className="group">
               <div className="bg-amber-700 rounded-xl p-3 shadow-lg border border-amber-600 relative">
                 {/* Product Image */}
@@ -1264,18 +1242,21 @@ export default function ProductsPage({ onAddToCart }: ProductsPageProps) {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        )}
 
-        {/* Snack Kiloan Products */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredSnackKiloanProducts.map((product) => (
-            <SnackKiloanCard
-              key={product.id}
-              product={product}
-              onAddToCart={addSnackKiloanToCart}
-            />
-          ))}
-        </div>
+        {/* Snack Kiloan Products - Only show if there are snack kiloan products */}
+        {filteredSnackKiloanProducts.length > 0 && (
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filteredSnackKiloanProducts.map((product) => (
+              <SnackKiloanCard
+                key={product.id}
+                product={product}
+                onAddToCart={addSnackKiloanToCart}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Empty State */}
         {filteredProducts.length === 0 && filteredSnackKiloanProducts.length === 0 && (

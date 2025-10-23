@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import CartModal, { CartItem } from "@/components/CartModal";
 import UserDataModal from "@/components/UserDataModal";
 import ProductDetailModal from "@/components/ProductDetailModal";
+import FloatingCheckoutButton from "@/components/FloatingCheckoutButton";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ShoppingCart, MapPin, Eye, Star, Plus, Minus, Check, ArrowUp } from "lucide-react";
@@ -903,7 +904,6 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isUserDataModalOpen, setIsUserDataModalOpen] = useState(false);
-  const [cartBounce, setCartBounce] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -912,16 +912,6 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
   };
-
-  // Trigger bounce animation when cart count changes
-  useEffect(() => {
-    const totalItems = getTotalItemsInCart();
-    if (totalItems > 0) {
-      setCartBounce(true);
-      const timer = setTimeout(() => setCartBounce(false), 500);
-      return () => clearTimeout(timer);
-    }
-  }, [cartItems]);
 
   // Show/hide scroll to top button based on scroll position
   useEffect(() => {
@@ -1087,6 +1077,10 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
 
   const handleDetailModalAddToCart = (product: Product, quantity: number) => {
     handleAddToCart(product, quantity);
+  };
+
+  const handleCheckout = () => {
+    setIsCartOpen(true);
   };
 
   return (
@@ -1394,25 +1388,6 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
               </div>
             )}
 
-            {/* Shopping Cart Icon - Floating */}
-            <div className="fixed bottom-6 right-6 z-50">
-              <button 
-                onClick={() => setIsCartOpen(true)}
-                className="w-14 h-14 bg-white rounded-full shadow-xl flex items-center justify-center hover:shadow-2xl transition-all duration-200 transform hover:scale-110"
-              >
-                <ShoppingCart className="w-6 h-6 text-red-600" />
-                {getTotalItemsInCart() > 0 && (
-                  <div 
-                    className={`absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white text-xs rounded-full flex items-center justify-center font-bold transition-transform duration-300 ${
-                      cartBounce ? 'animate-bounce scale-110' : ''
-                    }`}
-                  >
-                    {getTotalItemsInCart()}
-                  </div>
-                )}
-              </button>
-            </div>
-
             {/* Scroll to Top Button - Floating */}
             {showScrollTop && (
               <div className="fixed bottom-24 right-6 z-50">
@@ -1460,6 +1435,15 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
       </main>
       
       <Footer />
+
+      {/* Floating Checkout Button */}
+      {getTotalItemsInCart() > 0 && (
+        <FloatingCheckoutButton 
+          cartItems={cartItems}
+          onCheckoutClick={handleCheckout}
+          onCartClick={handleCheckout}
+        />
+      )}
       
       {/* Cart Modal */}
       <CartModal

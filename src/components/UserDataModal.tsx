@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, User, MapPin, Phone, ShoppingBag, Copy, CheckCircle2 } from "lucide-react";
+import { X, User, MapPin, Phone, ShoppingBag, Copy, CheckCircle2, Plus, Minus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,13 +20,17 @@ interface UserDataModalProps {
   onClose: () => void;
   cartItems: CartItem[];
   onCheckoutComplete: () => void;
+  onUpdateQuantity?: (id: number, newQuantity: number) => void;
+  onRemoveItem?: (id: number) => void;
 }
 
 export default function UserDataModal({ 
   isOpen, 
   onClose, 
   cartItems, 
-  onCheckoutComplete 
+  onCheckoutComplete,
+  onUpdateQuantity,
+  onRemoveItem
 }: UserDataModalProps) {
   const [userData, setUserData] = useState<UserData>({
     fullName: "",
@@ -300,39 +304,40 @@ export default function UserDataModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div 
         className="absolute inset-0 bg-black/50 backdrop-blur-none" 
         onClick={onClose}
       />
       
-      <Card className="relative w-full sm:max-w-md h-[95vh] sm:h-auto sm:max-h-[90vh] flex flex-col shadow-2xl rounded-t-3xl sm:rounded-2xl bg-white border-0 transform transition-transform duration-300 ease-out overflow-hidden">
-        {/* STICKY HEADER - with top padding for mobile */}
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-3 px-4 pt-5 sm:pt-3 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50 flex-shrink-0">
-          <CardTitle className="text-base sm:text-lg font-bold flex items-center gap-2 text-red-900">
-            <div className="p-1 bg-red-100 rounded-lg">
-              <User className="w-4 h-4 text-red-600" />
+      <Card className="relative w-full sm:max-w-md h-[96vh] sm:h-auto sm:max-h-[92vh] flex flex-col shadow-2xl rounded-t-2xl sm:rounded-2xl bg-white border-0 transform transition-transform duration-300 ease-out overflow-hidden">
+        {/* STICKY HEADER - Optimized for better visibility */}
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-2.5 sm:py-3 px-3 sm:px-4 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50 flex-shrink-0 min-h-[52px] sm:min-h-[56px]">
+          <CardTitle className="text-sm sm:text-base font-bold flex items-center gap-1.5 sm:gap-2 text-red-900 flex-1 pr-2">
+            <div className="p-0.5 sm:p-1 bg-red-100 rounded-lg flex-shrink-0">
+              <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
             </div>
-            Data Pemesan
+            <span className="truncate">Data Pemesan</span>
           </CardTitle>
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={onClose} 
-            className="h-8 w-8 p-0 rounded-full hover:bg-red-100 active:scale-95 transition-all duration-150 touch-manipulation"
+            className="h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-full hover:bg-red-100 active:scale-95 transition-all duration-150 touch-manipulation flex-shrink-0 border border-gray-200 bg-white/80 backdrop-blur-sm shadow-sm"
+            aria-label="Close modal"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            <X className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-gray-600 stroke-[2.5]" />
           </Button>
         </CardHeader>
         
         {/* SCROLLABLE CONTENT AREA */}
         <div className="flex-1 overflow-y-auto overscroll-contain">
-          <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 pb-4">
+          <div className="p-3 sm:p-4 space-y-3 sm:space-y-3.5 pb-3">
             {/* User Data Form */}
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-2.5 sm:space-y-3">
               <div>
-                <Label htmlFor="fullName" className="text-sm font-semibold text-gray-700 block mb-1.5 flex items-center gap-2">
-                  <User className="w-3.5 h-3.5 text-red-600" />
+                <Label htmlFor="fullName" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 sm:mb-1.5 flex items-center gap-1.5 sm:gap-2">
+                  <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-600 flex-shrink-0" />
                   Nama Lengkap *
                 </Label>
                 <Input
@@ -341,14 +346,14 @@ export default function UserDataModal({
                   placeholder="Masukkan nama lengkap Anda"
                   value={userData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className="h-10 sm:h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-colors duration-150 touch-manipulation"
+                  className="h-10 sm:h-11 text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-colors duration-150 touch-manipulation"
                   autoComplete="name"
                 />
               </div>
               
               <div>
-                <Label htmlFor="fullAddress" className="text-sm font-semibold text-gray-700 block mb-1.5 flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-red-600" />
+                <Label htmlFor="fullAddress" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 sm:mb-1.5 flex items-center gap-1.5 sm:gap-2">
+                  <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-600 flex-shrink-0" />
                   Alamat Lengkap *
                 </Label>
                 <Textarea
@@ -356,22 +361,22 @@ export default function UserDataModal({
                   placeholder="Masukkan alamat lengkap untuk pengiriman"
                   value={userData.fullAddress}
                   onChange={(e) => handleInputChange('fullAddress', e.target.value)}
-                  className="min-h-[70px] sm:min-h-[80px] text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 py-2 resize-none bg-white transition-colors duration-150 touch-manipulation"
+                  className="min-h-[65px] sm:min-h-[75px] text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 py-2 resize-none bg-white transition-colors duration-150 touch-manipulation"
                   rows={3}
                   autoComplete="street-address"
                   maxLength={200}
                 />
-                <p className="text-xs text-gray-500 mt-1 flex justify-between">
-                  <span>Contoh: Jl. Malioboro No. 123, RT 02/RW 05</span>
-                  <span className={userData.fullAddress.length > 180 ? 'text-orange-600 font-medium' : ''}>
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1 flex justify-between items-center gap-1">
+                  <span className="truncate">Contoh: Jl. Malioboro No. 123, RT 02/RW 05</span>
+                  <span className={`flex-shrink-0 ${userData.fullAddress.length > 180 ? 'text-orange-600 font-medium' : ''}`}>
                     {userData.fullAddress.length}/200
                   </span>
                 </p>
               </div>
               
               <div>
-                <Label htmlFor="city" className="text-sm font-semibold text-gray-700 block mb-1.5 flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-red-600" />
+                <Label htmlFor="city" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 sm:mb-1.5 flex items-center gap-1.5 sm:gap-2">
+                  <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-600 flex-shrink-0" />
                   Kota/Kabupaten *
                 </Label>
                 <Input
@@ -380,14 +385,14 @@ export default function UserDataModal({
                   placeholder="Contoh: Yogyakarta, Bantul, Sleman"
                   value={userData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
-                  className="h-10 sm:h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-colors duration-150 touch-manipulation"
+                  className="h-10 sm:h-11 text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-colors duration-150 touch-manipulation"
                   autoComplete="address-level2"
                 />
               </div>
               
               <div>
-                <Label htmlFor="whatsappNumber" className="text-sm font-semibold text-gray-700 block mb-1.5 flex items-center gap-2">
-                  <Phone className="w-3.5 h-3.5 text-red-600" />
+                <Label htmlFor="whatsappNumber" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 sm:mb-1.5 flex items-center gap-1.5 sm:gap-2">
+                  <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-600 flex-shrink-0" />
                   Nomor WhatsApp *
                 </Label>
                 <div className="relative">
@@ -398,28 +403,28 @@ export default function UserDataModal({
                     placeholder="Contoh: 08123456789"
                     value={userData.whatsappNumber}
                     onChange={(e) => handleInputChange('whatsappNumber', e.target.value)}
-                    className="h-10 sm:h-11 text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 pr-12 bg-white transition-colors duration-150 touch-manipulation"
+                    className="h-10 sm:h-11 text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 pr-10 sm:pr-12 bg-white transition-colors duration-150 touch-manipulation"
                     autoComplete="tel"
                   />
                   {userData.whatsappNumber && (
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    <div className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2">
                       {userData.whatsappNumber.length >= 10 && userData.whatsappNumber.length <= 15 ? (
-                        <CheckCircle2 className="w-4 h-4 text-green-500" />
+                        <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500" />
                       ) : (
-                        <span className="text-xs text-gray-400">{userData.whatsappNumber.length}</span>
+                        <span className="text-[10px] sm:text-xs text-gray-400 font-medium">{userData.whatsappNumber.length}</span>
                       )}
                     </div>
                   )}
                 </div>
-                <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1 flex items-center gap-1">
                   {userData.whatsappNumber.length === 0 ? (
                     <>Masukkan nomor tanpa tanda +62 atau 0</>
                   ) : userData.whatsappNumber.length < 10 ? (
-                    <span className="text-orange-600">Minimal 10 digit</span>
+                    <span className="text-orange-600 font-medium">Minimal 10 digit</span>
                   ) : userData.whatsappNumber.length > 15 ? (
-                    <span className="text-red-600">Maksimal 15 digit</span>
+                    <span className="text-red-600 font-medium">Maksimal 15 digit</span>
                   ) : (
-                    <span className="text-green-600 flex items-center gap-1">
+                    <span className="text-green-600 flex items-center gap-1 font-medium">
                       <CheckCircle2 className="w-3 h-3" /> Nomor valid
                     </span>
                   )}
@@ -428,11 +433,11 @@ export default function UserDataModal({
             </div>
             
             {/* Mobile-optimized Order Summary - SCROLLABLE VERSION */}
-            <div className="border border-gray-200 rounded-xl overflow-hidden bg-gradient-to-br from-red-50 to-orange-50">
-              <div className="bg-gradient-to-r from-red-600 to-orange-600 px-4 py-2.5">
-                <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                  <ShoppingBag className="w-4 h-4" />
-                  Ringkasan Pesanan ({cartItems.length} item{cartItems.length > 1 ? 's' : ''})
+            <div className="border border-gray-200 rounded-xl overflow-hidden bg-gradient-to-br from-red-50 to-orange-50 shadow-sm">
+              <div className="bg-gradient-to-r from-red-600 to-orange-600 px-3 sm:px-4 py-2">
+                <h3 className="font-bold text-xs sm:text-sm text-white flex items-center gap-1.5 sm:gap-2">
+                  <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">Ringkasan Pesanan ({cartItems.length} item{cartItems.length > 1 ? 's' : ''})</span>
                 </h3>
               </div>
               
@@ -440,38 +445,72 @@ export default function UserDataModal({
               <div className="relative">
                 {/* Gradient fade at top */}
                 {cartItems.length > 3 && (
-                  <div className="absolute top-0 left-0 right-0 h-4 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
+                  <div className="absolute top-0 left-0 right-0 h-3 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
                 )}
                 
-                <div className="px-4 py-3 bg-white space-y-2 max-h-[180px] overflow-y-auto overscroll-contain">
+                <div className="px-3 sm:px-4 py-2.5 sm:py-3 bg-white space-y-2 max-h-[160px] sm:max-h-[180px] overflow-y-auto overscroll-contain">
                   {cartItems.map((item, index) => (
-                    <div key={item.id} className="flex justify-between items-start gap-3 text-sm">
+                    <div key={item.id} className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm border-b border-gray-100 pb-2 last:border-0 last:pb-0">
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 truncate leading-snug">
+                        <p className="font-medium text-gray-900 truncate leading-tight sm:leading-snug">
                           {item.name}
                         </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {item.quantity} × {formatPrice(item.price)}
+                        <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5">
+                          {formatPrice(item.price)} per item
                         </p>
+                        <div className="flex items-center gap-1.5 mt-1.5">
+                          <button
+                            onClick={() => {
+                              if (item.quantity === 1) {
+                                onRemoveItem?.(item.id);
+                              } else {
+                                onUpdateQuantity?.(item.id, item.quantity - 1);
+                              }
+                            }}
+                            className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-md transition-colors touch-manipulation"
+                            aria-label="Kurangi jumlah"
+                          >
+                            <Minus className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-700" />
+                          </button>
+                          <span className="w-8 sm:w-10 text-center font-semibold text-xs sm:text-sm text-gray-900">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => onUpdateQuantity?.(item.id, item.quantity + 1)}
+                            className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 active:bg-gray-300 rounded-md transition-colors touch-manipulation"
+                            aria-label="Tambah jumlah"
+                          >
+                            <Plus className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-700" />
+                          </button>
+                        </div>
                       </div>
-                      <span className="font-semibold text-red-600 text-sm whitespace-nowrap">
-                        {formatPrice(item.price * item.quantity)}
-                      </span>
+                      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                        <span className="font-semibold text-red-600 text-xs sm:text-sm whitespace-nowrap">
+                          {formatPrice(item.price * item.quantity)}
+                        </span>
+                        <button
+                          onClick={() => onRemoveItem?.(item.id)}
+                          className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center bg-red-50 hover:bg-red-100 active:bg-red-200 rounded-md transition-colors touch-manipulation group"
+                          aria-label="Hapus item"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600 group-hover:text-red-700" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
                 
                 {/* Gradient fade at bottom */}
                 {cartItems.length > 3 && (
-                  <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 right-0 h-3 bg-gradient-to-t from-white to-transparent pointer-events-none" />
                 )}
               </div>
               
               {/* Total - More Prominent */}
-              <div className="bg-gradient-to-r from-red-600 to-orange-600 px-4 py-3">
-                <div className="flex justify-between items-center">
-                  <span className="font-bold text-white text-sm">Total Pembayaran:</span>
-                  <span className="font-bold text-white text-lg">{formatPrice(totalPrice)}</span>
+              <div className="bg-gradient-to-r from-red-600 to-orange-600 px-3 sm:px-4 py-2.5 sm:py-3">
+                <div className="flex justify-between items-center gap-2">
+                  <span className="font-bold text-white text-xs sm:text-sm flex-shrink-0">Total Pembayaran:</span>
+                  <span className="font-bold text-white text-base sm:text-lg truncate">{formatPrice(totalPrice)}</span>
                 </div>
               </div>
             </div>
@@ -479,34 +518,34 @@ export default function UserDataModal({
         </div>
         
         {/* STICKY FOOTER - CHECKOUT BUTTON */}
-        <div className="flex-shrink-0 p-3 sm:p-4 border-t border-gray-200 bg-gradient-to-t from-white via-white to-transparent shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+        <div className="flex-shrink-0 p-2.5 sm:p-3 border-t border-gray-200 bg-gradient-to-t from-white via-white to-transparent shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
           <Button 
             onClick={handleCheckout}
             disabled={isSubmitting}
-            className="w-full h-12 sm:h-13 bg-gradient-to-r from-green-600 via-green-600 to-green-700 hover:from-green-700 hover:via-green-700 hover:to-green-800 active:scale-[0.98] text-white font-bold text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-11 sm:h-12 bg-gradient-to-r from-green-600 via-green-600 to-green-700 hover:from-green-700 hover:via-green-700 hover:to-green-800 active:scale-[0.98] text-white font-bold text-sm sm:text-base rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 touch-manipulation disabled:opacity-50 disabled:cursor-not-allowed"
             size="lg"
           >
             {isSubmitting ? (
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Memproses Pesanan...</span>
+                <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="text-sm sm:text-base">Memproses Pesanan...</span>
               </div>
             ) : (
-              <div className="flex items-center justify-center gap-2">
-                <div className="bg-white/20 p-1.5 rounded-lg">
-                  <Phone className="w-5 h-5" />
+              <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+                <div className="bg-white/20 p-1 sm:p-1.5 rounded-lg flex-shrink-0">
+                  <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <span>Checkout via WhatsApp</span>
-                <div className="ml-1 bg-white/20 px-2 py-0.5 rounded-full text-xs font-normal">
+                <span className="truncate">Checkout via WhatsApp</span>
+                <div className="ml-0.5 sm:ml-1 bg-white/20 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-normal flex-shrink-0">
                   {formatPrice(totalPrice)}
                 </div>
               </div>
             )}
           </Button>
           
-          <p className="text-xs text-gray-500 text-center mt-2 flex items-center justify-center gap-1">
-            <Copy className="w-3 h-3" />
-            <span>Pesan akan disalin otomatis ke clipboard</span>
+          <p className="text-[10px] sm:text-xs text-gray-500 text-center mt-1.5 sm:mt-2 flex items-center justify-center gap-1 px-2">
+            <Copy className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
+            <span className="truncate">Pesan akan disalin otomatis ke clipboard</span>
           </p>
         </div>
       </Card>

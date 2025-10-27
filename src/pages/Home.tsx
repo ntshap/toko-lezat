@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import CartModal, { CartItem } from "@/components/CartModal";
 import UserDataModal from "@/components/UserDataModal";
 import ProductDetailModal from "@/components/ProductDetailModal";
+import SnackKiloanDetailModal from "@/components/SnackKiloanDetailModal";
 import FloatingCheckoutButton from "@/components/FloatingCheckoutButton";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -908,6 +909,8 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
   const [isLoading, setIsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedSnackKiloan, setSelectedSnackKiloan] = useState<SnackKiloanProduct | null>(null);
+  const [isSnackKiloanDetailOpen, setIsSnackKiloanDetailOpen] = useState(false);
   const [randomSemuaProducts, setRandomSemuaProducts] = useState<Product[]>([]);
 
   const handleCategoryClick = (category: string) => {
@@ -1087,6 +1090,11 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
   const handleProductClick = (product: Product) => {
     setSelectedProduct(product);
     setIsDetailModalOpen(true);
+  };
+
+  const handleSnackKiloanClick = (product: SnackKiloanProduct) => {
+    setSelectedSnackKiloan(product);
+    setIsSnackKiloanDetailOpen(true);
   };
 
   const handleDetailModalAddToCart = (product: Product, quantity: number) => {
@@ -1400,6 +1408,7 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
                   key={product.id} 
                   product={product} 
                   onAddToCart={handleSnackKiloanAddToCart}
+                  onViewDetail={handleSnackKiloanClick}
                 />
               ))}
               </div>
@@ -1477,6 +1486,8 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
         onClose={() => setIsUserDataModalOpen(false)}
         cartItems={cartItems}
         onCheckoutComplete={handleCheckoutComplete}
+        onUpdateQuantity={onUpdateQuantity}
+        onRemoveItem={onRemoveFromCart}
       />
 
       {/* Product Detail Modal */}
@@ -1486,6 +1497,14 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
         onClose={() => setIsDetailModalOpen(false)}
         onAddToCart={handleDetailModalAddToCart}
         currentQuantity={selectedProduct ? (cartItems.find(item => item.id === selectedProduct.id)?.quantity || 0) : 0}
+      />
+
+      {/* Snack Kiloan Detail Modal */}
+      <SnackKiloanDetailModal
+        product={selectedSnackKiloan}
+        isOpen={isSnackKiloanDetailOpen}
+        onClose={() => setIsSnackKiloanDetailOpen(false)}
+        onAddToCart={handleSnackKiloanAddToCart}
       />
     </div>
   );

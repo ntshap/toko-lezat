@@ -12,7 +12,7 @@ export default function LocationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header 
         cartItemCount={0} 
         onCartClick={() => {}}
@@ -20,36 +20,27 @@ export default function LocationPage() {
         onSearchChange={() => {}}
       />
       
-      <main>
-        {/* Header - Simple and Clean */}
-        <div className="bg-red-600 py-6">
+      <main className="flex-1 flex flex-col">
+        {/* Toko Kami Header - Positioned above map */}
+        <div className="bg-red-600 py-4 sm:py-6 z-10">
           <div className="container mx-auto px-4">
-            <h1 className="text-white text-2xl sm:text-3xl font-bold text-center">Lokasi Toko</h1>
+            <h1 className="text-white text-xl sm:text-2xl md:text-3xl font-bold text-center">Toko Kami</h1>
           </div>
         </div>
 
-        {/* Main Location Section - Simple like mockup */}
-        <section className="py-8 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center">
-              <div className="max-w-4xl mx-auto">
-                {/* Large Google Maps */}
-                <div className="aspect-video rounded-xl overflow-hidden shadow-lg mb-6">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.745439151646!2d110.2225967!3d-7.493333399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a8f381c35967b%3A0x7e71ec5b29884cdf!2sPusat%20Oleh%20-%20Oleh%20Lezat!5e0!3m2!1sen!2sid!4v1757642857119!5m2!1sen!2sid"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    className="rounded-xl"
-                  ></iframe>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Full Screen Google Maps */}
+        <div className="flex-1 relative">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.745439151646!2d110.2225967!3d-7.493333399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a8f381c35967b%3A0x7e71ec5b29884cdf!2sPusat%20Oleh%20-%20Oleh%20Lezat!5e0!3m2!1sen!2sid!4v1757642857119!5m2!1sen!2sid"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            className="absolute inset-0"
+          ></iframe>
+        </div>
       </main>
 
       <Footer />

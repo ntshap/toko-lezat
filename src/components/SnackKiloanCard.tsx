@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Eye } from "lucide-react";
 
 export interface SnackKiloanProduct {
   id: number;
@@ -29,9 +29,10 @@ export interface SnackKiloanCartItem {
 interface SnackKiloanCardProps {
   product: SnackKiloanProduct;
   onAddToCart: (item: SnackKiloanCartItem) => void;
+  onViewDetail?: (product: SnackKiloanProduct) => void;
 }
 
-export default function SnackKiloanCard({ product, onAddToCart }: SnackKiloanCardProps) {
+export default function SnackKiloanCard({ product, onAddToCart, onViewDetail }: SnackKiloanCardProps) {
   const [selectedWeight, setSelectedWeight] = useState(product.weightOptions[0]);
   const [quantity, setQuantity] = useState(1);
 
@@ -53,17 +54,25 @@ export default function SnackKiloanCard({ product, onAddToCart }: SnackKiloanCar
   };
 
   return (
-    <div className="bg-amber-700 rounded-xl p-3 sm:p-4 shadow-lg border border-amber-600 relative">
+    <div className="group bg-amber-700 rounded-xl p-3 sm:p-4 shadow-lg border border-amber-600 relative">
       {/* Product Image */}
-      <div className="aspect-square bg-amber-600 rounded-lg mb-3 overflow-hidden relative">
+      <div 
+        className="aspect-square bg-amber-600 rounded-lg mb-3 overflow-hidden relative cursor-pointer"
+        onClick={() => onViewDetail?.(product)}
+      >
         <img
           src={product.image}
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         
+        {/* Eye Icon Overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
+          <Eye className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </div>
+        
         {/* Snack Kiloan Badge */}
-        <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+        <div className="absolute top-2 left-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-md">
           Kiloan
         </div>
       </div>

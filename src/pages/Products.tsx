@@ -7,6 +7,7 @@ import CartModal, { CartItem } from "@/components/CartModal";
 import FloatingCheckoutButton from "@/components/FloatingCheckoutButton";
 import UserDataModal from "@/components/UserDataModal";
 import ProductDetailModal from "@/components/ProductDetailModal";
+import SnackKiloanDetailModal from "@/components/SnackKiloanDetailModal";
 import { useToast } from "@/hooks/use-toast";
 import SnackKiloanCard, { SnackKiloanProduct, SnackKiloanCartItem } from "@/components/SnackKiloanCard";
 import { snackKiloanProducts } from "@/data/snackKiloanData";
@@ -911,6 +912,8 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
   const [isLoading, setIsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedSnackKiloan, setSelectedSnackKiloan] = useState<SnackKiloanProduct | null>(null);
+  const [isSnackKiloanDetailOpen, setIsSnackKiloanDetailOpen] = useState(false);
 
   // Handle category parameter from URL
   useEffect(() => {
@@ -1086,6 +1089,11 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
   const handleProductClick = (product: Product) => {
     setSelectedProduct(product);
     setIsDetailModalOpen(true);
+  };
+
+  const handleSnackKiloanClick = (product: SnackKiloanProduct) => {
+    setSelectedSnackKiloan(product);
+    setIsSnackKiloanDetailOpen(true);
   };
 
   const handleDetailModalAddToCart = (product: Product, quantity: number) => {
@@ -1305,6 +1313,7 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
                 key={product.id}
                 product={product}
                 onAddToCart={addSnackKiloanToCart}
+                onViewDetail={handleSnackKiloanClick}
               />
             ))}
           </div>
@@ -1350,6 +1359,8 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
         onClose={() => setIsUserDataModalOpen(false)}
         cartItems={cartItems}
         onCheckoutComplete={handleCheckoutComplete}
+        onUpdateQuantity={onUpdateQuantity}
+        onRemoveItem={onRemoveFromCart}
       />
 
       {/* Product Detail Modal */}
@@ -1359,6 +1370,14 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
         onClose={() => setIsDetailModalOpen(false)}
         onAddToCart={handleDetailModalAddToCart}
         currentQuantity={selectedProduct ? (cartItems.find(item => item.id === selectedProduct.id)?.quantity || 0) : 0}
+      />
+
+      {/* Snack Kiloan Detail Modal */}
+      <SnackKiloanDetailModal
+        product={selectedSnackKiloan}
+        isOpen={isSnackKiloanDetailOpen}
+        onClose={() => setIsSnackKiloanDetailOpen(false)}
+        onAddToCart={addSnackKiloanToCart}
       />
     </div>
   );

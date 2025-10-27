@@ -21,80 +21,38 @@ export default function ContactLocation() {
   };
 
   return (
-    <>
-      {/* White Section - Toko Kami matching UI design */}
-      <section id="contact" className="py-8 bg-white">
+    <div className="w-full">
+      {/* Toko Kami Header - White Background Only */}
+      <div className="bg-white py-6 sm:py-8 w-full">
         <div className="container mx-auto px-4">
-          <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl font-black text-gray-900 mb-8">
-              Toko Kami
-            </h2>
-            
-            <div className="max-w-6xl mx-auto">
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-6">
-                Lokasi & Tampilan Toko 360°
-              </h3>
-              
-              {/* Double Maps Layout - Regular Map & 360° View */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                {/* Regular Google Maps */}
-                <div className="aspect-video rounded-xl overflow-hidden shadow-lg">
-                  <div className="mb-2">
-                    <h4 className="text-lg font-semibold text-gray-800">📍 Lokasi di Maps</h4>
-                  </div>
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.745439151646!2d110.2225967!3d-7.493333399999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a8f381c35967b%3A0x7e71ec5b29884cdf!2sPusat%20Oleh%20-%20Oleh%20Lezat!5e0!3m2!1sen!2sid!4v1757642857119!5m2!1sen!2sid"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    className="rounded-xl"
-                  ></iframe>
-                </div>
-
-                {/* 360° Street View */}
-                <div className="aspect-video rounded-xl overflow-hidden shadow-lg">
-                  <div className="mb-2">
-                    <h4 className="text-lg font-semibold text-gray-800">👁️ Tampilan Toko 360°</h4>
-                  </div>
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!4v1757642898313!6m8!1m7!1sQj1PS1mDWxDfPXXpqYB5AQ!2m2!1d-7.493334006981341!2d110.222667005607!3f277.7709!4f0!5f0.7820865974627469"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    className="rounded-xl"
-                  ></iframe>
-                </div>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex gap-4 justify-center">
-                <Button 
-                  onClick={handleGoogleMaps}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-                >
-                  <MapPin className="w-4 h-4 mr-2" />
-                  Buka di Google Maps
-                </Button>
-              </div>
-            </div>
-          </div>
+          <h2 className="text-gray-900 text-2xl sm:text-3xl md:text-4xl font-bold text-center">
+            Toko Kami
+          </h2>
         </div>
-      </section>
+      </div>
+
+      {/* Full Rectangle Map - Street View 360° - NO ROUNDED CORNERS */}
+      <div className="w-full h-[500px] sm:h-[600px] lg:h-[700px] bg-gray-200">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!4v1757642898313!6m8!1m7!1sQj1PS1mDWxDfPXXpqYB5AQ!2m2!1d-7.493334006981341!2d110.222667005607!3f277.7709!4f0!5f0.7820865974627469"
+          width="100%"
+          height="100%"
+          style={{ border: 0, display: 'block', margin: 0, padding: 0 }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title="Google Maps Street View - Toko Lezat"
+        ></iframe>
+      </div>
 
       {/* Red Footer Section - Contact Info matching UI design */}
-      <section className="bg-red-600 py-8">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-white">
+      <section className="bg-red-600 py-4 sm:py-6">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 text-white">
             {/* Left Column - Address */}
             <div>
-              <h3 className="font-bold text-lg mb-4">Alamat</h3>
-              <div className="space-y-2">
+              <h3 className="font-bold text-base sm:text-lg mb-2 sm:mb-3">Alamat</h3>
+              <div className="space-y-1 sm:space-y-2 text-sm sm:text-base">
                 <p>Jl. Ikhlas Blok D1 No.1, Magelang</p>
                 <p>📞 (0293) 313131</p>
                 <p>📱 @tokolezatmagelang</p>
@@ -103,17 +61,19 @@ export default function ContactLocation() {
             
             {/* Right Column - Operating Hours */}
             <div>
-              <h3 className="font-bold text-lg mb-4">Jam Operasional</h3>
-              <div className="space-y-1">
+              <h3 className="font-bold text-base sm:text-lg mb-2 sm:mb-3">Jam Operasional</h3>
+              <div className="space-y-1 text-sm sm:text-base">
                 <p>Toko Buka</p>
                 <p>pukul 09.00 - 18.00 WIB</p>
-                <p className="mt-3">Online</p>
+                <p className="mt-2">Online</p>
+                <p>Senin - Sabtu</p>
                 <p>pukul 09.00 - 17.00 WIB</p>
+                <p className="font-semibold">Minggu Tutup</p>
               </div>
             </div>
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

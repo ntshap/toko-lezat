@@ -310,9 +310,9 @@ export default function UserDataModal({
         onClick={onClose}
       />
       
-      <Card className="relative w-full sm:max-w-md h-[96vh] sm:h-auto sm:max-h-[92vh] flex flex-col shadow-2xl rounded-t-2xl sm:rounded-2xl bg-white border-0 transform transition-transform duration-300 ease-out overflow-hidden">
+      <Card className="relative w-full sm:max-w-md h-[98vh] sm:h-auto sm:max-h-[95vh] flex flex-col shadow-2xl rounded-t-2xl sm:rounded-2xl bg-white border-0 transform transition-transform duration-300 ease-out overflow-hidden">
         {/* STICKY HEADER - Optimized for better visibility */}
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-2.5 sm:py-3 px-3 sm:px-4 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50 flex-shrink-0 min-h-[52px] sm:min-h-[56px]">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 py-2 sm:py-2.5 px-3 sm:px-4 border-b border-gray-100 bg-gradient-to-r from-red-50 to-orange-50 flex-shrink-0 min-h-[48px] sm:min-h-[52px]">
           <CardTitle className="text-sm sm:text-base font-bold flex items-center gap-1.5 sm:gap-2 text-red-900 flex-1 pr-2">
             <div className="p-0.5 sm:p-1 bg-red-100 rounded-lg flex-shrink-0">
               <User className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
@@ -323,20 +323,20 @@ export default function UserDataModal({
             variant="ghost" 
             size="sm" 
             onClick={onClose} 
-            className="h-9 w-9 sm:h-10 sm:w-10 p-0 rounded-full hover:bg-red-100 active:scale-95 transition-all duration-150 touch-manipulation flex-shrink-0 border border-gray-200 bg-white/80 backdrop-blur-sm shadow-sm"
+            className="h-8 w-8 sm:h-9 sm:w-9 p-0 rounded-full hover:bg-red-100 active:scale-95 transition-all duration-150 touch-manipulation flex-shrink-0 border border-gray-200 bg-white/80 backdrop-blur-sm shadow-sm"
             aria-label="Close modal"
           >
-            <X className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-gray-600 stroke-[2.5]" />
+            <X className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-gray-600 stroke-[2.5]" />
           </Button>
         </CardHeader>
         
         {/* SCROLLABLE CONTENT AREA */}
-        <div className="flex-1 overflow-y-auto overscroll-contain">
-          <div className="p-3 sm:p-4 space-y-3 sm:space-y-3.5 pb-3">
+        <div className="flex-1 overflow-y-auto overscroll-contain scroll-smooth">
+          <div className="p-3 sm:p-4 space-y-2.5 sm:space-y-3 pb-3">
             {/* User Data Form */}
-            <div className="space-y-2.5 sm:space-y-3">
+            <div className="space-y-2 sm:space-y-2.5">
               <div>
-                <Label htmlFor="fullName" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 sm:mb-1.5 flex items-center gap-1.5 sm:gap-2">
+                <Label htmlFor="fullName" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 flex items-center gap-1.5">
                   <User className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-600 flex-shrink-0" />
                   Nama Lengkap *
                 </Label>
@@ -346,13 +346,13 @@ export default function UserDataModal({
                   placeholder="Masukkan nama lengkap Anda"
                   value={userData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className="h-10 sm:h-11 text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-colors duration-150 touch-manipulation"
+                  className="h-9 sm:h-10 text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-colors duration-150 touch-manipulation"
                   autoComplete="name"
                 />
               </div>
               
               <div>
-                <Label htmlFor="fullAddress" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 sm:mb-1.5 flex items-center gap-1.5 sm:gap-2">
+                <Label htmlFor="fullAddress" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 flex items-center gap-1.5">
                   <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-600 flex-shrink-0" />
                   Alamat Lengkap *
                 </Label>
@@ -361,12 +361,12 @@ export default function UserDataModal({
                   placeholder="Masukkan alamat lengkap untuk pengiriman"
                   value={userData.fullAddress}
                   onChange={(e) => handleInputChange('fullAddress', e.target.value)}
-                  className="min-h-[65px] sm:min-h-[75px] text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 py-2 resize-none bg-white transition-colors duration-150 touch-manipulation"
+                  className="min-h-[60px] sm:min-h-[70px] text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 py-2 resize-none bg-white transition-colors duration-150 touch-manipulation"
                   rows={3}
                   autoComplete="street-address"
                   maxLength={200}
                 />
-                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1 flex justify-between items-center gap-1">
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 flex justify-between items-center gap-1">
                   <span className="truncate">Contoh: Jl. Malioboro No. 123, RT 02/RW 05</span>
                   <span className={`flex-shrink-0 ${userData.fullAddress.length > 180 ? 'text-orange-600 font-medium' : ''}`}>
                     {userData.fullAddress.length}/200
@@ -375,7 +375,7 @@ export default function UserDataModal({
               </div>
               
               <div>
-                <Label htmlFor="city" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 sm:mb-1.5 flex items-center gap-1.5 sm:gap-2">
+                <Label htmlFor="city" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 flex items-center gap-1.5">
                   <MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-600 flex-shrink-0" />
                   Kota/Kabupaten *
                 </Label>
@@ -385,13 +385,13 @@ export default function UserDataModal({
                   placeholder="Contoh: Yogyakarta, Bantul, Sleman"
                   value={userData.city}
                   onChange={(e) => handleInputChange('city', e.target.value)}
-                  className="h-10 sm:h-11 text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-colors duration-150 touch-manipulation"
+                  className="h-9 sm:h-10 text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 bg-white transition-colors duration-150 touch-manipulation"
                   autoComplete="address-level2"
                 />
               </div>
               
               <div>
-                <Label htmlFor="whatsappNumber" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 sm:mb-1.5 flex items-center gap-1.5 sm:gap-2">
+                <Label htmlFor="whatsappNumber" className="text-xs sm:text-sm font-semibold text-gray-700 block mb-1 flex items-center gap-1.5">
                   <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-red-600 flex-shrink-0" />
                   Nomor WhatsApp *
                 </Label>
@@ -403,7 +403,7 @@ export default function UserDataModal({
                     placeholder="Contoh: 08123456789"
                     value={userData.whatsappNumber}
                     onChange={(e) => handleInputChange('whatsappNumber', e.target.value)}
-                    className="h-10 sm:h-11 text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 pr-10 sm:pr-12 bg-white transition-colors duration-150 touch-manipulation"
+                    className="h-9 sm:h-10 text-sm sm:text-base border border-gray-300 focus:border-red-500 rounded-lg px-3 pr-10 sm:pr-12 bg-white transition-colors duration-150 touch-manipulation"
                     autoComplete="tel"
                   />
                   {userData.whatsappNumber && (
@@ -416,7 +416,7 @@ export default function UserDataModal({
                     </div>
                   )}
                 </div>
-                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 sm:mt-1 flex items-center gap-1">
+                <p className="text-[10px] sm:text-xs text-gray-500 mt-0.5 flex items-center gap-1">
                   {userData.whatsappNumber.length === 0 ? (
                     <>Masukkan nomor tanpa tanda +62 atau 0</>
                   ) : userData.whatsappNumber.length < 10 ? (

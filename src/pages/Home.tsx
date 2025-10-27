@@ -1433,16 +1433,16 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
         <GoogleReviews />
 
         {/* Toko Kami Section - Separate heading and full-width map */}
-        <section className="bg-white py-8">
+        <section className="bg-white py-4">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-2xl font-black text-gray-900 mb-4">
+            <h2 className="text-2xl font-black text-gray-900 mb-2">
               Toko Kami
             </h2>
           </div>
         </section>
 
         <div className="w-full">
-          <div className="relative w-full h-[320px] sm:h-[460px] lg:h-[560px]">
+          <div className="relative w-full h-[360px] sm:h-[500px] lg:h-[600px]">
             <iframe
               src="https://www.google.com/maps/embed?pb=!4v1757642898313!6m8!1m7!1sQj1PS1mDWxDfPXXpqYB5AQ!2m2!1d-7.493334006981341!2d110.222667005607!3f277.7709!4f0!5f0.7820865974627469"
               width="100%"

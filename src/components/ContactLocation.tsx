@@ -23,26 +23,29 @@ export default function ContactLocation() {
   return (
     <div className="w-full">
       {/* Toko Kami Header - White Background Only */}
-      <div className="bg-white py-6 sm:py-8 w-full">
+      <section className="bg-white py-6 sm:py-8 w-full">
         <div className="container mx-auto px-4">
           <h2 className="text-gray-900 text-2xl sm:text-3xl md:text-4xl font-bold text-center">
             Toko Kami
           </h2>
         </div>
-      </div>
+      </section>
 
       {/* Full Rectangle Map - Street View 360° - NO ROUNDED CORNERS */}
-      <div className="w-full h-[500px] sm:h-[600px] lg:h-[700px] bg-gray-200">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!4v1757642898313!6m8!1m7!1sQj1PS1mDWxDfPXXpqYB5AQ!2m2!1d-7.493334006981341!2d110.222667005607!3f277.7709!4f0!5f0.7820865974627469"
-          width="100%"
-          height="100%"
-          style={{ border: 0, display: 'block', margin: 0, padding: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title="Google Maps Street View - Toko Lezat"
-        ></iframe>
+      <div className="w-full">
+        <div className="relative w-full h-[360px] sm:h-[520px] lg:h-[640px]">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!4v1757642898313!6m8!1m7!1sQj1PS1mDWxDfPXXpqYB5AQ!2m2!1d-7.493334006981341!2d110.222667005607!3f277.7709!4f0!5f0.7820865974627469"
+            width="100%"
+            height="100%"
+            style={{ border: 0, display: 'block' }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Google Maps Street View - Toko Lezat"
+            className="absolute inset-0 h-full w-full"
+          ></iframe>
+        </div>
       </div>
 
       {/* Red Footer Section - Contact Info matching UI design */}

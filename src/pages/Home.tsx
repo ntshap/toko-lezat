@@ -1432,32 +1432,30 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
         {/* Review Pembeli Section */}
         <GoogleReviews />
 
-        {/* Toko Kami Section - White background like mockup */}
-        <section className="py-8 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center">
-              <h2 className="text-2xl font-black text-gray-900 mb-8">
-                Toko Kami
-              </h2>
-              
-              <div className="max-w-2xl mx-auto">
-                {/* 360° Street View */}
-                <div className="aspect-video rounded-xl overflow-hidden shadow-lg mb-6">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!4v1757642898313!6m8!1m7!1sQj1PS1mDWxDfPXXpqYB5AQ!2m2!1d-7.493334006981341!2d110.222667005607!3f277.7709!4f0!5f0.7820865974627469"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    className="rounded-xl"
-                  ></iframe>
-                </div>
-              </div>
-            </div>
+        {/* Toko Kami Section - Separate heading and full-width map */}
+        <section className="bg-white py-8">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-2xl font-black text-gray-900 mb-4">
+              Toko Kami
+            </h2>
           </div>
         </section>
+
+        <div className="w-full">
+          <div className="relative w-full h-[320px] sm:h-[460px] lg:h-[560px]">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!4v1757642898313!6m8!1m7!1sQj1PS1mDWxDfPXXpqYB5AQ!2m2!1d-7.493334006981341!2d110.222667005607!3f277.7709!4f0!5f0.7820865974627469"
+              width="100%"
+              height="100%"
+              style={{ border: 0, display: 'block' }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Google Maps Street View - Toko Lezat"
+              className="absolute inset-0 h-full w-full"
+            ></iframe>
+          </div>
+        </div>
       </main>
       
       <Footer />

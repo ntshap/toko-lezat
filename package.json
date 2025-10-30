@@ -9,6 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
+    "postinstall": "npm rebuild esbuild",
     "validate-permen": "tsx src/scripts/validatePermenManisan.ts",
     "validate-keripik": "tsx src/scripts/validateKeripik.ts",
     "validate-kacang": "tsx src/scripts/validateKacang.ts",

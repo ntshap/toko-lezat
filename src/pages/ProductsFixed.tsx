@@ -885,7 +885,7 @@ const products: Product[] = [
 // snackKiloanProducts is now imported from @/data/snackKiloanData
 // Contains 32 products with complete pricing for 1/4kg, 1/2kg, and 1kg
 
-const categories = ["Semua", "Kripik dan Snack Ringan", "Kue Kering", "Permen & Manisan", "Kue Basah", "Kacang-kacangan", "Snack Kiloan", "Minuman", "Lain-lain"];
+const categories = ["Semua", "Kue Kering", "Keripik", "Permen & Manisan", "Kue Basah", "Kacang-kacangan", "Snack Kiloan", "Minuman", "Lain-lain"];
 
 interface ProductsPageProps {
   cartItems: CartItem[];

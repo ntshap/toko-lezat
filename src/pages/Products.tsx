@@ -923,7 +923,7 @@ const products: Product[] = [
 // Debug log untuk memastikan data ter-load
 console.log('🔍 Products.tsx - snackKiloanProducts loaded:', snackKiloanProducts.length);
 
-const categories = ["Semua", "Kripik dan Snack Ringan", "Kue Kering", "Keripik", "Permen & Manisan", "Bakpia dan Kue Basah", "Kacang-kacangan", "Snack Kiloan", "Minuman", "Lain-lain"];
+const categories = ["Semua", "Kue Kering", "Keripik", "Permen & Manisan", "Bakpia dan Kue Basah", "Kacang-kacangan", "Snack Kiloan", "Minuman", "Lain-lain"];
 
 interface ProductsPageProps {
   cartItems: CartItem[];

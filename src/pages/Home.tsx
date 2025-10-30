@@ -1187,17 +1187,6 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
                 Semua
               </button>
               <button 
-                onClick={() => handleCategoryClick('Kripik dan Snack Ringan')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
-                  selectedCategory === 'Kripik dan Snack Ringan' 
-                    ? 'bg-orange-600 text-white shadow-lg scale-105' 
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {selectedCategory === 'Kripik dan Snack Ringan' && <Check className="w-4 h-4" />}
-                Kripik dan Snack Ringan
-              </button>
-              <button 
                 onClick={() => handleCategoryClick('Kue Kering')}
                 className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
                   selectedCategory === 'Kue Kering' 

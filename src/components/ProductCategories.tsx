@@ -97,7 +97,6 @@ import kondangFoodWedangSerai from "@/assets/image/Minuman Instan/KONDANG FOOD W
 
 // Product categories (ordered to match Home page)
 const categories = [
-  "Kripik dan Snack Ringan",
   "Kue Kering", 
   "Keripik",
   "Permen & Manisan",
@@ -1057,7 +1056,7 @@ export default function ProductCategories({
             </button>
             
             {/* Category buttons matching your UI design */}
-            {['Kripik dan Snack Ringan', 'Kue Kering', 'Permen', 'Bakpia dan Kue Basah', 'Kacang-kacangan', 'Snack Kiloan', 'Minuman', 'Lain-lain'].map((category) => {
+            {['Kue Kering', 'Keripik', 'Permen & Manisan', 'Bakpia dan Kue Basah', 'Kacang-kacangan', 'Snack Kiloan', 'Minuman', 'Lain-lain'].map((category) => {
               // Map display name to actual category name
               let actualCategory = category;
               if (category === 'Minuman') {

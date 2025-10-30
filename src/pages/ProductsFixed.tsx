@@ -889,7 +889,7 @@ const categories = ["Semua", "Kripik dan Snack Ringan", "Kue Kering", "Permen & 
 
 interface ProductsPageProps {
   cartItems: CartItem[];
-  onAddToCart: (product: any, quantityChange?: number) => void;
+  onAddToCart: (product: Product, quantityChange?: number) => void;
   onRemoveFromCart: (id: number) => void;
   onUpdateQuantity: (id: number, quantity: number) => void;
   onClearCart: () => void;
@@ -935,11 +935,13 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
     const cartItem: CartItem = {
       ...item,
       description: originalProduct?.description || '',
+      category: "Snack Kiloan",
+      weight: `${item.weightKg}kg`,
       id: typeof item.id === 'string' ? parseInt((item.id as string).replace('sk', '')) + 1000 : item.id as number
     };
     
     // Use parent's onAddToCart handler
-    onAddToCart(cartItem, cartItem.quantity);
+    onAddToCart(cartItem as Product, cartItem.quantity);
 
     toast({
       title: "Produk ditambahkan!",

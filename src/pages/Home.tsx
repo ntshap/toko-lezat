@@ -14,6 +14,9 @@ import { ShoppingCart, MapPin, Eye, Star, Plus, Minus, Check, ArrowUp } from "lu
 import SnackKiloanCard, { SnackKiloanProduct, SnackKiloanCartItem } from "@/components/SnackKiloanCard";
 import { useToast } from "@/hooks/use-toast";
 import { snackKiloanProducts } from "@/data/snackKiloanData";
+import { permenManisanProducts } from "@/data/permenManisanData";
+import { keripikProducts } from "@/data/keripikData";
+import { kacangProducts } from "@/data/kacangData";
 
 // Kue Kering imports
 import susCoklat from "@/assets/image/KUE KERING/1_SUS COKLAT.jpg";
@@ -118,7 +121,7 @@ interface Product {
 
 interface HomePageProps {
   cartItems: CartItem[];
-  onAddToCart: (product: any, quantityChange?: number) => void;
+  onAddToCart: (product: Product, quantityChange?: number) => void;
   onRemoveFromCart: (id: number) => void;
   onUpdateQuantity: (id: number, quantity: number) => void;
   onClearCart: () => void;
@@ -892,7 +895,37 @@ const allProducts: Product[] = [
     description: "Wedang serai Kondang Food yang harum dan menyegarkan",
     category: "Minuman Instan",
     weight: "150 g"
-  }
+  },
+  // Permen & Manisan - imported from permenManisanData
+  ...permenManisanProducts.map(product => ({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    description: product.description,
+    category: product.category,
+    weight: product.weight
+  })),
+  // Keripik - imported from keripikData
+  ...keripikProducts.map(product => ({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    description: product.description,
+    category: product.category,
+    weight: product.weight
+  })),
+  // Kacang-kacangan - imported from kacangData
+  ...kacangProducts.map(product => ({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    description: product.description,
+    category: product.category,
+    weight: product.weight
+  }))
 ];
 
 // snackKiloanProducts is now imported from @/data/snackKiloanData
@@ -954,8 +987,10 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
       "Kue Kering": products.filter(p => p.category === "Kue Kering"),
       "Bakpia & Kue Basah": products.filter(p => p.category === "Bakpia & Kue Basah" || p.category === "Kue Basah"),
       "Minuman Instan": products.filter(p => p.category === "Minuman Instan"),
+      "Permen & Manisan": products.filter(p => p.category === "Permen & Manisan"),
+      "Keripik": products.filter(p => p.category === "Keripik"),
       "Kacang-kacangan": products.filter(p => p.category === "Kacang-kacangan"),
-      "Other": products.filter(p => !["Kue Kering", "Bakpia & Kue Basah", "Kue Basah", "Minuman Instan", "Kacang-kacangan"].includes(p.category))
+      "Other": products.filter(p => !["Kue Kering", "Bakpia & Kue Basah", "Kue Basah", "Minuman Instan", "Permen & Manisan", "Keripik", "Kacang-kacangan"].includes(p.category))
     };
 
     // Take 2-3 products from each category to make it diverse
@@ -1035,7 +1070,7 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
     return products;
   })();
 
-  const handleAddToCart = (product: any, quantityChange: number = 1) => {
+  const handleAddToCart = (product: Product, quantityChange: number = 1) => {
     // Call the parent's onAddToCart handler
     onAddToCart(product, quantityChange);
 
@@ -1056,11 +1091,13 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
       price: item.price,
       image: item.image,
       description: item.description || "",
+      category: "Snack Kiloan",
+      weight: `${item.weightKg}kg`,
       quantity: item.quantity
     };
 
     // Use parent's onAddToCart to add the converted cart item
-    onAddToCart(cartItem, cartItem.quantity);
+    onAddToCart(cartItem as Product, cartItem.quantity);
     
     toast({
       title: "✅ Produk ditambahkan!",
@@ -1170,6 +1207,17 @@ const HomePage = ({ cartItems, onAddToCart, onRemoveFromCart, onUpdateQuantity, 
               >
                 {selectedCategory === 'Kue Kering' && <Check className="w-4 h-4" />}
                 Kue Kering
+              </button>
+              <button 
+                onClick={() => handleCategoryClick('Keripik')}
+                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 flex items-center gap-2 ${
+                  selectedCategory === 'Keripik' 
+                    ? 'bg-orange-600 text-white shadow-lg scale-105' 
+                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                {selectedCategory === 'Keripik' && <Check className="w-4 h-4" />}
+                Keripik
               </button>
               <button 
                 onClick={() => handleCategoryClick('Permen & Manisan')}

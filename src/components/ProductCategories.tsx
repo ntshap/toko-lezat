@@ -99,8 +99,9 @@ import kondangFoodWedangSerai from "@/assets/image/Minuman Instan/KONDANG FOOD W
 const categories = [
   "Kripik dan Snack Ringan",
   "Kue Kering", 
+  "Keripik",
+  "Permen & Manisan",
   "Bakpia dan Kue Basah",
-  "Permen",
   "Kacang-kacangan",
   "Minuman Instan",
   "Lain-lain"

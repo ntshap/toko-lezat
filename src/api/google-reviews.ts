@@ -100,20 +100,24 @@ router.get('/cached-reviews', async (req, res) => {
     // Implementasi cache dengan Redis atau database
     // Untuk mengurangi API calls ke Google
     
-    // Contoh dengan simple file cache
-    const fs = require('fs');
-    const path = require('path');
-    const cacheFile = path.join(__dirname, '../cache/reviews.json');
+    // Note: File system cache disabled for frontend build
+    // Use localStorage or IndexedDB instead in production
     
-    if (fs.existsSync(cacheFile)) {
-      const cacheData = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
-      const cacheAge = Date.now() - new Date(cacheData.last_updated).getTime();
-      
-      // Cache valid untuk 1 jam (3600000 ms)
-      if (cacheAge < 3600000) {
-        return res.json(cacheData);
-      }
-    }
+    /* eslint-disable @typescript-eslint/no-require-imports */
+    // const fs = require('fs');
+    // const path = require('path');
+    // const cacheFile = path.join(__dirname, '../cache/reviews.json');
+    /* eslint-enable @typescript-eslint/no-require-imports */
+    
+    // if (fs.existsSync(cacheFile)) {
+    //   const cacheData = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
+    //   const cacheAge = Date.now() - new Date(cacheData.last_updated).getTime();
+    //   
+    //   // Cache valid untuk 1 jam (3600000 ms)
+    //   if (cacheAge < 3600000) {
+    //     return res.json(cacheData);
+    //   }
+    // }
     
     // Jika cache expired, redirect ke endpoint real
     return res.redirect('/api/google-reviews');

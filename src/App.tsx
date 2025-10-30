@@ -3,16 +3,36 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import HomePage from "./pages/Home";
 import Products from "./pages/Products";
 import LocationPage from "./pages/Location";
 import NotFound from "./pages/NotFound";
 import { CartItem } from "@/components/CartModal";
+import { Product } from "@/components/ProductCard";
+import { trackPageView, setupScrollTracking } from "@/lib/analytics";
 
 const queryClient = new QueryClient();
 
 const CART_STORAGE_KEY = "toko-lezat-cart";
+
+// Analytics wrapper component
+const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Track page view on route change
+    trackPageView(location.pathname + location.search);
+  }, [location]);
+
+  useEffect(() => {
+    // Setup scroll tracking
+    const cleanup = setupScrollTracking();
+    return cleanup;
+  }, [location.pathname]);
+
+  return <>{children}</>;
+};
 
 const App = () => {
   // Initialize cart state from localStorage or empty array
@@ -36,7 +56,7 @@ const App = () => {
   }, [cartItems]);
 
   // Cart handler functions
-  const handleAddToCart = (product: any, quantityChange: number = 1) => {
+  const handleAddToCart = (product: Product, quantityChange: number = 1) => {
     const existingItem = cartItems.find(item => item.id === product.id);
     
     if (existingItem) {
@@ -91,24 +111,25 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route 
-              path="/" 
-              element={
-                <HomePage 
-                  cartItems={cartItems}
-                  onAddToCart={handleAddToCart}
-                  onRemoveFromCart={handleRemoveFromCart}
-                  onUpdateQuantity={handleUpdateQuantity}
-                  onClearCart={handleClearCart}
-                />
-              } 
-            />
-            <Route 
-              path="/products" 
-              element={
-                <Products 
-                  cartItems={cartItems}
+          <AnalyticsWrapper>
+            <Routes>
+              <Route 
+                path="/" 
+                element={
+                  <HomePage 
+                    cartItems={cartItems}
+                    onAddToCart={handleAddToCart}
+                    onRemoveFromCart={handleRemoveFromCart}
+                    onUpdateQuantity={handleUpdateQuantity}
+                    onClearCart={handleClearCart}
+                  />
+                } 
+              />
+              <Route 
+                path="/products" 
+                element={
+                  <Products 
+                    cartItems={cartItems}
                   onAddToCart={handleAddToCart}
                   onRemoveFromCart={handleRemoveFromCart}
                   onUpdateQuantity={handleUpdateQuantity}
@@ -120,6 +141,7 @@ const App = () => {
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </AnalyticsWrapper>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

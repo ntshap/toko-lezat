@@ -1,0 +1,178 @@
+# SEO & Analytics Setup Guide
+
+## ✅ Sudah Dikonfigurasi:
+
+### 1. **SEO Meta Tags** (`index.html`)
+- ✅ Primary meta tags (title, description, keywords)
+- ✅ Open Graph tags (Facebook sharing)
+- ✅ Twitter Card tags
+- ✅ Geo tags (lokasi Magelang)
+- ✅ Schema.org markup (LocalBusiness, Store, Products)
+- ✅ Canonical URL
+- ✅ Language set to Indonesian (`lang="id"`)
+
+### 2. **Sitemap & Robots**
+- ✅ `public/sitemap.xml` - Sitemap untuk semua pages
+- ✅ `public/robots.txt` - Updated dengan sitemap URL
+
+### 3. **Analytics Implementation**
+- ✅ `src/lib/analytics.ts` - Google Analytics 4 utilities
+- ✅ Page view tracking
+- ✅ E-commerce event tracking
+- ✅ Scroll tracking
+- ✅ Search tracking
+- ✅ WhatsApp click tracking
+
+## 🔧 Yang Perlu Dilakukan:
+
+### 1. **Setup Google Analytics 4**
+
+**Step 1:** Buat GA4 Property
+1. Buka https://analytics.google.com
+2. Create Account → Create Property
+3. Property name: "Pusat Oleh-Oleh Lezat"
+4. Pilih Indonesia timezone
+5. Copy Measurement ID (format: G-XXXXXXXXXX)
+
+**Step 2:** Replace Placeholder ID
+Edit `index.html` line ~189:
+```html
+<!-- BEFORE -->
+gtag('config', 'G-XXXXXXXXXX', {
+
+<!-- AFTER -->
+gtag('config', 'G-YOUR_REAL_ID', {
+```
+
+Edit `src/lib/analytics.ts` line ~34:
+```typescript
+// BEFORE
+window.gtag!('config', 'G-XXXXXXXXXX', {
+
+// AFTER
+window.gtag!('config', 'G-YOUR_REAL_ID', {
+```
+
+### 2. **Setup Facebook Pixel (Optional)**
+
+**Step 1:** Create Meta Pixel
+1. Buka https://business.facebook.com
+2. Events Manager → Create Pixel
+3. Copy Pixel ID
+
+**Step 2:** Uncomment & Update
+Edit `index.html` line ~206-207:
+```html
+<!-- BEFORE (commented out) -->
+// fbq('init', 'YOUR_PIXEL_ID');
+// fbq('track', 'PageView');
+
+<!-- AFTER -->
+fbq('init', '1234567890123456');  // Your actual pixel ID
+fbq('track', 'PageView');
+```
+
+Uncomment line ~209:
+```html
+<!-- BEFORE -->
+<!-- <noscript><img ... /></noscript> -->
+
+<!-- AFTER -->
+<noscript><img height="1" width="1" style="display:none" 
+  src="https://www.facebook.com/tr?id=1234567890123456&ev=PageView&noscript=1" />
+</noscript>
+```
+
+### 3. **Update Contact Info**
+
+Edit `index.html`:
+- Line ~48: Update phone number
+```html
+<meta property="og:phone_number" content="+6281234567890" />
+<!-- Ganti dengan nomor WhatsApp real -->
+```
+
+- Line ~98: Update phone in schema
+```json
+"telephone": "+6281234567890",
+<!-- Ganti dengan nomor WhatsApp real -->
+```
+
+### 4. **Update Social Media Links**
+
+Edit `index.html` line ~113-116:
+```json
+"sameAs": [
+  "https://www.instagram.com/pusatoleholehlezat",  // Update URL
+  "https://www.facebook.com/pusatoleholehlezat"     // Update URL
+]
+```
+
+### 5. **Update Domain di Sitemap**
+
+Edit `public/sitemap.xml`:
+Replace `https://pusatoleholehlezat.com/` dengan domain production Anda
+
+### 6. **Update Domain di Robots.txt**
+
+Edit `public/robots.txt` line terakhir:
+```
+Sitemap: https://your-actual-domain.com/sitemap.xml
+```
+
+## 📊 How to Use Analytics
+
+### Track Events in Components:
+
+```typescript
+import { trackAddToCart, trackWhatsAppClick, trackSearch } from '@/lib/analytics';
+
+// When adding product to cart
+trackAddToCart({
+  id: product.id,
+  name: product.name,
+  category: product.category,
+  price: product.price,
+  quantity: 1
+});
+
+// When clicking WhatsApp button
+trackWhatsAppClick('checkout');
+
+// When searching
+trackSearch(searchQuery, resultsCount);
+```
+
+## 🚀 Deployment Checklist:
+
+- [ ] Replace Google Analytics ID
+- [ ] Update phone number (WhatsApp)
+- [ ] Update social media URLs
+- [ ] Update domain in sitemap.xml
+- [ ] Update domain in robots.txt
+- [ ] (Optional) Setup Facebook Pixel
+- [ ] Verify sitemap at: https://yourdomain.com/sitemap.xml
+- [ ] Verify robots.txt at: https://yourdomain.com/robots.txt
+- [ ] Submit sitemap to Google Search Console
+- [ ] Verify GA4 tracking in Real-Time reports
+
+## 📈 Monitor Analytics:
+
+1. **Real-time Report**: See live visitors
+2. **Events**: Track user interactions
+3. **E-commerce**: Monitor cart & checkout events
+4. **Engagement**: See scroll depth & time on page
+
+## 🔍 SEO Verification Tools:
+
+- Google Search Console: https://search.google.com/search-console
+- Facebook Sharing Debugger: https://developers.facebook.com/tools/debug/
+- Twitter Card Validator: https://cards-dev.twitter.com/validator
+- Google Rich Results Test: https://search.google.com/test/rich-results
+
+## 📝 Notes:
+
+- Analytics akan otomatis track page views
+- Scroll tracking sudah disetup (25%, 50%, 75%, 100%)
+- E-commerce events siap pakai untuk cart & checkout
+- Semua tracking non-blocking (tidak affect performance)

@@ -16,8 +16,12 @@ interface CartModalProps {
   onRemoveItem: (productId: number) => void;
 }
 
+interface ToastFunction {
+  (options: { title: string; description: string; duration?: number }): void;
+}
+
 // WhatsApp checkout function with toast notification
-const handleCheckout = (cartItems: CartItem[], totalPrice: number, toast: any) => {
+const handleCheckout = (cartItems: CartItem[], totalPrice: number, toast: ToastFunction) => {
   // Format the date
   const today = new Date();
   const dateOptions: Intl.DateTimeFormatOptions = { 

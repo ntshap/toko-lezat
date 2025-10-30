@@ -11,6 +11,9 @@ import SnackKiloanDetailModal from "@/components/SnackKiloanDetailModal";
 import { useToast } from "@/hooks/use-toast";
 import SnackKiloanCard, { SnackKiloanProduct, SnackKiloanCartItem } from "@/components/SnackKiloanCard";
 import { snackKiloanProducts } from "@/data/snackKiloanData";
+import { permenManisanProducts } from "@/data/permenManisanData";
+import { keripikProducts } from "@/data/keripikData";
+import { kacangProducts } from "@/data/kacangData";
 
 // Kue Kering imports
 import susCoklat from "@/assets/image/KUE KERING/1_SUS COKLAT.jpg";
@@ -881,7 +884,37 @@ const products: Product[] = [
     description: "Wedang serai Kondang Food yang harum dan menyegarkan",
     category: "Minuman Instan",
     weight: "150 g"
-  }
+  },
+  // Permen & Manisan - imported from permenManisanData
+  ...permenManisanProducts.map(product => ({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    description: product.description,
+    category: product.category,
+    weight: product.weight
+  })),
+  // Keripik - imported from keripikData
+  ...keripikProducts.map(product => ({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    description: product.description,
+    category: product.category,
+    weight: product.weight
+  })),
+  // Kacang-kacangan - imported from kacangData
+  ...kacangProducts.map(product => ({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    image: product.image,
+    description: product.description,
+    category: product.category,
+    weight: product.weight
+  }))
 ];
 
 // snackKiloanProducts is now imported from @/data/snackKiloanData
@@ -890,11 +923,11 @@ const products: Product[] = [
 // Debug log untuk memastikan data ter-load
 console.log('🔍 Products.tsx - snackKiloanProducts loaded:', snackKiloanProducts.length);
 
-const categories = ["Semua", "Kripik dan Snack Ringan", "Kue Kering", "Permen & Manisan", "Bakpia dan Kue Basah", "Kacang-kacangan", "Snack Kiloan", "Minuman", "Lain-lain"];
+const categories = ["Semua", "Kripik dan Snack Ringan", "Kue Kering", "Keripik", "Permen & Manisan", "Bakpia dan Kue Basah", "Kacang-kacangan", "Snack Kiloan", "Minuman", "Lain-lain"];
 
 interface ProductsPageProps {
   cartItems: CartItem[];
-  onAddToCart: (product: any, quantityChange?: number) => void;
+  onAddToCart: (product: Product, quantityChange?: number) => void;
   onRemoveFromCart: (id: number) => void;
   onUpdateQuantity: (id: number, quantity: number) => void;
   onClearCart: () => void;
@@ -953,7 +986,9 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
       "Bakpia & Kue Basah": products.filter(p => p.category === "Bakpia & Kue Basah" || p.category === "Kue Basah"),
       "Minuman Instan": products.filter(p => p.category === "Minuman Instan"),
       "Kacang-kacangan": products.filter(p => p.category === "Kacang-kacangan"),
-      "Other": products.filter(p => !["Kue Kering", "Bakpia & Kue Basah", "Kue Basah", "Minuman Instan", "Kacang-kacangan"].includes(p.category))
+      "Keripik": products.filter(p => p.category === "Keripik"),
+      "Permen & Manisan": products.filter(p => p.category === "Permen & Manisan"),
+      "Other": products.filter(p => !["Kue Kering", "Bakpia & Kue Basah", "Kue Basah", "Minuman Instan", "Kacang-kacangan", "Keripik", "Permen & Manisan"].includes(p.category))
     };
 
     // Take 2-3 products from each category to make it diverse
@@ -1045,11 +1080,13 @@ export default function ProductsPage({ cartItems, onAddToCart, onRemoveFromCart,
     const cartItem: CartItem = {
       ...item,
       description: originalProduct?.description || '',
+      category: "Snack Kiloan",
+      weight: `${item.weightKg}kg`,
       id: typeof item.id === 'string' ? parseInt((item.id as string).replace('sk', '')) + 1000 : item.id as number
     };
     
     // Use parent's onAddToCart handler
-    onAddToCart(cartItem, cartItem.quantity);
+    onAddToCart(cartItem as Product, cartItem.quantity);
 
     toast({
       title: "✅ Produk ditambahkan!",
